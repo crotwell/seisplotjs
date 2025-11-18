@@ -19,8 +19,8 @@ import * as mseed3 from "./mseed3";
 import { parseUtil } from "./stationxml";
 import { DateTime } from "luxon";
 
-/** const for datalink protocol for web sockets, DataLink1.0 */
-export const DATALINK_PROTOCOL = "DataLink1.0";
+/** const for websocket subprotocol for datalink, DataLink1.0 */
+export const WS_DATALINK_SUBPROTOCOL = "DataLink1.0";
 
 /** enum for modes, either QUERY or STREAM */
 export enum MODE {
@@ -59,6 +59,7 @@ export const STREAM = "STREAM";
 export const ENDSTREAM = "ENDSTREAM";
 export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
+export const JSON_TYPE = "/JSON";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
 export function extractDLProto(lines: Array<string>): string {
@@ -114,6 +115,7 @@ export class DataLinkConnection {
   /** @private */
   _responseReject: null | ((error: Error) => void);
   webSocket: WebSocket | null;
+  subprotocol: string;
   dlproto: string;
 
   constructor(
@@ -123,6 +125,7 @@ export class DataLinkConnection {
   ) {
     this.dlproto = "1.0";
     this.webSocket = null;
+    this.subprotocol = WS_DATALINK_SUBPROTOCOL;
     this.url = url ? url : IRIS_RINGSERVER_URL;
     this._mode = MODE.Query;
     this.packetHandler = packetHandler;
@@ -161,7 +164,7 @@ export class DataLinkConnection {
       if (this.webSocket) {
         this.webSocket.close();
       }
-      const webSocket = new WebSocket(this.url, DATALINK_PROTOCOL);
+      const webSocket = new WebSocket(this.url, this.subprotocol);
       this.webSocket = webSocket;
       webSocket.binaryType = "arraybuffer";
 
@@ -188,14 +191,17 @@ export class DataLinkConnection {
       webSocket.onopen = () => {
         resolve(this);
       };
-    })
-      .then((datalink: unknown) => {
+    }).then((datalink: unknown) => {
         return (datalink as DataLinkConnection).sendId();
-      })
-      .then((idmsg: string) => {
-        this.serverId = idmsg;
-        return idmsg;
-      });
+    }).catch( e => {
+      if (!this.webSocket?.protocol || this.webSocket.protocol.length === 0) {
+        throw new Error(`fail to create websocket, possible due to subprotocol: sent subprotocol=${this.subprotocol} received empty`);
+      }
+      throw e;
+    }).then((idmsg: string) => {
+      this.serverId = idmsg;
+      return idmsg;
+    });
   }
 
   /**
@@ -736,10 +742,12 @@ export class DataLinkPacket {
   dataSize: number;
   _miniseed: null | miniseed.DataRecord;
   _mseed3: null | mseed3.MSeed3Record;
+  _json: null | object;
 
   constructor(header: string, dataview: DataView) {
     this._miniseed = null;
     this._mseed3 = null;
+    this._json = null;
     this.header = header;
     this.data = dataview;
     const split = this.header.split(" ");
@@ -840,6 +848,34 @@ export class DataLinkPacket {
     }
 
     return this._mseed3;
+  }
+
+
+
+  /**
+   * is this packet a json packet
+   *
+   * @returns          true if it is json
+   */
+  isJson(): boolean {
+    return isDef(this._json) || this.streamId.endsWith(JSON_TYPE);
+  }
+
+  /**
+   * Parsed payload as a json if is json, null otherwise.
+   *
+   * @returns JSON object or null
+   */
+  asJson(): object | null {
+    if (!isDef(this._json)) {
+      if (this.streamId.endsWith(JSON_TYPE)) {
+        this._json = JSON.parse(dataViewToString(this.data));
+      } else {
+        this._json = null;
+      }
+    }
+
+    return this._json;
   }
 }
 

@@ -1,0 +1,975 @@
+{
+    "@context": [
+        "https://geojson.org/geojson-ld/geojson-context.jsonld",
+        {
+            "@version": "1.1",
+            "wx": "https://api.weather.gov/ontology#",
+            "s": "https://schema.org/",
+            "geo": "http://www.opengis.net/ont/geosparql#",
+            "unit": "http://codes.wmo.int/common/unit/",
+            "@vocab": "https://api.weather.gov/ontology#",
+            "geometry": {
+                "@id": "s:GeoCoordinates",
+                "@type": "geo:wktLiteral"
+            },
+            "city": "s:addressLocality",
+            "state": "s:addressRegion",
+            "distance": {
+                "@id": "s:Distance",
+                "@type": "s:QuantitativeValue"
+            },
+            "bearing": {
+                "@type": "s:QuantitativeValue"
+            },
+            "value": {
+                "@id": "s:value"
+            },
+            "unitCode": {
+                "@id": "s:unitCode",
+                "@type": "@id"
+            },
+            "forecastOffice": {
+                "@type": "@id"
+            },
+            "forecastGridData": {
+                "@type": "@id"
+            },
+            "publicZone": {
+                "@type": "@id"
+            },
+            "county": {
+                "@type": "@id"
+            },
+            "observationStations": {
+                "@container": "@list",
+                "@type": "@id"
+            }
+        }
+    ],
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "id": "https://api.weather.gov/stations/KFLO",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.73083,
+                    34.1877799
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KFLO",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 44.5008
+                },
+                "stationIdentifier": "KFLO",
+                "name": "Florence - Florence Regional Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 12431.02999534
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 33
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ032",
+                "county": "https://api.weather.gov/zones/county/SCC041",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ032"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KCKI",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.857,
+                    33.717
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KCKI",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 20.1168
+                },
+                "stationIdentifier": "KCKI",
+                "name": "Kingstree Williamsburg Regional Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 42216.520141989
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 186
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ039",
+                "county": "https://api.weather.gov/zones/county/SCC089",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ039"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KMAO",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.3349999,
+                    34.181
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KMAO",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 28.0416
+                },
+                "stationIdentifier": "KMAO",
+                "name": "Marion County Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 44291.561369784
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 77
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ033",
+                "county": "https://api.weather.gov/zones/county/SCC067",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ033"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KSSC",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.48333,
+                    33.96667
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KSSC",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 74.0664
+                },
+                "stationIdentifier": "KSSC",
+                "name": "Shaw Air Force Base",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 64126.272331029
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 257
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ031",
+                "county": "https://api.weather.gov/zones/county/SCC085",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ031"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KHYW",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.122,
+                    33.829
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KHYW",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 10.0584
+                },
+                "stationIdentifier": "KHYW",
+                "name": "Conway Horry County Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 69522.609773829
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 114
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ058",
+                "county": "https://api.weather.gov/zones/county/SCC051",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ058"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KMEB",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.3683,
+                    34.79132
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KMEB",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 64.008
+                },
+                "stationIdentifier": "KMEB",
+                "name": "Laurinburg Maxton Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 87238.399847503
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 27
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ085",
+                "county": "https://api.weather.gov/zones/county/NCC165",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ085"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KLBT",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.059,
+                    34.60817
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KLBT",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 35.9664
+                },
+                "stationIdentifier": "KLBT",
+                "name": "Lumberton Municipal Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 89176.813724137
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 49
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ087",
+                "county": "https://api.weather.gov/zones/county/NCC155",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ087"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KMYR",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.92833,
+                    33.67975
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KMYR",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 7.62
+                },
+                "stationIdentifier": "KMYR",
+                "name": "Myrtle Beach International Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 93096.975423163
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 119
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ054",
+                "county": "https://api.weather.gov/zones/county/SCC051",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ054"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KGGE",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.3196,
+                    33.3117
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KGGE",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 11.8872
+                },
+                "stationIdentifier": "KGGE",
+                "name": "Georgetown County Airport       ",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 97895.904827251
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 152
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ056",
+                "county": "https://api.weather.gov/zones/county/SCC043",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ056"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KCPC",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.715,
+                    34.27278
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KCPC",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 29.8704
+                },
+                "stationIdentifier": "KCPC",
+                "name": "Whiteville, Columbus County Municipal Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 102181.95273025
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 78
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ099",
+                "county": "https://api.weather.gov/zones/county/NCC047",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ099"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KCRE",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.7204299,
+                    33.81619
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KCRE",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 7.9248
+                },
+                "stationIdentifier": "KCRE",
+                "name": "North Myrtle Beach Grand Strand Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 104670.82754843
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 106
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ054",
+                "county": "https://api.weather.gov/zones/county/SCC051",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ054"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KEYF",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.57902,
+                    34.60418
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KEYF",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 38.1
+                },
+                "stationIdentifier": "KEYF",
+                "name": "Curtis L Brown Jr. Field Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 126002.03721928
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 62
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ096",
+                "county": "https://api.weather.gov/zones/county/NCC017",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ096"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KFAY",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.88,
+                    34.98944
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KFAY",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 56.9976
+                },
+                "stationIdentifier": "KFAY",
+                "name": "Fayetteville, Fayetteville Regional Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 130700.76875711
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 40
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ088",
+                "county": "https://api.weather.gov/zones/county/NCC051",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ088"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KSOP",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.4,
+                    35.23333
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KSOP",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 141.1224
+                },
+                "stationIdentifier": "KSOP",
+                "name": "Pinehurst/Southern Pines, Moore County Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 131964.85532285
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 16
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ075",
+                "county": "https://api.weather.gov/zones/county/NCC125",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ075"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KCHS",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.04056,
+                    32.89889
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KCHS",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 14.0208
+                },
+                "stationIdentifier": "KCHS",
+                "name": "Charleston, Charleston Air Force Base",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 134696.92663094
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 189
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/SCZ050",
+                "county": "https://api.weather.gov/zones/county/SCC019",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/SCZ050"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KFBG",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.93158,
+                    35.1314
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KFBG",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 68.8848
+                },
+                "stationIdentifier": "KFBG",
+                "name": "Fort Bragg / Simmons Army Airfield",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 140306.10642178
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 34
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ088",
+                "county": "https://api.weather.gov/zones/county/NCC051",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ088"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KPOB",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -79.00771,
+                    35.17531
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KPOB",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 56.0832
+                },
+                "stationIdentifier": "KPOB",
+                "name": "Pope Air Force Base",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 140599.94899083
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 31
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ088",
+                "county": "https://api.weather.gov/zones/county/NCC051",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ088"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KSUT",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.07223,
+                    33.92921
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KSUT",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 4.8768
+                },
+                "stationIdentifier": "KSUT",
+                "name": "Brunswick County Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 160731.06776908
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 96
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ110",
+                "county": "https://api.weather.gov/zones/county/NCC019",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ110"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KCTZ",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.36276,
+                    34.97522
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KCTZ",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 42.9768
+                },
+                "stationIdentifier": "KCTZ",
+                "name": "Sampson County Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 164444.02058629
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 53
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ089",
+                "county": "https://api.weather.gov/zones/county/NCC163",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ089"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KILM",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -77.89987,
+                    34.26681
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KILM",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 7.0104
+                },
+                "stationIdentifier": "KILM",
+                "name": "Wilmington International Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 176265.78675506
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 83
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ107",
+                "county": "https://api.weather.gov/zones/county/NCC129",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ107"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KACZ",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.00389,
+                    34.71786
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KACZ",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 11.5824
+                },
+                "stationIdentifier": "KACZ",
+                "name": "Henderson Field Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 179169.44817529
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 66
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ105",
+                "county": "https://api.weather.gov/zones/county/NCC141",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ105"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KDPL",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -77.97995,
+                    34.99942
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KDPL",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 39.0144
+                },
+                "stationIdentifier": "KDPL",
+                "name": "Duplin County Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 195088.97888164
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 58
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ090",
+                "county": "https://api.weather.gov/zones/county/NCC061",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ090"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KW40",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.03862,
+                    35.22145
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KW40",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 50.9016
+                },
+                "stationIdentifier": "KW40",
+                "name": "Mount Olive Municipal Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 204455.29682783
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 51
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ078",
+                "county": "https://api.weather.gov/zones/county/NCC191",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ078"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KOAJ",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -77.61667,
+                    34.8333299
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KOAJ",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 28.956
+                },
+                "stationIdentifier": "KOAJ",
+                "name": "Jacksonville, Albert J Ellis Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 216771.76456766
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 67
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ198",
+                "county": "https://api.weather.gov/zones/county/NCC133",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ198"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KNCA",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -77.44066,
+                    34.70627
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KNCA",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 6.096
+                },
+                "stationIdentifier": "KNCA",
+                "name": "MCAS New River",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 227315.59391017
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 71
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ198",
+                "county": "https://api.weather.gov/zones/county/NCC133",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ198"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KMCZ",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -77.1782,
+                    35.86219
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KMCZ",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 22.86
+                },
+                "stationIdentifier": "KMCZ",
+                "name": "Martin County Airport",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 309674.9583501
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 49
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ029",
+                "county": "https://api.weather.gov/zones/county/NCC117",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ029"
+            }
+        },
+        {
+            "id": "https://api.weather.gov/stations/KMQI",
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -75.7,
+                    35.91667
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/stations/KMQI",
+                "@type": "wx:ObservationStation",
+                "elevation": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 3.9624
+                },
+                "stationIdentifier": "KMQI",
+                "name": "Manteo / Dare County Regional",
+                "timeZone": "America/New_York",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 425188.02410055
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 60
+                },
+                "forecast": "https://api.weather.gov/zones/forecast/NCZ203",
+                "county": "https://api.weather.gov/zones/county/NCC055",
+                "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ203"
+            }
+        }
+    ],
+    "observationStations": [
+        "https://api.weather.gov/stations/KFLO",
+        "https://api.weather.gov/stations/KCKI",
+        "https://api.weather.gov/stations/KMAO",
+        "https://api.weather.gov/stations/KSSC",
+        "https://api.weather.gov/stations/KHYW",
+        "https://api.weather.gov/stations/KMEB",
+        "https://api.weather.gov/stations/KLBT",
+        "https://api.weather.gov/stations/KMYR",
+        "https://api.weather.gov/stations/KGGE",
+        "https://api.weather.gov/stations/KCPC",
+        "https://api.weather.gov/stations/KCRE",
+        "https://api.weather.gov/stations/KEYF",
+        "https://api.weather.gov/stations/KFAY",
+        "https://api.weather.gov/stations/KSOP",
+        "https://api.weather.gov/stations/KCHS",
+        "https://api.weather.gov/stations/KFBG",
+        "https://api.weather.gov/stations/KPOB",
+        "https://api.weather.gov/stations/KSUT",
+        "https://api.weather.gov/stations/KCTZ",
+        "https://api.weather.gov/stations/KILM",
+        "https://api.weather.gov/stations/KACZ",
+        "https://api.weather.gov/stations/KDPL",
+        "https://api.weather.gov/stations/KW40",
+        "https://api.weather.gov/stations/KOAJ",
+        "https://api.weather.gov/stations/KNCA",
+        "https://api.weather.gov/stations/KMCZ",
+        "https://api.weather.gov/stations/KMQI"
+    ],
+    "pagination": {
+        "next": "https://api.weather.gov/stations?id%5B0%5D=KACZ&id%5B1%5D=KCHS&id%5B2%5D=KCKI&id%5B3%5D=KCPC&id%5B4%5D=KCRE&id%5B5%5D=KCTZ&id%5B6%5D=KDPL&id%5B7%5D=KEYF&id%5B8%5D=KFAY&id%5B9%5D=KFBG&id%5B10%5D=KFLO&id%5B11%5D=KGGE&id%5B12%5D=KHYW&id%5B13%5D=KILM&id%5B14%5D=KLBT&id%5B15%5D=KMAO&id%5B16%5D=KMCZ&id%5B17%5D=KMEB&id%5B18%5D=KMQI&id%5B19%5D=KMYR&id%5B20%5D=KNCA&id%5B21%5D=KOAJ&id%5B22%5D=KPOB&id%5B23%5D=KSOP&id%5B24%5D=KSSC&id%5B25%5D=KSUT&id%5B26%5D=KW40&cursor=eyJzIjo1MDB9"
+    }
+}

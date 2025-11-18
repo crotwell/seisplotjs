@@ -33,11 +33,13 @@ import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import * as mseed3eh from "./mseed3eh";
 import * as mseedarchive from "./mseedarchive";
+import * as nws from "./nws";
 import * as oregondsputil from "./oregondsputil";
 import * as organizeddisplay from "./organizeddisplay";
 import * as particlemotion from "./particlemotion";
 import * as quakeml from "./quakeml";
 import * as ringserverweb from "./ringserverweb";
+import * as ringserverweb4 from "./ringserverweb4";
 import * as sacPoleZero from "./sacpolezero";
 import * as scale from "./scale";
 import * as seedcodec from "./seedcodec";
@@ -57,6 +59,7 @@ import * as syngine from "./syngine";
 import * as taper from "./taper";
 import * as taup3 from "./taup3";
 import * as transfer from "./transfer";
+import * as transition from "./transition";
 import * as traveltime from "./traveltime";
 import * as usgsgeojson from "./usgsgeojson";
 import * as util from "./util";
@@ -95,11 +98,13 @@ export {
   mseed3,
   mseed3eh,
   mseedarchive,
+  nws,
   oregondsputil,
   organizeddisplay,
   particlemotion,
   quakeml,
   ringserverweb,
+  ringserverweb4,
   sacPoleZero,
   scale,
   seedcodec,
@@ -120,6 +125,7 @@ export {
   taper,
   taup3,
   transfer,
+  transition,
   traveltime,
   usgsgeojson,
   util,

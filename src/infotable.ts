@@ -239,6 +239,7 @@ export class QuakeTable extends HTMLElement {
   _quakeList: Array<Quake>;
   _rowToQuake: Map<HTMLTableRowElement, Quake>;
   _timezone?: Zone;
+  _timeFormat?: any;
   lastSortAsc = true;
   lastSortCol: string | undefined;
   _columnValues: Map<string, (q: Quake) => string>;
@@ -312,6 +313,19 @@ export class QuakeTable extends HTMLElement {
   }
   set timeZone(timezone: Zone|undefined) {
     this._timezone = timezone;
+    this.draw();
+  }
+
+  /**
+   * Time format, passed to luxon toLocaleString()
+   * https://moment.github.io/luxon/api-docs/index.html#datetimetolocalestring
+   * @return time as a string
+   */
+  get timeFormat(): any|undefined {
+    return this._timeFormat;
+  }
+  set timeFormat(timeFormat: any|undefined) {
+    this._timeFormat = timeFormat;
     this.draw();
   }
   static createDefaultColumnLabels() {
@@ -403,7 +417,12 @@ export class QuakeTable extends HTMLElement {
       const cell = row.insertCell(index);
       if (h === QUAKE_COLUMN.LOCALTIME && this.timeZone) {
         // special case if set timezone
-        cell.textContent = q.time.setZone(this.timeZone).toISO();
+        const localQuakeTime = q.time.setZone(this.timeZone);
+        if (this.timeFormat) {
+          cell.textContent = localQuakeTime.toLocaleString(this.timeFormat);
+        } else {
+          cell.textContent = localQuakeTime.toISO();
+        }
       } else {
         cell.textContent = this.getQuakeValue(q, h);
       }

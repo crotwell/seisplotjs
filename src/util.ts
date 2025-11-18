@@ -125,11 +125,11 @@ export function doIntGetterSetter(
     obj[hiddenField] = undefined;
   } else if (isNumArg(value)) {
     obj[hiddenField] = value;
-  } else if (isStringArg(value) && Number.isFinite(Number(value))) {
+  } else if (isStringArg(value) && Number.isSafeInteger(Number(value))) {
     obj[hiddenField] = parseInt(value);
   } else {
     throw new Error(
-      `${field} value argument is optional or number, but was type ${typeof value}, '${value}' `,
+      `${field} value argument is optional or integer, but was type ${typeof value}, '${value}' `,
     );
   }
 
@@ -578,6 +578,46 @@ export function nameForTimeZone(zone: string|null|Zone, atTime?: DateTime|null):
 }
 
 /**
+ * Utility method to pull raw text result from a url.
+ * Result returned is an Promise.
+ *
+ * @param url the url
+ * @returns promise to string result
+ */
+export function pullText(url: string, timeoutSec?: number): Promise<string> {
+  if (!timeoutSec) { timeoutSec = 30;}
+  const fetchInit = defaultFetchInitObj(TEXT_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000).then(
+    (response) => {
+      if (response.status === 200) {
+        return response.text();
+      } else {
+        throw new Error(`Status not 200: ${response.status}`);
+      }
+    });
+}
+
+/**
+ * Utility method to pull raw json result from a url.
+ * Result returned is an Promise.
+ *
+ * @param url the url
+ * @returns promise to string result
+ */
+export function pullJson(url: string, timeoutSec?: number): Promise<Record<string, unknown>> {
+  if (!timeoutSec) { timeoutSec = 30;}
+  const fetchInit = defaultFetchInitObj(JSON_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000).then(
+    (response) => {
+      if (response.status === 200) {
+        return response.json() as unknown as Record<string, unknown>;
+      } else {
+        throw new Error(`Status not 200: ${response.status}`);
+      }
+    });
+}
+
+/**
  * @returns the protocol, http: or https: for the document if possible.
  * Note this includes the colon.
  */
@@ -598,6 +638,19 @@ export function checkProtocol(defaultProtocol="http:"): string {
   }
 
   return _protocol;
+}
+
+/**
+ * Upgrade url protocol to https if document location is https
+ * @param  url  url to upgrade
+ * @return     upgraded url
+ */
+export function fixProtocolInUrl(url: string): string {
+  const protocol = checkProtocol();
+  if (url.startsWith("http:") && protocol == "https:") {
+    return `${protocol}${url.substring(5)}`;
+  }
+  return url;
 }
 
 export interface FetchInitObject {
@@ -702,7 +755,7 @@ export function getFetch(): (
  */
 export function doFetchWithTimeout(
   url: string | URL,
-  fetchInit?: RequestInit,
+  fetchInit?: RequestInit|null,
   timeoutSec?: number,
   fetcher?: (
     url: URL | RequestInfo,
@@ -748,6 +801,8 @@ export function doFetchWithTimeout(
   } else {
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
+  // see if we need to fetch via https due to document being https
+  absoluteUrl.protocol = checkProtocol(absoluteUrl.protocol);
 
   log(
     `attempt to fetch ${internalFetchInit.method ? internalFetchInit.method : ""} ${stringify(
@@ -810,7 +865,7 @@ export function doFetchWithTimeout(
  * @param  mimeType      mimeType, default application/octet-stream
  */
 export function downloadBlobAsFile(
-  data: Uint8Array,
+  data: Uint8Array<ArrayBuffer>,
   filename: string,
   mimeType = "application/octet-stream",
 ) {
@@ -820,7 +875,7 @@ export function downloadBlobAsFile(
 
   if (!filename) filename = "filetodownload.txt";
 
-  const blob = new Blob([data], { type: mimeType });
+  const blob = new Blob([data.buffer], { type: mimeType });
   const e = document.createEvent("MouseEvents");
   const a = document.createElement("a");
 
@@ -894,4 +949,35 @@ export function updateVersionText(selector = "#sp-version") {
   document.querySelectorAll(selector).forEach((el) => {
     el.textContent = version;
   });
+}
+
+/**
+ * Parses a string of the form 'an+b', where 'a' is a positive integer (can be omitted if 1), 'n' is a
+ * literal character, and 'b' is an integer (or omitted for zero). Examples include: '3n+1',
+ * 'n', '2n', '4n-2'. The resulting 'b' value will be reduced to its smallest positive form; for
+ * example, the previous example would return [4, 2] (-2 % 4 = 2), which is an equivalent representation
+ * when considering the bias for an infinite series.
+ * @param value String of the form 'an+b'
+ * @returns The 'a' and 'b' values parsed and reduced from the given 'value' string, returned as an array
+ */
+export function anplusb(value: string | number): Array<number> {
+  let a = 1;
+  let b = 0;
+  if (typeof value === "number" && Number.isSafeInteger(value)) {
+    // If value is given as a number, return it as 'a'
+    a = value;
+  } else if (typeof value === "string") {
+    // Find values in the format of 'an+b', making a and b optional
+    const re = /^(\d*)n(?:([+-]\d+))?$/;
+    const m = re.exec(value.replaceAll(/\s/g, ""));
+    if (m === null) {
+      throw new Error(`Unable to parse as 'an+b' (ex. '3n+1'), got: '${value}'`);
+    }
+    // If values are defined, parse to integers. Otherwise, keep defaults
+    a = m[1] ? +m[1] : a;
+    let parsedB = m[2] ? +m[2] : b;
+    // When parsing b, b can be a negative value, so we take the positive modulo
+    b = parsedB < 0 ? parsedB + a : parsedB
+  }
+  return [ a, b ];
 }

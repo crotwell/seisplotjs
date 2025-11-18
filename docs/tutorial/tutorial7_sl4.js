@@ -1,4 +1,4 @@
-import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../seisplotjs_3.2.0-SNAPSHOT_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
@@ -58,7 +58,7 @@ let requestConfig = [
 let start = sp.luxon.DateTime.utc().minus(duration);
 let dataCmd = sp.seedlink4.createDataTimeCommand(start);
 let requestConfigWithData = requestConfig.concat([ dataCmd ])
-let endCommand = "END";
+let endCommand = sp.seedlink4.END_COMMAND;
 const LOCAL_SEEDLINK_V4 = "wss://eeyore.seis.sc.edu/testringserver/seedlink";
 
 document.querySelector("span#channel").textContent = requestConfig.join(" ");

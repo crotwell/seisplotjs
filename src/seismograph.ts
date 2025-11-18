@@ -15,7 +15,6 @@ import {
   axisRight as d3axisRight,
 } from "d3-axis";
 
-import { zoom as d3zoom } from "d3-zoom";
 import { AUTO_COLOR_SELECTOR } from "./cssutil";
 import { AmplitudeScalable, TimeScalable, MinMaxable } from "./scale";
 import { SeismographConfig, numberFormatWrapper } from "./seismographconfig";
@@ -49,8 +48,8 @@ import type { HandlebarsInput } from "./axisutil";
 import type { Axis } from "d3-axis";
 import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
 import type { Selection } from "d3-selection";
-import type { ZoomTransform } from "d3-zoom";
 
+import {PanZoomer} from "./scale";
 import {
   SeismogramDisplayData,
   calcMinMax,
@@ -225,7 +224,6 @@ export class Seismograph extends SeisPlotElement {
   static _lastID: number;
   plotId: number;
   beforeFirstDraw: boolean;
-
   /** @private */
   _debugAlignmentSeisData: Array<SeismogramDisplayData>;
   width: number;
@@ -247,6 +245,8 @@ export class Seismograph extends SeisPlotElement {
   time_scalable: SeismographTimeScalable;
   amp_scalable: SeismographAmplitudeScalable;
 
+  panZoomer?: PanZoomer;
+
   _resizeObserver: ResizeObserver;
   minmax_sample_pixels = DEFAULT_MAX_SAMPLE_PER_PIXEL;
   constructor(
@@ -266,6 +266,7 @@ export class Seismograph extends SeisPlotElement {
     this.width = 200;
     this.height = 100;
 
+
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
     this.addStyle(seismograph_css);
@@ -275,6 +276,7 @@ export class Seismograph extends SeisPlotElement {
 
     this.canvas = null;
     this.canvasHolder = null;
+
     this.svg = d3select(wrapper).append("svg").style("z-index", 100);
     const svgNode = this.svg.node();
     if (svgNode != null) {
@@ -355,7 +357,6 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .classed("allseismograms", true)
       .classed(AUTO_COLOR_SELECTOR, true);
-    this.enableZoom();
 
     // create marker g
     this.g
@@ -406,13 +407,6 @@ export class Seismograph extends SeisPlotElement {
     });
   }
 
-  get seisData() {
-    return super.seisData;
-  }
-  set seisData(seisData: Array<SeismogramDisplayData>) {
-    this._seisDataList = [];
-    this.appendSeisData(seisData);
-  }
   get seismographConfig() {
     return super.seismographConfig;
   }
@@ -430,7 +424,6 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
-    this.enableZoom();
 
     this.redraw();
   }
@@ -460,31 +453,15 @@ export class Seismograph extends SeisPlotElement {
 
     return false;
   }
-  enableZoom(): void {
-    if (this.seismographConfig.allowZoom && !this.seismographConfig.fixedTimeScale) {
-      const mythis = this;
-      const z = this.svg.call(
-        // @ts-expect-error typescript and d3 don't always place nice together
-        d3zoom().on("zoom", function (e) {
-          mythis.zoomed(e);
-        }),
-      );
-
-      if (!this.seismographConfig.wheelZoom) {
-        z.on("wheel.zoom", null);
-      }
-    } else {
-      const z = this.svg.call(
-        // @ts-expect-error typescript and d3 don't always place nice together
-        d3zoom().on("zoom", null),
-      );
-      z.on("wheel.zoom", null);
-    }
-  }
 
   draw(): void {
     if (!this.isConnected) {
       return;
+    }
+    if (this.panZoomer && this.seismographConfig.linkedTimeScale) {
+      // in case update in seisConfig after creation
+      this.panZoomer.linkedTimeScale = this.seismographConfig.linkedTimeScale;
+      this.panZoomer.wheelZoom = this.seismographConfig.wheelZoom;
     }
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
     const svgEl = wrapper.querySelector("svg") as SVGElement;
@@ -551,6 +528,14 @@ export class Seismograph extends SeisPlotElement {
         null,
         undefined
       >;
+      if (this.seismographConfig.linkedTimeScale) {
+        const canvasHolderNode = this.canvasHolder.node();
+        if (!this.panZoomer && canvasHolderNode) {
+          this.panZoomer = new PanZoomer(canvasHolderNode, this.seismographConfig.linkedTimeScale, this.seismographConfig.wheelZoom);
+        } else if (this.panZoomer && canvasHolderNode) {
+          this.panZoomer.target = canvasHolderNode;
+        }
+      }
     }
 
     this.drawSeismograms();
@@ -1028,34 +1013,6 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  zoomed(e: any): void {
-    const t: ZoomTransform = e.transform;
-
-    if (isDef(this.seismographConfig.linkedTimeScale)) {
-      const linkedTS = this.seismographConfig.linkedTimeScale;
-
-      const origOffset = linkedTS.origOffset.toMillis() / 1000;
-      const origDuration = linkedTS.origDuration.toMillis() / 1000;
-      const origXScale = d3scaleLinear();
-      origXScale.range([0, this.width]);
-      if (origDuration > 0) {
-        origXScale.domain([origOffset, origOffset + origDuration]);
-      } else {
-        origXScale.domain([origOffset + origDuration, origOffset]);
-      }
-      const xt = t.rescaleX(origXScale);
-      const startDelta =
-        xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
-      const duration = xt.domain()[1] - xt.domain()[0];
-      linkedTS.zoom(
-        Duration.fromMillis(startDelta * 1000),
-        Duration.fromMillis(duration * 1000),
-      );
-    } else {
-      throw new Error("can't zoom fixedTimeScale");
-    }
-  }
-
   redrawWithXScale(): void {
     const mythis = this;
 
@@ -1320,6 +1277,9 @@ export class Seismograph extends SeisPlotElement {
     if (this.canvas) {
       this.canvas.attr("width", this.width).attr("height", this.height + 1);
     }
+    if (this.panZoomer) {
+      this.panZoomer.width = this.width;
+    }
   }
 
   drawTitle() {
@@ -1578,54 +1538,6 @@ export class Seismograph extends SeisPlotElement {
   }
 
   /**
-   * can append single seismogram segment or an array of segments.
-   *
-   * @param sddList array or single SeismogramDisplayData or Seismogram
-   * @private
-   */
-  _internalAppend(
-    sddList:
-      | Array<SeismogramDisplayData>
-      | SeismogramDisplayData
-      | Array<Seismogram>
-      | Seismogram,
-  ): void {
-    if (!sddList) {
-      // don't append a null
-    } else if (Array.isArray(sddList)) {
-      for (const s of sddList) {
-        if (s instanceof SeismogramDisplayData) {
-          this._seisDataList.push(s);
-        } else {
-          this._seisDataList.push(SeismogramDisplayData.fromSeismogram(s));
-        }
-      }
-    } else {
-      if (sddList instanceof SeismogramDisplayData) {
-        this._seisDataList.push(sddList);
-      } else {
-        this._seisDataList.push(SeismogramDisplayData.fromSeismogram(sddList));
-      }
-    }
-  }
-
-  /**
-   * appends the seismogram(s) or SeismogramDisplayData as separate time series.
-   *
-   * @param seismogram data to append
-   */
-  appendSeisData(
-    seismogram:
-      | Array<Seismogram>
-      | Array<SeismogramDisplayData>
-      | Seismogram
-      | SeismogramDisplayData,
-  ) {
-    this._internalAppend(seismogram);
-    this.seisDataUpdated();
-  }
-
-  /**
    * Notification to the element that something about the current seismogram
    * data has changed. This could be that the actual waveform data has been updated
    * or that auxillary data like quake or channel has been added. This should
@@ -1719,7 +1631,6 @@ export class SeismographTimeScalable extends TimeScalable {
   graph: Seismograph;
   drawAlignmentTimeOffset: Duration;
   drawDuration: Duration;
-
   constructor(
     graph: Seismograph,
     alignmentTimeOffset: Duration,

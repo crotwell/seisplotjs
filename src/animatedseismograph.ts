@@ -129,6 +129,7 @@ export type RTConfig = {
   minRedrawMillis?: number;
   networkList: Array<Network>;
   removeTrend: boolean;
+  seismographConfig?: SeismographConfig
 };
 
 /**
@@ -184,11 +185,13 @@ export function internalCreateRealtimeDisplay(
     negDuration,
     config.offset,
   );
-  const seisPlotConfig = new SeismographConfig();
-  seisPlotConfig.wheelZoom = false;
-  seisPlotConfig.isYAxisNice = false;
-  seisPlotConfig.linkedTimeScale = timeScale;
-  seisPlotConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
+  if ( ! config.seismographConfig ) {
+    config.seismographConfig = new SeismographConfig();
+  }
+  config.seismographConfig.wheelZoom = false;
+  config.seismographConfig.isYAxisNice = false;
+  config.seismographConfig.linkedTimeScale = timeScale;
+  config.seismographConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
   const animationScaler = new AnimatedTimeScaler(
     timeScale,
     config.alignmentTime,
@@ -196,13 +199,14 @@ export function internalCreateRealtimeDisplay(
   );
 
   const rawSeisData = new Array<SeismogramDisplayData>();
-  const orgDisp = new OrganizedDisplay([], seisPlotConfig);
+  const orgDisp = new OrganizedDisplay([], config.seismographConfig);
     // default is to sort by order added, which will be random for real time
   // alphabetical seems better for rt
   orgDisp.sortby = SORT_ALPHABETICAL;
 
   // packet handler can accept datalink, seedlink or seedlinkv4 packets and
   // either miniseed or miniseed3 data
+  console.log("Create Packet Handler")
   const packetHandler = (packet: DataLinkPacket|SEPacket|SequencedDataRecord) => {
     if (!packet) {
       return;
@@ -261,9 +265,10 @@ export function internalCreateRealtimeDisplay(
         }
       } else {
         // never happens, but typescipt
-
+        console.log("NEVER HAPPENS, but I guess it just did!!!")
       }
     } else {
+      console.log(`Did not find SDD ${codes}, create new`)
       const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
       rawSeisData.push(sdd);
       if (config.networkList) {
@@ -301,6 +306,7 @@ export function internalCreateRealtimeDisplay(
  * @param  timeRange  time window to coarse trim the data to
  */
 export function trim(orgDisplay: OrganizedDisplay, timeRange: Interval) {
+  console.log(`trim rt orgDisplay: ${timeRange}`)
   orgDisplay.seisData.forEach((sdd) => {
     sdd.trimInPlace(timeRange);
     sdd.timeRange = timeRange;

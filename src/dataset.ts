@@ -57,8 +57,6 @@ export class Dataset {
       throw new Error("unable to create subfolder in zip file: " + dirname);
     }
 
-    zip.file("Hello.txt", "Hello World\n");
-
     const seisFolder = zip.folder(SEISMOGRAM_DIR);
     if (seisFolder === null) {
       throw new Error("can't make folder");
@@ -70,7 +68,7 @@ export class Dataset {
       type: "uint8array",
       compression: "DEFLATE",
     });
-    downloadBlobAsFile(content, filename);
+    downloadBlobAsFile(content as Uint8Array<ArrayBuffer>, filename);
   }
   waveformsToMSeed3(): Map<string, ArrayBuffer> {
     const out = new Map<string, ArrayBuffer>();
