@@ -26,7 +26,6 @@ const staList = [
   "CSB",
   "HAW",
   "HODGE",
-  "JKYD",
   "JSC",
   "PARR",
   "PAULI",
