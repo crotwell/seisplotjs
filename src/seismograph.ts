@@ -428,7 +428,13 @@ export class Seismograph extends SeisPlotElement {
     this.redraw();
   }
   connectedCallback() {
-    this.redraw();
+
+    if (this.seismographConfig.linkedAmplitudeScale) {
+      this.beforeFirstDraw = false;
+      this.seismographConfig.linkedAmplitudeScale.recalculate();
+    } else {
+      this.redraw();
+    }
   }
   disconnectedCallback() {
     if (this.seismographConfig.linkedAmplitudeScale) {
@@ -1550,7 +1556,11 @@ export class Seismograph extends SeisPlotElement {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
       //this.drawSeismograms();
-      this.redraw();
+      if (this.seismographConfig.linkedAmplitudeScale) {
+        this.seismographConfig.linkedAmplitudeScale.recalculate();
+      } else {
+        this.redraw();
+      }
     }
   }
 

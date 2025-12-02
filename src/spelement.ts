@@ -102,6 +102,13 @@ export class SeisPlotElement extends HTMLElement {
     this.seisDataUpdated();
   }
 
+  setSeisDataAndConfig(seisData: Array<SeismogramDisplayData>,
+                      seismographConfig: SeismographConfig) {
+    this._seismographConfig = seismographConfig;
+    this._seisDataList = [];
+    this.appendSeisData(seisData);
+  }
+
   /**
    * The sorting type to optionally sort the data by. New sort types may be
    * added by supplying a key and function that takes an SeismogramDisplayData

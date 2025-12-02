@@ -267,7 +267,8 @@ export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
 export class FixedHalfWidthAmplitudeScale extends LinkedAmplitudeScale {
   constructor(halfWidth: number, graphList?: Array<AmplitudeScalable>) {
     super(graphList);
-    this.halfWidth = halfWidth;
+    this._halfWidth = halfWidth;
+
   }
   recalculate(): Promise<Array<AmplitudeScalable>> {
     // no-op, just notify
