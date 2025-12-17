@@ -42,7 +42,7 @@ test( "query setter test", () => {
   expect(dsQuery.getSpecVersion()).toEqual("1");
   expect(dsQuery.port(80)).toBe(dsQuery);
   expect(dsQuery.getPort()).toEqual(80);
-  expect(dsQuery.getHost()).toEqual("service.iris.edu");
+  expect(dsQuery.getHost()).toEqual(fdsndataselect.EARTHSCOPE_HOST);
   const url = dsQuery.formURL();
   expect(url).toBeDefined();
   // net is first, so no &
@@ -52,5 +52,5 @@ test( "query setter test", () => {
    'minimumlength', 'longestonly', 'quality', 'format', 'nodata']) {
      expect(url).toContain('&'+k+'=');
    }
-   expect(url).toContain("http://"+fdsndataselect.IRIS_HOST+"/fdsnws/dataselect/1/query?");
+   expect(url).toContain("http://"+fdsndataselect.EARTHSCOPE_HOST+"/fdsnws/dataselect/1/query?");
 });
