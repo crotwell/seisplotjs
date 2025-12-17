@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST } from "./fdsncommon";
 import { NslcId } from "./fdsnsourceid";
 import * as util from "./util"; // for util.log
 import { DateTime, Interval } from "luxon";
@@ -51,7 +51,7 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `fdsnws-${DATASELECT_SERVICE}-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export { IRIS_HOST };
+export { IRIS_HOST, EARTHSCOPE_HOST };
 
 /**
  * Query to a FDSN Dataselect web service.
@@ -95,7 +95,7 @@ export class DataSelectQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = IRIS_HOST;
+      host = EARTHSCOPE_HOST;
     }
     super(DATASELECT_SERVICE, host);
   }

@@ -5,6 +5,7 @@
 import { isNonEmptyStringArg, checkProtocol } from "./util";
 
 export const IRIS_HOST = "service.iris.edu";
+export const EARTHSCOPE_HOST = "service.earthscope.org";
 
 export const FDSNWS_PATH_BASE = "fdsnws";
 export const IRISWS_PATH_BASE = "irisws";
