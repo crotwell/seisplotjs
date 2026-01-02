@@ -96,6 +96,7 @@ export class DataSelectQuery extends FDSNCommon {
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
       host = EARTHSCOPE_HOST;
+      protocol = "https:";
     }
     super(DATASELECT_SERVICE, host);
   }
