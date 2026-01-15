@@ -510,6 +510,7 @@ export class Seismograph extends SeisPlotElement {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
       this.canvasHolder.attr("x", this.seismographConfig.margin.left);
       this.canvasHolder.attr("y", this.seismographConfig.margin.top);
+      // Set canvas size to be resolution-scaled, then set actual size in CSS. This enables resolution support
       this.canvas.attr("width", this._canvasWidth).attr("height", this._canvasHeight);
       this.canvas.attr("style", `width: ${this.width}px; height: ${this.height}px;`);
     } else {
@@ -663,7 +664,7 @@ export class Seismograph extends SeisPlotElement {
     drawAllOnCanvas(
       canvas,
       this._seisDataList,
-      this._seisDataList.map((sdd) => this.timeScaleForSeisDisplayData(sdd, true)),
+      this._seisDataList.map((sdd) => this.timeScaleForSeisDisplayData(sdd, true)),  // Set resolution scaling to true
       this._seisDataList.map((sdd) => this.ampScaleForSeisDisplayData(sdd)),
       this._seisDataList.map((_sdd, ti) =>
         this.seismographConfig.getColorForIndex(ti),
@@ -698,7 +699,7 @@ export class Seismograph extends SeisPlotElement {
   ampScaleForSeisDisplayData(
     sdd: SeismogramDisplayData,
   ): ScaleLinear<number, number, never> {
-    const ampScale = this.__initAmpScale(true);
+    const ampScale = this.__initAmpScale(true);  // Set resolution scaling to true
     if (this.seismographConfig.linkedAmplitudeScale) {
       const drawHalfWidth = this.amp_scalable.drawHalfWidth;
       let sensitivityVal = 1;
@@ -1278,6 +1279,7 @@ export class Seismograph extends SeisPlotElement {
       this.outerWidth -
       this.seismographConfig.margin.left -
       this.seismographConfig.margin.right;
+    // Scale canvas size to enable resolution support
     this._canvasHeight = this.height * this.seismographConfig.resolutionScale;
     this._canvasWidth = this.width * this.seismographConfig.resolutionScale;
 
