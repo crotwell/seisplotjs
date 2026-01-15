@@ -230,6 +230,8 @@ export class Seismograph extends SeisPlotElement {
   height: number;
   outerWidth: number;
   outerHeight: number;
+  _canvasWidth: number;
+  _canvasHeight: number;
   svg: Selection<SVGSVGElement, unknown, null, undefined>;
   canvasHolder: null | Selection<
     SVGForeignObjectElement,
@@ -265,7 +267,8 @@ export class Seismograph extends SeisPlotElement {
     this._debugAlignmentSeisData = [];
     this.width = 200;
     this.height = 100;
-
+    this._canvasWidth = 200;
+    this._canvasHeight = 100;
 
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
@@ -507,7 +510,8 @@ export class Seismograph extends SeisPlotElement {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
       this.canvasHolder.attr("x", this.seismographConfig.margin.left);
       this.canvasHolder.attr("y", this.seismographConfig.margin.top);
-      this.canvas.attr("width", this.width).attr("height", this.height);
+      this.canvas.attr("width", this._canvasWidth).attr("height", this._canvasHeight);
+      this.canvas.attr("style", `width: ${this.width}px; height: ${this.height}px;`);
     } else {
       const svg = d3select(svgEl);
       this.canvasHolder = svg
@@ -526,8 +530,9 @@ export class Seismograph extends SeisPlotElement {
         .attr("xmlns", XHTML_NS)
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", this.width)
-        .attr("height", this.height);
+        .attr("width", this._canvasWidth)
+        .attr("height", this._canvasHeight)
+        .attr("style", `width: ${this.width}px; height: ${this.height}px;`);
       this.canvas = c as unknown as Selection<
         HTMLCanvasElement,
         unknown,
@@ -658,12 +663,12 @@ export class Seismograph extends SeisPlotElement {
     drawAllOnCanvas(
       canvas,
       this._seisDataList,
-      this._seisDataList.map((sdd) => this.timeScaleForSeisDisplayData(sdd)),
+      this._seisDataList.map((sdd) => this.timeScaleForSeisDisplayData(sdd, true)),
       this._seisDataList.map((sdd) => this.ampScaleForSeisDisplayData(sdd)),
       this._seisDataList.map((_sdd, ti) =>
         this.seismographConfig.getColorForIndex(ti),
       ),
-      this.seismographConfig.lineWidth,
+      this.seismographConfig.lineWidth * this.seismographConfig.resolutionScale,
       this.seismographConfig.connectSegments,
       this.minmax_sample_pixels,
     );
@@ -693,7 +698,7 @@ export class Seismograph extends SeisPlotElement {
   ampScaleForSeisDisplayData(
     sdd: SeismogramDisplayData,
   ): ScaleLinear<number, number, never> {
-    const ampScale = this.__initAmpScale();
+    const ampScale = this.__initAmpScale(true);
     if (this.seismographConfig.linkedAmplitudeScale) {
       const drawHalfWidth = this.amp_scalable.drawHalfWidth;
       let sensitivityVal = 1;
@@ -762,6 +767,7 @@ export class Seismograph extends SeisPlotElement {
 
   timeScaleForSeisDisplayData(
     sdd?: SeismogramDisplayData | Interval,
+    scaleForResolution: boolean = false,
   ): axisutil.LuxonTimeScale {
     let plotInterval;
     if (sdd) {
@@ -783,7 +789,7 @@ export class Seismograph extends SeisPlotElement {
         plotInterval = util.durationEnd(1, DateTime.utc());
       }
     }
-    return new axisutil.LuxonTimeScale(plotInterval, [0, this.width]);
+    return new axisutil.LuxonTimeScale(plotInterval, [0, scaleForResolution ? this._canvasWidth : this.width]);
   }
 
   /**
@@ -799,10 +805,10 @@ export class Seismograph extends SeisPlotElement {
    * @private
    * @returns amp scale with range set
    */
-  __initAmpScale(): ScaleLinear<number, number, never> {
+  __initAmpScale(scaleForResolution: boolean = false): ScaleLinear<number, number, never> {
     const ampAxisScale = d3scaleLinear();
     // don't use top,bot pixel, somehow line at top amp disappears if [this.height, 0]
-    ampAxisScale.range([this.height - 1, 1]);
+    ampAxisScale.range([(scaleForResolution ? this._canvasHeight : this.height) - 1, 1]);
     return ampAxisScale;
   }
 
@@ -1272,6 +1278,8 @@ export class Seismograph extends SeisPlotElement {
       this.outerWidth -
       this.seismographConfig.margin.left -
       this.seismographConfig.margin.right;
+    this._canvasHeight = this.height * this.seismographConfig.resolutionScale;
+    this._canvasWidth = this.width * this.seismographConfig.resolutionScale;
 
     this.calcScaleAndZoom();
 
@@ -1281,10 +1289,10 @@ export class Seismograph extends SeisPlotElement {
         .attr("height", this.height + 1);
     }
     if (this.canvas) {
-      this.canvas.attr("width", this.width).attr("height", this.height + 1);
+      this.canvas.attr("width", this._canvasWidth).attr("height", this._canvasHeight + 1);
     }
     if (this.panZoomer) {
-      this.panZoomer.width = this.width;
+      this.panZoomer.width = this._canvasWidth;
     }
   }
 
