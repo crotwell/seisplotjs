@@ -128,6 +128,7 @@ export class SeismographConfig {
   amplitudeMode: AMPLITUDE_MODE;
   doGain: boolean;
   windowAmp: boolean;
+  resolutionScale: number;
   /** @private */
   _fixedAmplitudeScale: null | Array<number>;
 
@@ -183,6 +184,7 @@ export class SeismographConfig {
     this.amplitudeMode = AMPLITUDE_MODE.MinMax;
     this.doGain = true;
     this.windowAmp = true;
+    this.resolutionScale = 1;
     this._fixedAmplitudeScale = null;
     this._fixedTimeScale = null;
     this._linkedAmplitudeScale = new IndividualAmplitudeScale();
