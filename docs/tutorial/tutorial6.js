@@ -17,7 +17,7 @@ document.querySelector("span#starttime").textContent =
 document.querySelector("span#endtime").textContent =
   timeWindow.end.toISO(luxOpts);
 new sp.fdsndatacenters.DataCentersQuery()
-  .findFdsnDataSelect("IRISDMC")
+  .findFdsnDataSelect("EarthScope")
   // snip start seismogram
   .then((dataSelectArray) => {
     return dataSelectArray[0]

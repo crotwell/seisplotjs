@@ -142,7 +142,7 @@
               to an even value. You can create a custom query to the FDSN
               Datacenters Registry, but there is a convenience method to just
               get standard FDSN web services. So, we will just get the first
-              fdsn-dataselect web service that we find in the IRISDMC
+              fdsn-dataselect web service that we find in the EarthScope
               datacenter. Being a remote operation, this also returns a Promise.
       </p>
       <pre><code class="language-javascript" snippet="window">
@@ -161,7 +161,7 @@ document.querySelector("span#starttime").textContent =
 document.querySelector("span#endtime").textContent =
   timeWindow.end.toISO(luxOpts);
 new sp.fdsndatacenters.DataCentersQuery()
-  .findFdsnDataSelect("IRISDMC")
+  .findFdsnDataSelect("EarthScope")
 </code></pre>
       <p>
        In the then method of the Promise from findFdsnDataSelect, we
