@@ -5,6 +5,7 @@
  */
 import { DateTime } from "luxon";
 import { z } from "zod/v4";
+import {defaultPortStringForProtocol} from "./fdsncommon";
 import {
   FDSN_PREFIX,
   FDSNSourceId,
@@ -354,13 +355,9 @@ export class RingserverConnection {
       this._port = 80;
     }
 
-    return (
-      checkProtocol(this._protocol) +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
-      this._prefix
-    );
+    const port = defaultPortStringForProtocol(this._protocol, this._port);
+
+    return `${checkProtocol(this._protocol)}//${this._host}${port}${this._prefix}`;
   }
 
   /**

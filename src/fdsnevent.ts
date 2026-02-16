@@ -792,7 +792,7 @@ export class EventQuery extends FDSNCommon {
     if (this._protocol.endsWith(colon)) {
      colon = "";
     }
-    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const port = this.defaultPortStringForProtocol(this._protocol);
     const path = `${this._path_base}/${this._service}/${this._specVersion}`;
     return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }

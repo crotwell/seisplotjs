@@ -96,9 +96,11 @@ export class DataSelectQuery extends FDSNCommon {
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
       host = EARTHSCOPE_HOST;
-      protocol = "https:";
     }
     super(DATASELECT_SERVICE, host);
+    if (host === EARTHSCOPE_HOST) {
+      this.protocol("https:");
+    }
   }
 
   /**
@@ -591,13 +593,14 @@ export class DataSelectQuery extends FDSNCommon {
    */
   formBaseURL(): string {
     let colon = ":";
-
-    if (this._protocol.endsWith(colon)) {
+    const protocol = this._host === EARTHSCOPE_HOST ? "https:" : this._protocol;
+    if (protocol.endsWith(colon)) {
       colon = "";
     }
-    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const port = this.defaultPortStringForProtocol(protocol);
+
     const path = `${this._path_base}/${this._service}/${this._specVersion}`;
-    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
+    return `${protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formVersionURL(): string {

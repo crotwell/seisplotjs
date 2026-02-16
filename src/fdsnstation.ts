@@ -6,6 +6,7 @@
 import {
   FDSNCommon,
   IRIS_HOST,
+  EARTHSCOPE_HOST,
   LatLonRegion,
   LatLonBox,
   LatLonRadius,
@@ -61,7 +62,7 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export { IRIS_HOST };
+export { IRIS_HOST, EARTHSCOPE_HOST };
 
 /**
  * Query to a FDSN Station web service.
@@ -1083,7 +1084,7 @@ export class StationQuery extends FDSNCommon {
     if (this._protocol.endsWith(colon)) {
     colon = "";
     }
-    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const port = this.defaultPortStringForProtocol(this._protocol);
     const path = `${this._path_base}/${this._service}/${this._specVersion}`;
     return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }

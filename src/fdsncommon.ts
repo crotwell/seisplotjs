@@ -38,7 +38,7 @@ export class FDSNCommon {
 
   constructor(service: string, host?: string) {
     this._specVersion = "1";
-    this._host = IRIS_HOST;
+    this._host = EARTHSCOPE_HOST;
     this._protocol = checkProtocol();
     this._path_base = FDSNWS_PATH_BASE;
     this._service = service;
@@ -50,7 +50,21 @@ export class FDSNCommon {
     this._port = 80;
     this._timeoutSec = 30;
   }
+
+  defaultPortStringForProtocol(protocol: string) {
+    return defaultPortStringForProtocol(protocol, this._port);
+
+  }
 }
+
+
+export function defaultPortStringForProtocol(protocol: string, port: number) {
+    return (( protocol === "http" || protocol === "http:" ||
+                protocol === "https" || protocol === "https:")
+              && (port === 80 || port === 443)
+          ) ? "" : ":" + String(port);
+
+  }
 
 export class LatLonRegion {}
 export class LatLonBox extends LatLonRegion {
