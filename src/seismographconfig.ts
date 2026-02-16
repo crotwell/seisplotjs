@@ -184,7 +184,7 @@ export class SeismographConfig {
     this.amplitudeMode = AMPLITUDE_MODE.MinMax;
     this.doGain = true;
     this.windowAmp = true;
-    this.resolutionScale = 1;
+    this.resolutionScale = 2;
     this._fixedAmplitudeScale = null;
     this._fixedTimeScale = null;
     this._linkedAmplitudeScale = new IndividualAmplitudeScale();
