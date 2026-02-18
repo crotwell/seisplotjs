@@ -1295,7 +1295,7 @@ export class Seismograph extends SeisPlotElement {
         .attr("height", this.seismographConfig.resolutionScale*this.height + 1);
     }
     if (this.panZoomer) {
-      this.panZoomer.width = this.seismographConfig.resolutionScale*this.width;
+      this.panZoomer.width = this.width;
     }
   }
 
