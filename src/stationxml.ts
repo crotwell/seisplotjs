@@ -9,7 +9,6 @@ import {
   isNonEmptyStringArg,
   isNumArg,
   checkStringOrDate,
-  stringify,
   reErrorWithMessage,
   WAY_FUTURE,
   doFetchWithTimeout,
@@ -1390,10 +1389,9 @@ export function convertToStage(stageXml: Element): Stage {
   if (gainXml) {
     gain = convertToGain(gainXml);
   } else {
-    throw new Error(
-      "Did not find Gain in stage number " +
-        stringify(_grabAttribute(stageXml, "number")),
-    );
+    // stage has no <StageGain> element, but gain is required in schema?
+    // just use unity gain at 1 Hz, weird but less bad than an exception?
+    gain = new Gain(1, 1);
   }
 
   const out = new Stage(filter, decimation, gain);
