@@ -121,6 +121,7 @@ export function createQuakeMarker(
   magScaleFactor = 5,
   classList?: Array<string>,
   centerLon = 0,
+  magToRadius:(magnitude: number, magScaleFactor: number)=> number = getRadiusForMag
 ) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(QuakeMarkerClassName);
@@ -131,7 +132,7 @@ export function createQuakeMarker(
       : quake.longitude - 360;
   // in case no mag
   const magnitude = quake.magnitude ? quake.magnitude.mag : 1;
-  const radius = getRadiusForMag(magnitude, magScaleFactor);
+  const radius = magToRadius(magnitude, magScaleFactor);
 
   const circle = L.circleMarker([quake.latitude, qLon], {
     color: "currentColor",
