@@ -57,6 +57,9 @@ export const monthSummaryM1_0Url =
 export const monthSummaryAllUrl =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
+export const yearSignificant =
+  "https://earthquake.usgs.gov/fdsnws/event/1/query.geojson?minsig=600"
+
 export const USGS_TECTONIC_SUMMARY_URL =
   "https://earthquake.usgs.gov/ws/geoserve/layers.json?type=tectonic";
 
@@ -122,6 +125,16 @@ export function loadMonthSummaryM1_0(): Promise<Array<Quake>> {
 }
 export function loadMonthSummaryAll(): Promise<Array<Quake>> {
   return loadUSGSSummary(monthSummaryAllUrl);
+}
+
+export function loadYearSignificant(): Promise<Array<Quake>> {
+  const now = DateTime.utc();
+  const yearAgo = now.minus({years: 1});
+  return loadSignificant(yearAgo, now);
+}
+
+export function loadSignificant(start: DateTime, end: DateTime): Promise<Array<Quake>> {
+  return loadUSGSSummary(`${yearSignificant}&starttime=${start.toISO()}&endtime=${end.toISO()}`);
 }
 
 export function loadUSGSSummary(url: string): Promise<Array<Quake>> {

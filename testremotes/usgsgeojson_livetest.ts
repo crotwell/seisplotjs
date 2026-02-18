@@ -86,3 +86,10 @@ test("grabMonth", () => {
   });
   return Promise.all([sig, m45, m25, m1, all]);
 });
+
+test("grabYearSignificant", () => {
+  const sig = usgsgeosjon.loadYearSignificant().then((quakeList: Array<Quake>) => {
+    expect(quakeList).toBeDefined();
+  });
+  return Promise.all([sig]);
+});
