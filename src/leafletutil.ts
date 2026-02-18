@@ -10,11 +10,10 @@ import {
 } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
 import { LatLonBox, LatLonRadius } from "./fdsncommon";
+import { fixProtocolInUrl } from "./util";
 
 import * as L from "leaflet";
 import { LatLngTuple } from "leaflet";
-
-import type {GeoJsonObject} from "geojson";
 
 export const MAP_ELEMENT = "sp-station-quake-map";
 export const triangle = "\u25B2";
@@ -476,6 +475,7 @@ export class QuakeStationMap extends SeisPlotElement {
     if (tileUrlAttr) {
       tileUrl = tileUrlAttr;
     }
+    tileUrl = fixProtocolInUrl(tileUrl);
     const maxZoomAttr = this.getAttribute(MAX_ZOOM);
     if (maxZoomAttr) {
       maxZoom = Number.parseInt(maxZoomAttr);
