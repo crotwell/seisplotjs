@@ -73,7 +73,7 @@
     "testremotes": "jest --config=jest_remote.config.js",
     "build:clean": "rimraf dist docs/seisplotjs_${npm_package_version}_standalone.mjs",
     "apidoc:clean": "rimraf docs/api",
-    "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && ((npm run dts && npm run dts_node) || npm run tsc)",
+    "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && ((npm run dts ) || npm run tsc)",
     "tutorial_snippet": "python3 snippetToTutorial.py",
     "standalone": "npm run esstandalone && cp dist/seisplotjs_${npm_package_version}_standalone.mjs docs/.",
     "doc": "npm run standalone && npm run apidoc && npm run tutorial_snippet ",
