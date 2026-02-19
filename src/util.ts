@@ -647,7 +647,7 @@ export function checkProtocol(defaultProtocol="http:"): string {
  */
 export function fixProtocolInUrl(url: string): string {
   const protocol = checkProtocol();
-  if (url.startsWith("http:") && protocol == "https:") {
+  if (url.startsWith("http:") && protocol === "https:") {
     return `${protocol}${url.substring(5)}`;
   }
   return url;
@@ -975,9 +975,9 @@ export function anplusb(value: string | number): Array<number> {
     }
     // If values are defined, parse to integers. Otherwise, keep defaults
     a = m[1] ? +m[1] : a;
-    let parsedB = m[2] ? +m[2] : b;
+    const parsedB = m[2] ? +m[2] : b;
     // When parsing b, b can be a negative value, so we take the positive modulo
-    b = parsedB < 0 ? parsedB + a : parsedB
+    b = parsedB < 0 ? parsedB + a : parsedB;
   }
   return [ a, b ];
 }

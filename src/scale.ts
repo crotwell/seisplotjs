@@ -15,7 +15,7 @@ let _lastId = 0;
 
 /** The Golden ratio. */
 export const PHI = (1 + Math.sqrt(5)) / 2;
-export const SQRT_PHI = Math.sqrt(PHI)
+export const SQRT_PHI = Math.sqrt(PHI);
 
 export class MinMaxable {
   min: number;
@@ -532,7 +532,7 @@ export class PanZoomer {
   _prev_zoom_k: number = 1;
   _prev_zoom_x: number = 0;
   min_k = 1/8192;
-  max_k = 8192
+  max_k = 8192;
   constructor(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement,
               linkedTimeScale: LinkedTimeScale,
               wheelZoom?: boolean) {
@@ -558,10 +558,10 @@ export class PanZoomer {
           this.doZoom(this.linkedTimeScale._prev_zoom_k, me.offsetX, this.width);
         }
       });
-    target.addEventListener("mouseup", (event: Event) => {
+    target.addEventListener("mouseup", (_event: Event) => {
       this.isMouseDown = false;
     });
-    target.addEventListener("mouseleave", (event: Event) => {
+    target.addEventListener("mouseleave", (_event: Event) => {
       this.isMouseDown = false;
     });
     target.addEventListener("dblclick", (event: Event) => {
@@ -596,7 +596,7 @@ export class PanZoomer {
     this.width = target.getBoundingClientRect().width;
   }
   get target(): HTMLElement|SVGSVGElement|SVGForeignObjectElement {
-    return this._target
+    return this._target;
   }
   transitionZoom(factor: number, offsetX: number, duration: number=250) {
     const start_k = this.linkedTimeScale._prev_zoom_k;
@@ -604,7 +604,7 @@ export class PanZoomer {
     const width = this.width;
 
     transition((step) => {
-      let transK = start_k+(end_k-start_k)*step;
+      const transK = start_k+(end_k-start_k)*step;
       this.doZoom(transK, offsetX, width);
       if (step === 1.0) {
       }
@@ -625,7 +625,7 @@ export class PanZoomer {
     const zoomDurationMillis = linkedTS.origDuration.toMillis() / k ;
     let timeShift = 0;
 
-    if (k != this.linkedTimeScale._prev_zoom_k) {
+    if (k !== this.linkedTimeScale._prev_zoom_k) {
       // zoom in, keep click time at same pixel
       zoomDuration = Duration.fromMillis(zoomDurationMillis);
       timeShift = (x/width)*(currDuration.toMillis()-zoomDurationMillis);

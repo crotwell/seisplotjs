@@ -58,7 +58,7 @@ export const monthSummaryAllUrl =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
 export const yearSignificant =
-  "https://earthquake.usgs.gov/fdsnws/event/1/query.geojson?minsig=600"
+  "https://earthquake.usgs.gov/fdsnws/event/1/query.geojson?minsig=600";
 
 export const USGS_TECTONIC_SUMMARY_URL =
   "https://earthquake.usgs.gov/ws/geoserve/layers.json?type=tectonic";

@@ -8,12 +8,12 @@ export function loadNWSPointInfo(lat: number, lon: number): Promise<NWSPointInfo
   fetchInit["headers"] = {
       "accept": "application/geo+json"
     };
-  const url = `https://api.weather.gov/points/${lat},${lon}`
+  const url = `https://api.weather.gov/points/${lat},${lon}`;
   return doFetchWithTimeout(url, fetchInit).then(resp => {
     if (resp.ok) {
       return resp.json();
     } else {
-      throw new Error(`fetch ${url} from NWS not ok: ${resp.status}`)
+      throw new Error(`fetch ${url} from NWS not ok: ${resp.status}`);
     }
   }).then(nwsJson => {
     return NWSPointInfo.parse(nwsJson);
@@ -32,7 +32,7 @@ export function loadForecast(station: Station): Promise<NWSForecast> {
       if (resp.ok) {
         return resp.json();
       } else {
-        throw new Error(`fetch forecast fro ${station.sourceId} not ok: ${resp.status}`)
+        throw new Error(`fetch forecast for ${station.sourceId} not ok: ${resp.status}`);
       }
     }).then(rawJson => {
       const nwsJson = NWSForecast.parse(rawJson);
@@ -47,12 +47,12 @@ export function nwsObservation(nws_station: string): Promise<NWSObservation> {
   fetchInit["headers"] = {
       "accept": "application/geo+json"
     };
-  const url = `https://api.weather.gov/stations/${nws_station}/observations/latest?require_qc=false`
+  const url = `https://api.weather.gov/stations/${nws_station}/observations/latest?require_qc=false`;
   return doFetchWithTimeout(url, fetchInit).then(resp => {
     if (resp.ok) {
       return resp.json();
     } else {
-      throw new Error(`fetch observation ${nws_station} not ok: ${resp.status}`)
+      throw new Error(`fetch observation ${nws_station} not ok: ${resp.status}`);
     }
   }).then(rawJson => {
     const nwsJson = NWSObservation.parse(rawJson);
@@ -72,7 +72,7 @@ export function loadObservation(station: Station): Promise<NWSObservation> {
       if (resp.ok) {
         return resp.json();
       } else {
-        throw new Error(`fetch forecast fro ${station.sourceId} not ok: ${resp.status}`)
+        throw new Error(`fetch forecast fro ${station.sourceId} not ok: ${resp.status}`);
       }
     }).then(rawJson => {
       const nwsJson = NWSObsStationCollection.parse(rawJson);
@@ -163,7 +163,8 @@ export const NWSObsStation = z.object({
     county: z.string(),
     fireWeatherZone: z.string(),
   })
-})
+});
+
 export const NWSObsStationCollection = NWSBaseObj.extend({
   type: z.literal("FeatureCollection"),
   features: z.array(NWSObsStation),

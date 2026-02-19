@@ -58,6 +58,20 @@ export type TraveltimeArrivalType = {
 };
 
 export type TraveltimeAmplitudeType = {
+  factorpsv: number;
+        factorsh: number;
+        geospread: number;
+        attenuation: number;
+        freeFactor: number;
+        radiationPattern: Array<number>;
+        radiationTerm: number;
+        mgtokg: number;
+        refltranpsv: number;
+        refltransh: number;
+        source: {
+          Mw: number;
+          attenuationfreq: number;
+        };
 }
 
 /**

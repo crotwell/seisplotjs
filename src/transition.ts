@@ -19,6 +19,6 @@ export function transition(drawFn: (x: number) => void,
     } else {
       drawFn(1.0);
     }
-  }
+  };
   window.requestAnimationFrame(transFn);
 }

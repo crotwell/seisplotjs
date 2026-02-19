@@ -17,7 +17,7 @@ import {
 import {
   sidForId,
   //typeForId
-} from "./ringserverweb4"
+} from "./ringserverweb4";
 import * as util from "./util"; // for util.log
 
 import {

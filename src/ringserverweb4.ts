@@ -216,13 +216,13 @@ export class RingserverConnection {
    * @returns Result as a Promise.
    */
   pullId(): Promise<RingserverIdType> {
-    return pullJson(this.formIdURL(), this._timeoutSec).catch((err) => {
+    return pullJson(this.formIdURL(), this._timeoutSec).catch((_err) => {
       // failed to get /id/json, try just /id text like ringserver3
       return pullText(this.formBaseURL()+"id", this._timeoutSec).then( rawlines => {
         const lines = rawlines.split("\n");
         let dlinfo = [`DLPROTO:1.0`];
         let slinfo = ["SLPROTO:3.1" ];
-        let version = lines[0];
+        const version = lines[0];
         if (version.startsWith("ringserver/4.0")) {
           // version 4.0 was FDSN Sid, but did not have DLPROTO:1.1
           // version 4.1 and greater should go via /id/json
@@ -232,8 +232,8 @@ export class RingserverConnection {
         } else {
           this.isFDSNSourceId = false;
         }
-        let organization = lines[1].substring("Organization: ".length);
-        let serverStart = "";
+        const organization = lines[1].substring("Organization: ".length);
+        const serverStart = "";
         return {
           software: version,
           organization: organization,
@@ -471,7 +471,7 @@ export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSo
       return parseSourceId(split[0]);
     } else {
       const items = split[0].split("_");
-      if (items.length == 4) {
+      if (items.length === 4) {
         // maybe old style NSLC
         const nslc = NslcId.parse(split[0], "_");
         return FDSNSourceId.fromNslcId(nslc);
