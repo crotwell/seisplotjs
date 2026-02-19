@@ -206,7 +206,6 @@ export function internalCreateRealtimeDisplay(
 
   // packet handler can accept datalink, seedlink or seedlinkv4 packets and
   // either miniseed or miniseed3 data
-  console.log("Create Packet Handler")
   const packetHandler = (packet: DataLinkPacket|SEPacket|SequencedDataRecord) => {
     if (!packet) {
       return;
@@ -265,7 +264,9 @@ export function internalCreateRealtimeDisplay(
         }
       } else {
         // never happens, but typescipt
-        console.log("NEVER HAPPENS, but I guess it just did!!!")
+        // console.log("NEVER HAPPENS, but I guess it just did!!!")
+        // should never say never as this shows up in logs sometimes
+        // maybe related to window in background during update???
       }
     } else {
       console.log(`Did not find SDD ${codes}, create new`)
