@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+     <meta charset="utf-8" />
+     <link rel="stylesheet" href="style.css">
+     <link rel="icon" type="image/png" href="../../flavicon.png" />
+     <style>
+#mymap {
+  height: 400px;
+}
+     </style>
+  </head>
+  <body>
+    <h5><a href="../../index.html" class="">Seisplotjs</a> - <a href="../index.html" class="">Examples</a> - QuakeMap</h5>
+
+    <p>Seisplotjs contains a simple map element and class that allow easily
+      plotting station as triangles and earthquakes as circles on a leaflet
+      map. The aim of this is to make it simple and easy to create a basic
+      map, but not to provide for creating more complex maps. For that case
+      it is better to create a map via normal leaflet code and then just
+      use seisplotjs to create the markers for the stations and earthquakes.
+    </p>
+    <p>
+      In this example, we plot stations for the II and IU networks, significant
+      earthquakes from the last month from the USGS and tectonic regions, also
+      from the USGS. Each station, event or region can be clicked on to
+      show more information. This illustrates the use of quakeclick and
+      stationclick custom events, which make it easier to deal with actions
+      like this.
+    </p>
+
+    <div id="mymap"><p>A map should appear here...</p></div>
+    <div id="quakeinfo"></div>
+    <div id="stationinfo"></div>
+    <div id="tectonicinfo"></div>
+
+    <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
+
+    <script type="module" src="makemap.js"></script>
+  </body>
+</html>

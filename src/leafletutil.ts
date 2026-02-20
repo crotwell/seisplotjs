@@ -169,7 +169,6 @@ export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
   stationList: Array<Station> = [];
   geoRegionList: Array<LatLonBox | LatLonRadius> = [];
-  geoJsonLayerMap: Map<string, GeoJsonObject>;
 
   map: L.Map | null;
   classToColor: Map<string, string>;
@@ -177,14 +176,11 @@ export class QuakeStationMap extends SeisPlotElement {
 
   stationClassMap: Map<string, Array<string>>;
   quakeClassMap: Map<string, Array<string>>;
-  geoJsonLayerOptionsMap: Map<string, L.GeoJSONOptions>;
-  overlayLayerMap: Map<string, L.LayerGroup>;
   quakeLayer = L.layerGroup();
 
   quakeLayerName = "Quakes";
   stationLayer = L.layerGroup();
   stationLayerName = "Stations";
-  layerControl = L.control.layers();
   constructor(
     seisData?: Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
@@ -194,9 +190,6 @@ export class QuakeStationMap extends SeisPlotElement {
     this.classToColor = new Map<string, string>();
     this.stationClassMap = new Map<string, Array<string>>();
     this.quakeClassMap = new Map<string, Array<string>>();
-    this.geoJsonLayerOptionsMap = new Map<string, L.GeoJSONOptions>();
-    this.geoJsonLayerMap = new Map<string, GeoJsonObject>();
-    this.overlayLayerMap = new Map<string, L.LayerGroup>();
 
     this.addStyle(leaflet_css);
     this.addStyle(stationMarker_css);
@@ -333,20 +326,6 @@ export class QuakeStationMap extends SeisPlotElement {
       c.classList.remove(classname);
     });
   }
-
-  addGeoJsonLayer(layername: string, geoJsonData: GeoJsonObject, geoJsonOptions?: L.GeoJSONOptions) {
-    this.geoJsonLayerMap.set(layername, geoJsonData);
-    if (geoJsonOptions) {
-      this.setGeoJsonLayerOptions(layername, geoJsonOptions);
-    }
-  }
-  setGeoJsonLayerOptions(layername: string, geoJsonOptions: L.GeoJSONOptions){
-    this.geoJsonLayerOptionsMap.set(layername, geoJsonOptions);
-  }
-  getGeoJsonLayerOptions(layername: string): L.GeoJSONOptions|undefined {
-    return this.geoJsonLayerOptionsMap.get(layername);
-  }
-
   /**
    * Set a color in css for the classname. This is a simple alternative
    * to full styling via addStyle().
@@ -463,7 +442,6 @@ export class QuakeStationMap extends SeisPlotElement {
       this.zoomLevel,
     );
     this.map = mymap;
-    this.layerControl.addTo(mymap);
 
     if (this.seismographConfig.wheelZoom) {
       mymap.scrollWheelZoom.enable();
@@ -492,23 +470,12 @@ export class QuakeStationMap extends SeisPlotElement {
 
     const regionBounds = this.drawGeoRegions(mymap);
     regionBounds.forEach((b) => this.mapItems.push(b));
-    this.drawGeoJsonLayers();
     this.drawStationLayer(); //updates this.mapItems
     // Draw quakeLayer last so it is the layer on the very top and will respond to click events.
     this.drawQuakeLayer(); //updates this.mapItems
 
     if (this.fitBounds && this.mapItems.length > 1) {
       mymap.fitBounds(this.mapItems);
-    }
-  }
-
-  drawGeoJsonLayers() {
-    // Add geoJsonLayers if present
-    for (const [layername, jsondata] of this.geoJsonLayerMap) {
-      if (this.map) {
-        const options = this.geoJsonLayerOptionsMap.get(layername);
-        L.geoJSON(jsondata, options).addTo(this.map);
-      }
     }
   }
 
@@ -534,11 +501,6 @@ export class QuakeStationMap extends SeisPlotElement {
     if (this.map){
       this.quakeLayer.addTo(this.map);
     }
-    // if quakes are present and the layer has not be added to the control do so.
-    if (quakes.length > 0 && !this.overlayLayerMap.has(this.quakeLayerName)) {
-      this.overlayLayerMap.set(this.quakeLayerName, this.quakeLayer);
-      this.layerControl.addOverlay(this.quakeLayer, this.quakeLayerName);
-    }
   }
   drawStationLayer(){
     this.stationLayer.clearLayers();
@@ -562,10 +524,6 @@ export class QuakeStationMap extends SeisPlotElement {
 
     if (this.map){
       this.stationLayer.addTo(this.map);
-    }
-    if (stations.length > 0 && !this.overlayLayerMap.has(this.stationLayerName)) {
-      this.overlayLayerMap.set(this.stationLayerName, this.stationLayer);
-      this.layerControl.addOverlay(this.stationLayer, this.stationLayerName);
     }
   }
 
