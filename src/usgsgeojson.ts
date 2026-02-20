@@ -127,6 +127,12 @@ export function loadMonthSummaryAll(): Promise<Array<Quake>> {
   return loadUSGSSummary(monthSummaryAllUrl);
 }
 
+export function loadMonthSignificant(): Promise<Array<Quake>> {
+  const now = DateTime.utc();
+  const monthAgo = now.minus({month: 1});
+  return loadSignificant(monthAgo, now);
+}
+
 export function loadYearSignificant(): Promise<Array<Quake>> {
   const now = DateTime.utc();
   const yearAgo = now.minus({years: 1});
