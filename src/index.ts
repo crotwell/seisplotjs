@@ -54,6 +54,7 @@ import * as seismographutil from "./seismographutil";
 import * as seismographconfig from "./seismographconfig";
 import * as seismographconfigeditor from "./seismographconfigeditor";
 import * as sorting from "./sorting";
+import * as spelement from "./spelement";
 import * as stationxml from "./stationxml";
 import * as syngine from "./syngine";
 import * as taper from "./taper";
@@ -119,6 +120,7 @@ export {
   seismographconfig,
   seismographconfigeditor,
   sorting,
+  spelement,
   spectraplot,
   stationxml,
   syngine,
