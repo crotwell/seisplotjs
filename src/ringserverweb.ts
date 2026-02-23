@@ -31,8 +31,8 @@ import {
   isoToDateTime,
   pullText
 } from "./util";
-export const SEEDLINK_PATH = "/seedlink";
-export const DATALINK_PATH = "/datalink";
+export const SEEDLINK_PATH = "seedlink";
+export const DATALINK_PATH = "datalink";
 export type RingserverVersion = {
   ringserverVersion: string;
   serverId: string;
@@ -89,7 +89,7 @@ export class RingserverConnection {
       this._protocol = "http:";
       this._host = hostStr;
       this._port = 80;
-      this._prefix = "";
+      this._prefix = "/";
     }
 
     // override port in URL if given
@@ -338,7 +338,7 @@ export class RingserverConnection {
    * @returns the id url
    */
   formIdURL(): string {
-    return this.formBaseURL() + "/id";
+    return this.formBaseURL() + "id";
   }
 
   /**
@@ -350,7 +350,7 @@ export class RingserverConnection {
   formStreamsURL(queryParams?: string): string {
     return (
       this.formBaseURL() +
-      "/streams" +
+      "streams" +
       (isNonEmptyStringArg(queryParams) && queryParams.length > 0
         ? "?" + queryParams
         : "")
@@ -366,7 +366,7 @@ export class RingserverConnection {
   formStreamIdsURL(queryParams: string): string {
     return (
       this.formBaseURL() +
-      "/streamids" +
+      "streamids" +
       (queryParams && queryParams.length > 0 ? "?" + queryParams : "")
     );
   }
