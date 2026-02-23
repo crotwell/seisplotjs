@@ -57,33 +57,44 @@ mapDiv.addEventListener("stationclick", evt => {
   `;
 });
 
+function fixPolygonForCenter(centerLon, polygon) {
+  const outPolygon = [];
+  for (const linring of polygon) {
+    let newLinRing = [];
+    const point = linring[0];
+    // geojson is lon,lat, but center is lat,lon
+    if (Math.abs(point[0]-centerLon) > 180) {
+      // check for polygons that are more than 180 away from center.
+      // The tectonic regions are -180 to 180, but we are plotting near
+      // the date line, so some regions will be off the map, but we
+      // can just shift them back
+      let shift = 0;
+      if (point[0] > centerLon) {
+        shift=-360;
+      } else {
+        shift = 360;
+      }
+
+      for (const point of linring) {
+        newLinRing.push([point[0]+shift, point[1]]);
+      }
+    } else {
+      // no change
+      newLinRing=linring;
+    }
+    outPolygon.push(newLinRing);
+  }
+  return outPolygon;
+}
+
 sp.usgsgeojson.loadUSGSTectonicLayer().then(tectonicGeoJson => {
   const tectonicLayer = L.geoJSON().addTo(map);
   for (const tectFeature of tectonicGeoJson.tectonic.features) {
     if (tectFeature.geometry.type === "Polygon") {
-      let coords = tectFeature.geometry.coordinates;
-      const point = coords[0][0];
-      // geojson is lon,lat
-      if (Math.abs(point[1]-center[1]) > 180) {
-        // check for polygons that are more than 180 away from center.
-        // The tectonic regions are -180 to 180, but we are plotting near
-        // the date line, so some regions will be off the map, but we
-        // can just shift them back
-        let shift = 0;
-        if (point[0] > center[1]) {
-          shift=-360;
-        } else {
-          shift = 360;
-        }
-        let newCoords = [];
-        for (const polygon of coords) {
-          const newPolygon = [];
-          newCoords.push(newPolygon);
-          for (const point of polygon) {
-            newPolygon.push([point[0]+shift, point[1]]);
-          }
-        }
-        tectFeature.geometry.coordinates = newCoords;
+      tectFeature.geometry.coordinates = fixPolygonForCenter(center[1], tectFeature.geometry.coordinates);
+    } else if (tectFeature.geometry.type === "MultiPolygon") {
+      for(let i=0; i<tectFeature.geometry.coordinates.length; i++) {
+        tectFeature.geometry.coordinates[i] = fixPolygonForCenter(center[1], tectFeature.geometry.coordinates[i]);
       }
     }
     const titem = L.geoJSON(tectFeature);
