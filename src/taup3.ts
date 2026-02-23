@@ -41,8 +41,17 @@ export type TauP3TimeJsonType = {
   sourcedepthlist: Array<number>;
   receiverdepthlist: Array<number>;
   phases: Array<string>;
+  source?: TraveltimeAmpSourceType;
   arrivals: Array<TraveltimeArrivalType>;
 };
+
+export type TraveltimeAmpSourceType = {
+  withAmplitude: boolean;
+  mw: number;
+  attenuationFreq: number;
+  numFrequencies: number;
+  strikeDipRake?: Array<number>;
+}
 export type TraveltimeArrivalType = {
   sourcedepth: number;
   receiverdepth: number;
