@@ -37,7 +37,7 @@ dsQuery
   })
   .catch(function (error) {
     const pre = document
-      .querySelector("div#myseismograph")
+      .querySelector("#messages")
       .appendChild(document.createElement("pre"));
     pre.textContent = "Error loading data." + error;
     console.assert(false, error);
