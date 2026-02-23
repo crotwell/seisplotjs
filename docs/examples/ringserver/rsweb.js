@@ -1,6 +1,6 @@
 import * as sp from "../../seisplotjs_3.2.0-SNAPSHOT_standalone.mjs";
 
-const hostUrl = "https://eeyore.seis.sc.edu/testringserver";
+const hostUrl = "https://rtserve.iris.washington.edu";
 const rs = new sp.ringserverweb.RingserverConnection(hostUrl);
 let numPackets = 0;
 

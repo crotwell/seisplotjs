@@ -24,12 +24,12 @@
     <div>
       <button id="streamids">Stream Ids</button>
       <label>Level: </label><input title="1-network to 4-channel" type="number" id="level" name="level" pattern="[0-6]" value="1" min="1" max="6"></input>
-      <label>Match: </label><input type="text" id="match" name="match" value="" title="matching regular expression"></input>
+      <label>Match: </label><input type="text" id="match" name="match" value="^I." title="matching regular expression"></input>
       <span>show available channel ids in ringserver.</span>
     </div>
     <div>
       <button id="streams">Streams</button>
-      <label>Match: </label><input type="text" id="streammatch" name="streammatch" value="" title="matching regular expression"></input>
+      <label>Match: </label><input type="text" id="streammatch" name="streammatch" value="^IU_C.*_HHZ" title="matching regular expression"></input>
       <span>get streams, channel and time range, to choose for realtime streaming</span>
     </div>
     <div>
