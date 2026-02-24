@@ -59,7 +59,6 @@ function errorFn(error) {
 // snip start datalink
 let datalink = null;
 const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
-const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/testringserver/datalink";
 const DATALINK_URL = IRIS_DATALINK;
 
 let toggleConnect = function () {
