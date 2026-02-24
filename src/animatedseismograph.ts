@@ -269,7 +269,7 @@ export function internalCreateRealtimeDisplay(
         // maybe related to window in background during update???
       }
     } else {
-      console.log(`Did not find SDD ${codes}, create new`)
+      console.log(`Did not find SDD ${codes}, create new`);
       const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
       rawSeisData.push(sdd);
       if (config.networkList) {
@@ -307,7 +307,7 @@ export function internalCreateRealtimeDisplay(
  * @param  timeRange  time window to coarse trim the data to
  */
 export function trim(orgDisplay: OrganizedDisplay, timeRange: Interval) {
-  console.log(`trim rt orgDisplay: ${timeRange}`)
+  console.log(`trim rt orgDisplay: ${timeRange}`);
   orgDisplay.seisData.forEach((sdd) => {
     sdd.trimInPlace(timeRange);
     sdd.timeRange = timeRange;

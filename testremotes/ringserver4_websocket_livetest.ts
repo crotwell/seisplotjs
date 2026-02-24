@@ -6,8 +6,8 @@ import {WS_SEEDLINK3_SUBPROTOCOL} from '../src/seedlink';
 
 test("do websocket open test", (done) => {
   const USC_HOST = "eeyore.seis.sc.edu";
-  const USC_PREFIX = "testringserver"
-  let url = `ws://${USC_HOST}/${USC_PREFIX}/seedlink`;
+  const USC_PREFIX = "testringserver";
+  const url = `ws://${USC_HOST}/${USC_PREFIX}/seedlink`;
   const webSocket = new WebSocket(url, WS_SEEDLINK3_SUBPROTOCOL);
 
   webSocket.binaryType = "arraybuffer";

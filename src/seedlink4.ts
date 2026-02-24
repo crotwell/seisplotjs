@@ -352,7 +352,7 @@ export class SeedlinkConnection {
           }
         };
       } catch (err) {
-        let evtError = toError(err);
+        const evtError = toError(err);
         this.close();
 
         reject(evtError);

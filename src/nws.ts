@@ -32,7 +32,7 @@ export function loadForecast(station: Station): Promise<NWSForecast> {
       if (resp.ok) {
         return resp.json();
       } else {
-        throw new Error(`fetch forecast for ${station.sourceId} not ok: ${resp.status}`);
+        throw new Error(`fetch forecast for ${station.sourceId.toString()} not ok: ${resp.status}`);
       }
     }).then(rawJson => {
       const nwsJson = NWSForecast.parse(rawJson);
@@ -72,7 +72,7 @@ export function loadObservation(station: Station): Promise<NWSObservation> {
       if (resp.ok) {
         return resp.json();
       } else {
-        throw new Error(`fetch forecast fro ${station.sourceId} not ok: ${resp.status}`);
+        throw new Error(`fetch forecast fro ${station.sourceId.toString()} not ok: ${resp.status}`);
       }
     }).then(rawJson => {
       const nwsJson = NWSObsStationCollection.parse(rawJson);

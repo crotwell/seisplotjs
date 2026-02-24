@@ -583,7 +583,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.topSeismographConfig != null && seisDispItems.length > 0) {
       seisDispItems[0].seismographConfig = this.topSeismographConfig;
       if (this.topSeismographConfig.margin.top > this.seismographConfig.margin.top) {
-        let sp_height = getComputedStyle(seisDispItems[0]).getPropertyValue("--sp-seismograph-height");
+        const sp_height = getComputedStyle(seisDispItems[0]).getPropertyValue("--sp-seismograph-height");
         if (sp_height !== "") {
           seisDispItems[0].addStyle(`sp-seismograph {
             height: ${sp_height};

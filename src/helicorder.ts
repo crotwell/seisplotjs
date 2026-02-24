@@ -31,9 +31,8 @@ export const HELICORDER_ELEMENT = "sp-helicorder";
  */
 export function getNowLineEndTime(hoursPerLine?: number): DateTime {
   if (! hoursPerLine) { hoursPerLine = 2;}
-  let e = DateTime.utc().endOf("hour").plus({ milliseconds: 1 });
-  e.plus({ hours: e.hour % hoursPerLine });
-  return e;
+  const e = DateTime.utc().endOf("hour").plus({ milliseconds: 1 });
+  return e.plus({ hours: e.hour % hoursPerLine });
 }
 
 export function createNowHelicorderInterval(hours?: number, hoursPerLine?: number): Interval {

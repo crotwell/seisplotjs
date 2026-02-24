@@ -27,7 +27,7 @@ test("do seedlink4 test", done => {
   // def is IRIS
   const ring = new RingserverConnection();
   const USC_HOST = "eeyore.seis.sc.edu";
-  const USC_PREFIX = "testringserver"
+  const USC_PREFIX = "testringserver";
   ring.host(USC_HOST);
   ring.prefix(USC_PREFIX);
   //ring.protocol("https");
