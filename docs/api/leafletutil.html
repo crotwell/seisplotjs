@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs 3.1.4 | Documentation</title>
+  <title>seisplotjs 3.2.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>seisplotjs</h3>
-          <div class='mb1'><code>3.1.4</code></div>
+          <div class='mb1'><code>3.2.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -109,9 +109,29 @@
               
                 
                 <li><a
+                  href='#cssclassforstationcodes'
+                  class="">
+                  cssClassForStationCodes
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#createstationmarker'
                   class="">
                   createStationMarker
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#getradiusformag'
+                  class="">
+                  getRadiusForMag
                   
                 </a>
                 
@@ -363,6 +383,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#quakestationmapmapitems'
+                        class='regular pre-open'>
+                        #mapItems
+                      </a></li>
+                      
+                      <li><a
                         href='#quakestationmapstationclassmap'
                         class='regular pre-open'>
                         #stationClassMap
@@ -372,6 +398,30 @@
                         href='#quakestationmapquakeclassmap'
                         class='regular pre-open'>
                         #quakeClassMap
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakestationmapquakelayer'
+                        class='regular pre-open'>
+                        #quakeLayer
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakestationmapquakelayername'
+                        class='regular pre-open'>
+                        #quakeLayerName
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakestationmapstationlayer'
+                        class='regular pre-open'>
+                        #stationLayer
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakestationmapstationlayername'
+                        class='regular pre-open'>
+                        #stationLayerName
                       </a></li>
                       
                       <li><a
@@ -495,6 +545,18 @@
                       </a></li>
                       
                       <li><a
+                        href='#quakestationmapdrawquakelayer'
+                        class='regular pre-open'>
+                        #drawQuakeLayer
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakestationmapdrawstationlayer'
+                        class='regular pre-open'>
+                        #drawStationLayer
+                      </a></li>
+                      
+                      <li><a
                         href='#quakestationmapupdatequakemarkerstyle'
                         class='regular pre-open'>
                         #updateQuakeMarkerStyle
@@ -568,7 +630,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L17-L17'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L18-L18'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -626,7 +688,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L18-L18'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L19-L19'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -684,7 +746,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L19-L19'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L20-L20'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -742,7 +804,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L20-L20'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L21-L21'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -800,7 +862,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L21-L21'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L22-L22'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -858,7 +920,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L22-L24'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L23-L25'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -911,7 +973,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L25-L27'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L26-L28'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -964,7 +1026,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L30-L70'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L31-L71'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1012,12 +1074,83 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='cssclassforstationcodes'>
+      cssClassForStationCodes
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L72-L74'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>cssClassForStationCodes(station: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>station</span> <code class='quiet'>(Station)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='createstationmarker'>
       createStationMarker
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L71-L94'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L75-L98'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1104,12 +1237,91 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='getradiusformag'>
+      getRadiusForMag
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L100-L107'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getRadiusForMag(magnitude: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, magScaleFactor: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>magnitude</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>magScaleFactor</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='createquakemarker'>
       createQuakeMarker
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L107-L135'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L119-L145'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1121,7 +1333,7 @@ with min radius of 1 for very small magnitudes. Longitudes are adjusted
 by +-360 to draw centered on the given center longitude, eg event at
 lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
 
-    <div class='pre p1 fill-light mt0'>createQuakeMarker(quake: Quake, magScaleFactor: any, classList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?, centerLon: any): any</div>
+    <div class='pre p1 fill-light mt0'>createQuakeMarker(quake: Quake, magScaleFactor: any, classList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?, centerLon: any, magToRadius: function (magnitude: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, magScaleFactor: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): any</div>
   
   
 
@@ -1174,6 +1386,15 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
           
         </div>
       
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>magToRadius</span> <code class='quiet'>(function (magnitude: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, magScaleFactor: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+            = <code>getRadiusForMag</code>)</code>
+	    
+          </div>
+          
+        </div>
+      
     </div>
   
 
@@ -1217,7 +1438,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L136-L136'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L147-L147'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1270,7 +1491,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L137-L137'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L148-L148'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1328,7 +1549,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L138-L139'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L149-L150'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1386,7 +1607,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L140-L140'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L151-L151'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1444,7 +1665,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L141-L141'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L152-L152'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1502,7 +1723,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L142-L142'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L153-L153'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1560,7 +1781,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L143-L143'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L154-L154'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1618,7 +1839,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L144-L144'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L155-L155'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1676,7 +1897,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L145-L145'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L156-L156'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1734,7 +1955,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L146-L146'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L157-L157'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1787,7 +2008,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L147-L147'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L158-L158'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1845,7 +2066,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L148-L148'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L159-L159'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1903,7 +2124,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L149-L149'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L160-L160'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -1961,7 +2182,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L150-L150'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L161-L161'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2019,7 +2240,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L151-L151'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L162-L162'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2077,7 +2298,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L153-L153'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L164-L164'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2135,7 +2356,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L154-L154'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L165-L165'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2193,7 +2414,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L155-L155'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L166-L166'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2251,7 +2472,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L157-L584'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L168-L630'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2328,7 +2549,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L572-L583'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L618-L629'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2393,7 +2614,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L158-L158'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L169-L169'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2450,7 +2671,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L159-L159'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L170-L170'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2507,7 +2728,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L160-L160'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L171-L171'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2564,7 +2785,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L161-L161'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L173-L173'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2626,7 +2847,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L162-L162'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L174-L174'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2640,6 +2861,63 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
       Type:
       <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakestationmapmapitems'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>mapItems</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L175-L175'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>mapItems</div>
   
   
 
@@ -2688,7 +2966,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L163-L163'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L177-L177'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2750,7 +3028,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L164-L164'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L178-L178'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2764,6 +3042,234 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
       Type:
       <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>>
     </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakestationmapquakelayer'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>quakeLayer</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L179-L179'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>quakeLayer</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakestationmapquakelayername'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>quakeLayerName</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L181-L181'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>quakeLayerName</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakestationmapstationlayer'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>stationLayer</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L182-L182'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>stationLayer</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakestationmapstationlayername'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>stationLayerName</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L183-L183'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>stationLayerName</div>
   
   
 
@@ -2812,7 +3318,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L183-L200'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L202-L219'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2890,7 +3396,7 @@ lon=350 may plot at -10 if centerlon &#x3C; 180.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L209-L223'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L228-L242'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -2973,7 +3479,7 @@ simply coloring.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L230-L243'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L249-L262'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3054,7 +3560,7 @@ simply coloring.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L249-L251'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L268-L270'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3126,7 +3632,7 @@ simply coloring.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L253-L268'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L272-L287'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3204,7 +3710,7 @@ simply coloring.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L277-L290'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L296-L309'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3287,7 +3793,7 @@ simply coloring.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L297-L309'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L316-L328'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3368,7 +3874,7 @@ simply coloring.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L317-L321'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L336-L340'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3450,7 +3956,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L322-L326'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L341-L345'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3520,7 +4026,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L327-L338'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L346-L357'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3587,7 +4093,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L339-L341'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L358-L360'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3662,7 +4168,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L342-L354'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L361-L373'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3729,7 +4235,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L355-L357'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L374-L376'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3804,7 +4310,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L358-L370'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L377-L389'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3871,7 +4377,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L371-L373'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L390-L392'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -3946,7 +4452,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L374-L386'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L393-L405'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4013,7 +4519,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L387-L389'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L406-L408'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4088,7 +4594,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L390-L402'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L409-L421'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4155,7 +4661,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L403-L405'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L422-L424'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4230,7 +4736,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L407-L483'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L426-L480'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4239,6 +4745,120 @@ to full styling via addStyle().</p>
 
   
     <div class='pre p1 fill-light mt0'>draw()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakestationmapdrawquakelayer'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>drawQuakeLayer()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L482-L504'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>drawQuakeLayer()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakestationmapdrawstationlayer'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>drawStationLayer()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L505-L528'>
+      <span>src/leafletutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>drawStationLayer()</div>
   
   
 
@@ -4287,7 +4907,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L484-L494'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L530-L540'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4344,7 +4964,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L495-L505'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L541-L551'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4401,7 +5021,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L506-L545'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L552-L591'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4476,7 +5096,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L546-L556'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L592-L602'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4533,7 +5153,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L557-L568'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L603-L614'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4590,7 +5210,7 @@ to full styling via addStyle().</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L569-L571'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L615-L617'>
       <span>src/leafletutil.ts</span>
       </a>
     
@@ -4684,7 +5304,7 @@ to full styling via addStyle().</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/leafletutil.ts#L588-L597'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/leafletutil.ts#L634-L643'>
       <span>src/leafletutil.ts</span>
       </a>
     

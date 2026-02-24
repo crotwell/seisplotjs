@@ -4,7 +4,20 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration } from "luxon";
-import { NslcId } from "./fdsnsourceid";
+import {extractDLProto} from "./datalink";
+import {defaultPortStringForProtocol} from "./fdsncommon";
+import {
+  FDSN_PREFIX,
+  StationSourceId,
+  NetworkSourceId,
+  NslcId,
+  parseSourceId,
+  FDSNSourceId
+} from "./fdsnsourceid";
+import {
+  sidForId,
+  //typeForId
+} from "./ringserverweb4";
 import * as util from "./util"; // for util.log
 
 import {
@@ -15,13 +28,11 @@ import {
   isNonEmptyStringArg,
   isNumArg,
   isDef,
-  TEXT_MIME,
-  doFetchWithTimeout,
-  defaultFetchInitObj,
   isoToDateTime,
+  pullText
 } from "./util";
-export const SEEDLINK_PATH = "/seedlink";
-export const DATALINK_PATH = "/datalink";
+export const SEEDLINK_PATH = "seedlink";
+export const DATALINK_PATH = "datalink";
 export type RingserverVersion = {
   ringserverVersion: string;
   serverId: string;
@@ -42,6 +53,9 @@ const ORG = "Organization: ";
  */
 export class RingserverConnection {
   /** @private */
+  _protocol: string;
+
+  /** @private */
   _host: string;
 
   /** @private */
@@ -53,6 +67,10 @@ export class RingserverConnection {
   /** @private */
   _timeoutSec: number;
 
+  isFDSNSourceId = false;
+
+  dlproto = "1.0";
+
   constructor(host?: string, port?: number) {
     const hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST;
 
@@ -60,6 +78,7 @@ export class RingserverConnection {
       const rs_url = new URL(hostStr);
       this._host = rs_url.hostname;
       this._port = parseInt(rs_url.port);
+      this._protocol = rs_url.protocol;
 
       if (!Number.isInteger(this._port)) {
         this._port = 80;
@@ -67,9 +86,10 @@ export class RingserverConnection {
 
       this._prefix = rs_url.pathname;
     } else {
+      this._protocol = "http:";
       this._host = hostStr;
       this._port = 80;
-      this._prefix = "";
+      this._prefix = "/";
     }
 
     // override port in URL if given
@@ -98,16 +118,34 @@ export class RingserverConnection {
   /**
    * Gets/Sets the remote port to connect to.
    *
-   * @param value optional new value if setting
-   * @returns new value if getting, this if setting
+   * @param value  new value to set
+   * @returns this
    */
-  port(value?: number): number | RingserverConnection {
+  port(value?: number): RingserverConnection {
     doIntGetterSetter(this, "port", value);
     return this;
   }
 
   getPort(): number | undefined {
     return this._port;
+  }
+
+  /**
+   * Sets the prefix for the URL path.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
+  prefix(value?: string): RingserverConnection {
+    if (value && ! value.startsWith("/")) {
+      value = "/"+value;
+    }
+    doStringGetterSetter(this, "prefix", value);
+    return this;
+  }
+
+  getPrefix(): string {
+    return this._prefix;
   }
 
   /**
@@ -127,22 +165,43 @@ export class RingserverConnection {
 
   /**
    * Pulls id result from ringserver /id parsed into an object with
-   * 'ringserverVersion' and 'serverId' fields.
+   * 'ringserverVersion' and 'serverId' fields. Also sets the
+   * isFDSNSourceId value as ringserver v4 uses new FDSN style ids
+   * while
    *
    * @returns Result as a Promise.
    */
   pullId(): Promise<RingserverVersion> {
-    return this.pullRaw(this.formIdURL()).then((raw) => {
+    return pullText(this.formIdURL(), this._timeoutSec).then((raw) => {
       const lines = raw.split("\n");
+      const ringserver_v4 = "ringserver/4";
+      const version = lines[0];
       let organization = lines[1];
 
       if (organization.startsWith(ORG)) {
         organization = organization.substring(ORG.length);
       }
+      if (version.startsWith(ringserver_v4)) {
+        this.isFDSNSourceId = true;
+      }
+      this.dlproto = extractDLProto(lines);
+      if (this.dlproto === "1.0") {
+        if (version.startsWith(ringserver_v4)) {
+          // version 4.0 was FDSN Sid, but did not have DLPROTO:1.1
+          // version 4.1 and greater should have it
+          this.isFDSNSourceId = true;
+        } else {
+          this.isFDSNSourceId = false;
+        }
+      } else {
+        this.isFDSNSourceId = true;
+      }
 
       return {
         ringserverVersion: lines[0],
         serverId: organization,
+        datalink: "DLPROTO:1.0",
+        seedlink: "SLPROTO:3.1"
       };
     });
   }
@@ -162,19 +221,19 @@ export class RingserverConnection {
    * @param matchPattern regular expression to match
    * @returns Result as a Promise.
    */
-  pullStreamIds(level: number, matchPattern: string): Promise<Array<string>> {
+  pullStreamIds(level: number, matchPattern?: string): Promise<Array<string>> {
     let queryParams = "level=6";
 
     if (isNumArg(level) && level > 0) {
       queryParams = "level=" + level;
     }
 
-    if (matchPattern) {
+    if (matchPattern && matchPattern.length > 0) {
       queryParams = queryParams + "&match=" + matchPattern;
     }
 
     const url = this.formStreamIdsURL(queryParams);
-    return this.pullRaw(url).then((raw) => {
+    return pullText(url, this._timeoutSec).then((raw) => {
       return raw.split("\n").filter((line) => line.length > 0);
     });
   }
@@ -189,15 +248,15 @@ export class RingserverConnection {
    * @returns promise to object with 'accessTime' as a DateTime
    * and 'streams' as an array of StreamStat objects.
    */
-  pullStreams(matchPattern: string): Promise<StreamsResult> {
+  pullStreams(matchPattern?: string): Promise<StreamsResult> {
     let queryParams = "";
 
-    if (matchPattern) {
+    if (matchPattern && matchPattern.length >0) {
       queryParams = "match=" + matchPattern;
     }
 
     const url = this.formStreamsURL(queryParams);
-    return this.pullRaw(url).then((raw) => {
+    return pullText(url, this._timeoutSec).then((raw) => {
       const lines = raw.split("\n");
       const out: StreamsResult = {
         accessTime: DateTime.utc(),
@@ -225,30 +284,10 @@ export class RingserverConnection {
     });
   }
 
-  /**
-   * Utility method to pull raw result from ringserver url.
-   * Result returned is an Promise.
-   *
-   * @param url the url
-   * @returns promise to string result
-   */
-  pullRaw(url: string): Promise<string> {
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      (response) => {
-        if (response.status === 200) {
-          return response.text();
-        } else {
-          throw new Error(`Status not 200: ${response.status}`);
-        }
-      },
-    );
-  }
-
   getDataLinkURL(): string {
     let proto = "ws:";
 
-    if (checkProtocol() === "https:") {
+    if (checkProtocol(this._protocol) === "https:") {
       proto = "wss:";
     }
 
@@ -265,7 +304,7 @@ export class RingserverConnection {
   getSeedLinkURL(): string {
     let proto = "ws:";
 
-    if (checkProtocol() === "https:") {
+    if (checkProtocol(this._protocol) === "https:") {
       proto = "wss:";
     }
 
@@ -288,14 +327,9 @@ export class RingserverConnection {
     if (this._port === 0) {
       this._port = 80;
     }
+    const port = defaultPortStringForProtocol(this._protocol, this._port);
 
-    return (
-      checkProtocol() +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
-      this._prefix
-    );
+    return `${checkProtocol(this._protocol)}//${this._host}${port}${this._prefix}`;
   }
 
   /**
@@ -304,7 +338,7 @@ export class RingserverConnection {
    * @returns the id url
    */
   formIdURL(): string {
-    return this.formBaseURL() + "/id";
+    return this.formBaseURL() + "id";
   }
 
   /**
@@ -316,7 +350,7 @@ export class RingserverConnection {
   formStreamsURL(queryParams?: string): string {
     return (
       this.formBaseURL() +
-      "/streams" +
+      "streams" +
       (isNonEmptyStringArg(queryParams) && queryParams.length > 0
         ? "?" + queryParams
         : "")
@@ -332,7 +366,7 @@ export class RingserverConnection {
   formStreamIdsURL(queryParams: string): string {
     return (
       this.formBaseURL() +
-      "/streamids" +
+      "streamids" +
       (queryParams && queryParams.length > 0 ? "?" + queryParams : "")
     );
   }
@@ -353,9 +387,13 @@ export function stationsFromStreams(
   const out: Map<string, StreamStat> = new Map();
 
   for (const s of streams) {
-    const nslc_type = nslcSplit(s.key);
-    const nslc = nslc_type.nslc;
-    const staKey = nslc.networkCode + "." + nslc.stationCode;
+    const sid = sidForId(s.key);
+    if (sid == null || sid instanceof NetworkSourceId) {
+      // oh well, doesn't look like a seismic channel?
+      continue;
+    }
+    const staSid = sid instanceof StationSourceId ? sid : sid.stationSourceId();
+    const staKey = staSid.networkCode + "_" + staSid.stationCode;
     let stat = out.get(staKey);
 
     if (!isDef(stat)) {
@@ -376,6 +414,13 @@ export function stationsFromStreams(
 
   return Array.from(out.values());
 }
+/**
+ * Holds ringserver/datalink id split into nslc and type.
+ *
+ * @deprecated
+ * @param type  [description]
+ * @param nslc  [description]
+ */
 export class NslcWithType {
   type: string;
   nslc: NslcId;
@@ -386,14 +431,40 @@ export class NslcWithType {
 }
 
 /**
+ * extracts the type from a ringserver id, ie the type from
+ * xxx/type.
+ * @param  id   ringserver/datalink style id
+ * @return   type, usually MSEED, MSEED3, JSON or TEXT
+ */
+export function typeForId(id: string): string | null {
+  const split = id.split("/");
+  if (split.length >= 2) {
+    return split[split.length-1];
+  }
+  return null;
+}
+
+/**
  * Split type, networkCode, stationCode, locationCode and channelCode
  * from a ringserver id formatted like net_sta_loc_chan/type
+ * or FDSN:net_sta_loc_b_s_s/type for new FDSN SourceIds
  *
+ * @deprecated
  * @param   id id string to split
  * @returns  object with the split fields
  */
 export function nslcSplit(id: string): NslcWithType {
   const split = id.split("/");
+  if (split[0].startsWith(FDSN_PREFIX)) {
+    const sid = parseSourceId(split[0]);
+    if (sid instanceof FDSNSourceId) {
+      return new NslcWithType(
+        split[1],
+        sid.asNslc());
+    } else {
+      throw new Error("tried to split, not an FDSN SourceId: " + id);
+    }
+  }
   const nslc = split[0].split("_");
 
   if (nslc.length === 4) {

@@ -295,12 +295,15 @@ export function seismogramSegmentAsLine(
           inHorizontalLine = true;
           continue;
         } else {
+          if (inHorizontalLine) {
+            pushPoint(out, curPixel - 1, prevLastYPixel);
+          }
           pushPoint(out, curPixel, firstYPixel);
           inHorizontalLine = false;
         }
       } else {
         // drawing min to max vs max to min depending on order
-        if (inHorizontalLine && prevLastYPixel !== firstYPixel) {
+        if (inHorizontalLine ) {
           pushPoint(out, curPixel - 1, prevLastYPixel);
         }
         inHorizontalLine = false;

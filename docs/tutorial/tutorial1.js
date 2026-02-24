@@ -1,5 +1,5 @@
 // snip start createseis
-import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../seisplotjs_3.2.0_standalone.mjs";
 sp.util.updateVersionText(".sp_version");
 
 let sampleRate = 20;
@@ -17,6 +17,7 @@ let myseismogram = sp.seismogram.Seismogram.fromContiguousData(
 // snip start draw
 let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 const graph = document.querySelector("sp-seismograph");
+const timeScale = graph.seismographConfig.linkedTimeScale
 graph.seismographConfig.title = "A sine wave!";
 graph.seismographConfig.margin.top = 25;
 graph.seisData = [seisData];
@@ -25,8 +26,8 @@ const div = document.querySelector("div#sinewave");
 const seisConfig = new sp.seismographconfig.SeismographConfig();
 seisConfig.title = "Another sine wave!";
 seisConfig.margin.top = 25;
+// snip start timescale
+seisConfig.linkedTimeScale = timeScale
 const div_graph = new sp.seismograph.Seismograph([seisData], seisConfig);
 div.appendChild(div_graph);
-// snip start timescale
-graph.seismographConfig.linkedTimeScale.link(div_graph);
 // snip end

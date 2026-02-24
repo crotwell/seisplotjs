@@ -6,6 +6,7 @@
 import {
   FDSNCommon,
   IRIS_HOST,
+  EARTHSCOPE_HOST,
   LatLonRegion,
   LatLonBox,
   LatLonRadius,
@@ -45,6 +46,9 @@ export const LEVELS = [
   LEVEL_RESPONSE,
 ];
 
+/** const for service name */
+export const STATION_SERVICE = "station";
+
 /**
  * Major version of the FDSN spec supported here.
  * Currently is 1.
@@ -58,7 +62,7 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export { IRIS_HOST };
+export { IRIS_HOST, EARTHSCOPE_HOST };
 
 /**
  * Query to a FDSN Station web service.
@@ -142,7 +146,7 @@ export class StationQuery extends FDSNCommon {
    * @param host the host to connect to , defaults to service.iris.edu
    */
   constructor(host?: string) {
-    super(host);
+    super(STATION_SERVICE, host);
   }
 
   /**
@@ -206,6 +210,15 @@ export class StationQuery extends FDSNCommon {
 
   getPort(): number | undefined {
     return this._port;
+  }
+
+  pathBase(value?: string): StationQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
   }
 
   /**
@@ -1069,18 +1082,11 @@ export class StationQuery extends FDSNCommon {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
-      colon = "";
+    colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + String(this._port)) +
-      "/fdsnws/station/" +
-      this._specVersion
-    );
+    const port = this.defaultPortStringForProtocol(this._protocol);
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formPostURL(): string {

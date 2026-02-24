@@ -90,3 +90,10 @@ and tries to have a more vanillajs style.
 
 Documentation for previous versions is archived at
 [http://www.seis.sc.edu/software/seisplotjs](http://www.seis.sc.edu/software/seisplotjs)
+
+
+# Development
+
+The current release is on the main branch and new development is done on the
+dev branch. If you would like to submit a pull request, please
+base it off of the dev branch. 

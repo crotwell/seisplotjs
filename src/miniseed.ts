@@ -23,7 +23,7 @@ export const M_TYPECODE: number = "M".charCodeAt(0);
  * @param arrayBuffer bytes to parse
  * @returns arry of data records
  */
-export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {
+export function parseDataRecords(arrayBuffer: ArrayBufferLike): Array<DataRecord> {
   const dataRecords = [];
   let offset = 0;
 

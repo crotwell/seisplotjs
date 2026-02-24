@@ -187,20 +187,22 @@ export class ParticleMotion extends SeisPlotElement {
     this.yScaleRmean = d3scaleLinear();
 
     if (this.seismographConfig.isCenteredAmp()) {
-      this.xAxis = d3axisBottom(this.xScaleRmean).tickFormat(
-        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
-      );
-      this.yAxis = d3axisLeft(this.yScaleRmean).tickFormat(
-        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
-      );
+      this.xAxis = d3axisBottom(this.xScaleRmean);
+      this.yAxis = d3axisLeft(this.yScaleRmean);
     } else {
-      this.xAxis = d3axisBottom(this.xScale).tickFormat(
-        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
-      );
-      this.yAxis = d3axisLeft(this.yScale).tickFormat(
-        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
-      );
+      this.xAxis = d3axisBottom(this.xScale);
+      this.yAxis = d3axisLeft(this.yScale);
     }
+    this.xAxis.ticks(this.seismographConfig.yAxisNumTickHint,
+      this.seismographConfig.amplitudeFormat)
+      .tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
+    this.yAxis.ticks(this.seismographConfig.yAxisNumTickHint,
+      this.seismographConfig.amplitudeFormat)
+      .tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
 
     this.width = 100;
     this.height = 100;

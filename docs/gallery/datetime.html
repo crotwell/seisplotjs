@@ -10,10 +10,14 @@
     <h5>
       <a href="../index.html" class="">Seisplotjs</a> -
       <a href="index.html" class="">Gallery</a>
-      <span class="sp_version">3.1.5-SNAPSHOT</span>
+      <span class="sp_version">3.2.0</span>
     </h5>
 
     <h3>Dates and Times:</h3>
+    <div>
+      <h5 id="sp-clock">&lt;sp-clock&gt;</h5>
+      <label>Now: </label><sp-clock />
+    </div>
     <div>
       <h5 id="sp-hourmin">&lt;sp-hourmin&gt;</h5>
       <label>Time: </label><sp-hourmin />
@@ -40,7 +44,7 @@
       import {
         datechooser,
         util,
-      } from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+      } from "../seisplotjs_3.2.0_standalone.mjs";
       util.updateVersionText(".sp_version");
 
       const outputArea = document.querySelector("#output");

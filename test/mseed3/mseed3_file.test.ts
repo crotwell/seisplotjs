@@ -3,7 +3,6 @@
 // cp -r miniSEED3/reference-data test/mseed3/.
 
 import { TextDecoder } from 'util';
-// @ts-expect-error browser and node TextDecoder are somehow different???
 global.TextDecoder = TextDecoder;
 
 
@@ -11,6 +10,12 @@ import { isDef } from '../../src/util';
 import * as mseed3 from '../../src/mseed3';
 import * as miniseed from '../../src/miniseed';
 import fs from 'fs';
+
+const MISSING_REF_DATA_MSG =`
+Missing reference data, download from:
+https://github.com/FDSN/miniSEED3
+and copy the reference-data directory into test/mseed3
+`;
 
 const fileList = [
   'test/mseed3/reference-data/reference-detectiononly.mseed3',
@@ -44,7 +49,7 @@ fileSizeMap.set('test/mseed3/reference-data/reference-text.mseed3',294);
 for (const filename of fileList) {
   test("ref mseed3 file vs json"+filename, () => {
 
-    expect(fs.existsSync(filename)).toEqual(true);
+    expect(fs.existsSync(filename), MISSING_REF_DATA_MSG).toEqual(true);
     const xData = fs.readFileSync(filename);
     expect(xData.length).toEqual(fileSizeMap.get(filename));
     let hexStr = "";
@@ -161,7 +166,7 @@ test("text output vs mseed2text", function() {
 "       payload encoding: STEIM-2 integer compression (val: 11)",
   ];
   const filename = 'test/mseed3/reference-data/reference-sinusoid-steim2.mseed3';
-  expect(fs.existsSync(filename)).toEqual(true);
+  expect(fs.existsSync(filename), MISSING_REF_DATA_MSG).toEqual(true);
   const xData = fs.readFileSync(filename);
 
   const ab = xData.buffer.slice(xData.byteOffset, xData.byteOffset + xData.byteLength);
@@ -251,4 +256,4 @@ test("mergeMseed3", () => {
   expect(drList).toHaveLength(86);
   const sddList = mseed3.sddPerChannel(drList);
   expect(sddList).toBeDefined();
-})
+});

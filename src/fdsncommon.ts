@@ -5,6 +5,11 @@
 import { isNonEmptyStringArg, checkProtocol } from "./util";
 
 export const IRIS_HOST = "service.iris.edu";
+export const EARTHSCOPE_HOST = "service.earthscope.org";
+
+export const FDSNWS_PATH_BASE = "fdsnws";
+export const IRISWS_PATH_BASE = "irisws";
+export const LOCALWS_PATH_BASE = "localws";
 
 export class FDSNCommon {
   /** @private */
@@ -17,6 +22,12 @@ export class FDSNCommon {
   _host: string;
 
   /** @private */
+  _path_base: string;
+
+  /** @private */
+  _service: string;
+
+  /** @private */
   _port: number;
 
   /** @private */
@@ -25,10 +36,12 @@ export class FDSNCommon {
   /** @private */
   _timeoutSec: number;
 
-  constructor(host?: string) {
+  constructor(service: string, host?: string) {
     this._specVersion = "1";
-    this._host = IRIS_HOST;
+    this._host = EARTHSCOPE_HOST;
     this._protocol = checkProtocol();
+    this._path_base = FDSNWS_PATH_BASE;
+    this._service = service;
 
     if (isNonEmptyStringArg(host)) {
       this._host = host;
@@ -37,7 +50,21 @@ export class FDSNCommon {
     this._port = 80;
     this._timeoutSec = 30;
   }
+
+  defaultPortStringForProtocol(protocol: string) {
+    return defaultPortStringForProtocol(protocol, this._port);
+
+  }
 }
+
+
+export function defaultPortStringForProtocol(protocol: string, port: number) {
+    return (( protocol === "http" || protocol === "http:" ||
+                protocol === "https" || protocol === "https:")
+              && (port === 80 || port === 443)
+          ) ? "" : ":" + String(port);
+
+  }
 
 export class LatLonRegion {}
 export class LatLonBox extends LatLonRegion {

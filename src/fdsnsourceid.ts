@@ -8,6 +8,9 @@ export const FDSN_PREFIX = "FDSN:";
 
 export const SEP = "_";
 
+export const TESTING_NETWORK = "XX";
+export const TESTING_STATION = "ABC";
+
 export class FDSNSourceId {
   networkCode: string;
   stationCode: string;
@@ -37,7 +40,7 @@ export class FDSNSourceId {
   ): FDSNSourceId {
     const s = source ? source : "Y";
     const ss = subsource ? subsource : "X";
-    return new FDSNSourceId("XX", "ABC", "", bandCodeForRate(sampRate), s, ss);
+    return new FDSNSourceId(TESTING_NETWORK, TESTING_STATION, "", bandCodeForRate(sampRate), s, ss);
   }
   static parse(id: string): FDSNSourceId {
     if (!id.startsWith(FDSN_PREFIX)) {
@@ -139,7 +142,7 @@ export class FDSNSourceId {
     return this.asNslc().channelCode;
   }
   toString(): string {
-    return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
+    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
   }
   toStringNoPrefix(): string {
     return `${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
@@ -184,7 +187,10 @@ export class NetworkSourceId {
   }
 
   toString(): string {
-    return `${FDSN_PREFIX}${this.networkCode}`;
+    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
+  }
+  toStringNoPrefix(): string {
+    return this.networkCode;
   }
   equals(other: NetworkSourceId): boolean {
     return this.toString() === other.toString();
@@ -213,7 +219,10 @@ export class StationSourceId {
     return new StationSourceId(items[0], items[1]);
   }
   toString(): string {
-    return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}`;
+    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
+  }
+  toStringNoPrefix(): string {
+    return `${this.networkCode}${SEP}${this.stationCode}`;
   }
   networkSourceId(): NetworkSourceId {
     return new NetworkSourceId(this.networkCode);
@@ -312,11 +321,17 @@ export class NslcId {
     this.locationCode = loc;
     this.channelCode = chan;
   }
+  /**
+   * Parse NSLC string like CO.JSC.00.HHZ into parts.
+   * @param  nslc     string to parse
+   * @param  sep="."  seperator, default is '.'
+   * @returns NslcId by splitting the string.
+   */
   static parse(nslc: string, sep = "."): NslcId {
-    const items = nslc.split(SEP);
+    const items = nslc.split(sep);
     if (items.length !== 4) {
       throw new Error(
-        `NSLC id must have 4 items; separated by '${sep}': ${nslc}`,
+        `NSLC id must have 4 items but was ${items.length}; separated by '${sep}': ${nslc}`,
       );
     }
     return new NslcId(items[0], items[1], items[2], items[3]);

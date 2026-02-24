@@ -14,10 +14,14 @@ export function sort(seisData: Array<SeismogramDisplayData>, key: string) {
   if (key === SORT_NONE) {
     return seisData;
   }
+  return sortByFunction(seisData, createSortValueFunction(key));
+}
+
+export function sortByFunction(seisData: Array<SeismogramDisplayData>,
+    sortableFunction: (sdd: SeismogramDisplayData) => number | string | DateTime) {
   const cache = new Map<SeismogramDisplayData, number | string | DateTime>();
-  const calcSortValue = createSortValueFunction(key);
   seisData.forEach((sdd) => {
-    cache.set(sdd, calcSortValue(sdd));
+    cache.set(sdd, sortableFunction(sdd));
   });
   return seisData.slice().sort((sddA, sddB) => {
     const valA = cache.get(sddA);
@@ -36,6 +40,17 @@ export function sort(seisData: Array<SeismogramDisplayData>, key: string) {
       return 0;
     }
   });
+}
+
+export function createDefaultSortingOptions(): Map<string,(sdd: SeismogramDisplayData) => number | string | DateTime> {
+  const out: Map<string,(sdd: SeismogramDisplayData) => number | string | DateTime> = new Map();
+  out.set(SORT_DISTANCE, createSortValueFunction(SORT_DISTANCE));
+  out.set(SORT_AZIMUTH, createSortValueFunction(SORT_AZIMUTH));
+  out.set(SORT_BACKAZIMUTH, createSortValueFunction(SORT_BACKAZIMUTH));
+  out.set(SORT_ALPHABETICAL, createSortValueFunction(SORT_ALPHABETICAL));
+  out.set(SORT_STARTTIME, createSortValueFunction(SORT_STARTTIME));
+  out.set(SORT_ORIGINTIME, createSortValueFunction(SORT_ORIGINTIME));
+  return out;
 }
 
 export function createSortValueFunction(

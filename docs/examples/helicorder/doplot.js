@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.0_standalone.mjs";
 
 const d3 = sp.d3;
 const luxon = sp.luxon;
@@ -103,7 +103,7 @@ export function doPlotHeli(config) {
     // draw empty SDD so clear existing and fix labels
     hash.heli.heliConfig.fixedTimeScale = hash.timeRange;
     hash.heli.seisData = [];
-    hash.heli.draw();
+    hash.heli.redraw();
   }
 
   clearMessages();
@@ -219,7 +219,7 @@ export function doPlotHeli(config) {
         // draw empty SDD so clear existing and fix labels
         hash.heli.heliConfig.fixedTimeScale = hash.timeRange;
         hash.heli.seisData = chanTR;
-        hash.heli.draw();
+        hash.heli.redraw();
       }
       return hash;
     })
@@ -539,7 +539,7 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
       });
       if (hash.seisData) {
         hash.seisData.addMarkers(markers);
-        hash.heli.draw();
+        hash.heli.redraw();
       } else {
       }
       return hash;
@@ -738,7 +738,7 @@ export function drawSeismograph(hash) {
 
   seismographDisp.seismographConfig = seismographConfig;
   seismographDisp.seisData = sddList;
-  seismographDisp.draw();
+  seismographDisp.redraw();
 
   seismographDisp.addEventListener("seismousemove", (sEvt) => {
     const mouseTimeSpan = document.querySelector("#mousetime");

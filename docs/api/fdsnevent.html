@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs 3.1.4 | Documentation</title>
+  <title>seisplotjs 3.2.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>seisplotjs</h3>
-          <div class='mb1'><code>3.1.4</code></div>
+          <div class='mb1'><code>3.2.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -32,6 +32,16 @@
                   href='#usgs_host'
                   class="">
                   USGS_HOST
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#event_service'
+                  class="">
+                  EVENT_SERVICE
                   
                 </a>
                 
@@ -117,6 +127,18 @@
                         href='#eventquerygetport'
                         class='regular pre-open'>
                         #getPort
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerypathbase'
+                        class='regular pre-open'>
+                        #pathBase
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetpathbase'
+                        class='regular pre-open'>
+                        #getPathBase
                       </a></li>
                       
                       <li><a
@@ -567,7 +589,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L16-L16'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L16-L16'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -615,12 +637,71 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='event_service'>
+      EVENT_SERVICE
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L43-L43'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>const for service name</p>
+
+    <div class='pre p1 fill-light mt0'>EVENT_SERVICE</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='service_version'>
       SERVICE_VERSION
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L46-L46'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L49-L49'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -680,7 +761,7 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L52-L52'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L55-L55'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -735,7 +816,7 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L61-L1074'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L64-L1082'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -816,7 +897,7 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L155-L158'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L158-L161'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -898,7 +979,7 @@ the web service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L160-L162'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L163-L165'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -960,7 +1041,7 @@ the web service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L171-L174'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L174-L177'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1041,7 +1122,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L176-L178'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L179-L181'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1103,7 +1184,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L186-L189'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L189-L192'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1183,7 +1264,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L191-L193'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L194-L196'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1245,7 +1326,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L201-L204'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L204-L207'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1325,7 +1406,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L206-L208'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L209-L211'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1373,6 +1454,143 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='eventquerypathbase'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>pathBase(value?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L213-L216'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>pathBase(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#eventquery">EventQuery</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetpathbase'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getPathBase()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L218-L220'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getPathBase(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='eventquerynodata'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -1387,7 +1605,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L217-L220'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L230-L233'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1468,7 +1686,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L222-L224'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L235-L237'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1530,7 +1748,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L232-L235'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L245-L248'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1610,7 +1828,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L237-L239'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L250-L252'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1672,7 +1890,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L247-L250'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L260-L263'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1752,7 +1970,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L252-L254'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L265-L267'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1814,7 +2032,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L262-L265'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L275-L278'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1894,7 +2112,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L267-L269'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L280-L282'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -1956,7 +2174,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L277-L280'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L290-L293'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2036,7 +2254,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L282-L284'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L295-L297'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2098,7 +2316,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L292-L296'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L305-L309'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2178,7 +2396,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L304-L307'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L317-L320'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2258,7 +2476,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L309-L311'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L322-L324'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2320,7 +2538,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L319-L322'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L332-L335'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2400,7 +2618,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L324-L326'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L337-L339'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2462,7 +2680,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L334-L337'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L347-L350'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2542,7 +2760,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L339-L341'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L352-L354'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2604,7 +2822,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L349-L352'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L362-L365'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2684,7 +2902,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L354-L356'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L367-L369'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2746,7 +2964,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L364-L367'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L377-L380'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2826,7 +3044,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L369-L371'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L382-L384'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2888,7 +3106,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L379-L382'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L392-L395'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -2968,7 +3186,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L384-L386'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L397-L399'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3030,7 +3248,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L394-L397'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L407-L410'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3110,7 +3328,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L399-L401'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L412-L414'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3172,7 +3390,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L409-L412'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L422-L425'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3252,7 +3470,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L414-L416'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L427-L429'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3314,7 +3532,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L424-L427'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L437-L440'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3394,7 +3612,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L429-L431'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L442-L444'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3456,7 +3674,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L439-L442'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L452-L455'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3536,7 +3754,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L444-L446'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L457-L459'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3598,7 +3816,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L454-L457'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L467-L470'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3678,7 +3896,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L459-L461'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L472-L474'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3740,7 +3958,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L469-L472'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L482-L485'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3820,7 +4038,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L474-L476'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L487-L489'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3882,7 +4100,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L484-L487'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L497-L500'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -3962,7 +4180,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L489-L491'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L502-L504'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4024,7 +4242,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L499-L502'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L512-L515'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4104,7 +4322,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L504-L506'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L517-L519'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4166,7 +4384,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L514-L517'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L527-L530'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4246,7 +4464,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L519-L521'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L532-L534'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4308,7 +4526,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L529-L532'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L542-L545'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4388,7 +4606,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L534-L536'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L547-L549'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4450,7 +4668,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L544-L547'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L557-L560'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4530,7 +4748,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L549-L551'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L562-L564'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4592,7 +4810,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L559-L562'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L572-L575'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4672,7 +4890,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L564-L566'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L577-L579'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4734,7 +4952,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L574-L577'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L587-L590'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4814,7 +5032,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L579-L581'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L592-L594'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4876,7 +5094,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L589-L592'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L602-L605'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -4956,7 +5174,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L594-L596'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L607-L609'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5018,7 +5236,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L604-L607'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L617-L620'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5098,7 +5316,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L609-L611'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L622-L624'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5160,7 +5378,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L619-L622'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L632-L635'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5240,7 +5458,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L624-L626'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L637-L639'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5302,7 +5520,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L634-L637'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L647-L650'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5382,7 +5600,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L639-L641'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L652-L654'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5444,7 +5662,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L643-L680'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L656-L693'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5519,7 +5737,7 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L689-L711'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L702-L724'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5587,7 +5805,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L718-L722'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L731-L735'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5653,7 +5871,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L724-L728'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L737-L741'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5715,7 +5933,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L735-L761'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L748-L774'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5781,7 +5999,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L768-L790'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L783-L798'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5847,7 +6065,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L797-L799'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L805-L807'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5913,7 +6131,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L806-L846'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L814-L854'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -5979,7 +6197,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L853-L855'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L861-L863'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -6045,7 +6263,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L862-L898'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L870-L906'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -6111,7 +6329,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L905-L907'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L913-L915'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -6177,7 +6395,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L914-L926'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L922-L934'>
       <span>src/fdsnevent.ts</span>
       </a>
     
@@ -6243,7 +6461,7 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/fdsnevent.ts#L933-L1073'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/fdsnevent.ts#L941-L1081'>
       <span>src/fdsnevent.ts</span>
       </a>
     

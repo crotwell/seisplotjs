@@ -4,17 +4,17 @@
  * https://www.seis.sc.edu
  */
 import {
-  isObject,
   isDef,
   isStringArg,
   isNonEmptyStringArg,
   isNumArg,
   checkStringOrDate,
-  stringify,
   reErrorWithMessage,
   WAY_FUTURE,
   doFetchWithTimeout,
   defaultFetchInitObj,
+  mightBeXml,
+  dataViewToString,
   XML_MIME,
 } from "./util";
 import { Complex } from "./oregondsputil";
@@ -27,6 +27,7 @@ import {
 } from "./fdsnsourceid";
 import { DateTime, Interval } from "luxon";
 
+export const STAXML_MIME="application/vnd.fdsn.stationxml+xml";
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
@@ -57,7 +58,13 @@ export function createChannelClickEvent(
     mouseevent: mouseclick,
     channel: sta,
   };
-  return new CustomEvent(CHANNEL_CLICK_EVENT, { detail: detail });
+  return new CustomEvent(CHANNEL_CLICK_EVENT,
+    { detail: detail,
+      bubbles: true,
+      cancelable: false,
+      composed: true
+    }
+  );
 }
 
 /**
@@ -76,7 +83,13 @@ export function createStationClickEvent(
     mouseevent: mouseclick,
     station: sta,
   };
-  return new CustomEvent(STATION_CLICK_EVENT, { detail: detail });
+  return new CustomEvent(STATION_CLICK_EVENT,
+    { detail: detail,
+      bubbles: true,
+      cancelable: false,
+      composed: true
+    }
+  );
 }
 
 // StationXML classes
@@ -291,8 +304,8 @@ export class Channel {
     this.elevation = 0;
     this.sampleRate = 0;
 
-    if (channelCode.length !== 3) {
-      throw new Error(`Channel code must be 3 chars: ${channelCode}`);
+    if (channelCode.length !== 3 && (channelCode.split('_').length !== 3)) {
+      throw new Error(`Channel code must be 3 chars or of form b_s_s: "${channelCode} ${channelCode.split('_').length}"`);
     }
 
     this.channelCode = channelCode;
@@ -320,6 +333,10 @@ export class Channel {
       this.locationCode,
       this.channelCode,
     );
+  }
+
+  set sourceId(sid: FDSNSourceId) {
+    this._sourceId = sid;
   }
 
   get nslcId(): NslcId {
@@ -1228,12 +1245,12 @@ export function convertToStage(stageXml: Element): Stage {
   } else {
     // shoudl be a filter of some kind, check for units
     const inputUnits = _grabFirstElText(
-      _grabFirstEl(stageXml, "InputUnits"),
+      _grabFirstEl(subEl, "InputUnits"),
       "Name",
     );
 
     const outputUnits = _grabFirstElText(
-      _grabFirstEl(stageXml, "OutputUnits"),
+      _grabFirstEl(subEl, "OutputUnits"),
       "Name",
     );
 
@@ -1249,31 +1266,31 @@ export function convertToStage(stageXml: Element): Stage {
     if (subEl.localName === "PolesZeros") {
       const pzFilter = new PolesZeros(inputUnits, outputUnits);
 
-      const pzt = _grabFirstElText(stageXml, "PzTransferFunctionType");
+      const pzt = _grabFirstElText(subEl, "PzTransferFunctionType");
 
       if (isNonEmptyStringArg(pzt)) {
         pzFilter.pzTransferFunctionType = pzt;
       }
 
-      const nfa = _grabFirstElFloat(stageXml, "NormalizationFactor");
+      const nfa = _grabFirstElFloat(subEl, "NormalizationFactor");
 
       if (isNumArg(nfa)) {
         pzFilter.normalizationFactor = nfa;
       }
 
-      const nfr = _grabFirstElFloat(stageXml, "NormalizationFrequency");
+      const nfr = _grabFirstElFloat(subEl, "NormalizationFrequency");
 
       if (isNumArg(nfr)) {
         pzFilter.normalizationFrequency = nfr;
       }
 
       const zeros = Array.from(
-        stageXml.getElementsByTagNameNS(STAML_NS, "Zero"),
+        subEl.getElementsByTagNameNS(STAML_NS, "Zero"),
       ).map(function (zeroEl) {
         return extractComplex(zeroEl);
       });
       const poles = Array.from(
-        stageXml.getElementsByTagNameNS(STAML_NS, "Pole"),
+        subEl.getElementsByTagNameNS(STAML_NS, "Pole"),
       ).map(function (poleEl) {
         return extractComplex(poleEl);
       });
@@ -1372,10 +1389,9 @@ export function convertToStage(stageXml: Element): Stage {
   if (gainXml) {
     gain = convertToGain(gainXml);
   } else {
-    throw new Error(
-      "Did not find Gain in stage number " +
-        stringify(_grabAttribute(stageXml, "number")),
-    );
+    // stage has no <StageGain> element, but gain is required in schema?
+    // just use unity gain at 1 Hz, weird but less bad than an exception?
+    gain = new Gain(1, 1);
   }
 
   const out = new Stage(filter, decimation, gain);
@@ -1456,6 +1472,25 @@ export function extractComplex(el: Element): InstanceType<typeof Complex> {
   }
 }
 
+
+/**
+ * Generator function to access all active stations within all networks in the array.
+ *
+ * @param      networks array of Networks
+ * @param      atTime time for station to be active, defaults to now
+ * @yields           generator yeiding stations
+ */
+export function* activeNetworks(
+  networks: Array<Network>,
+  atTime?: DateTime
+): Generator<Network, void, unknown> {
+  for (const n of networks) {
+    if (n.isActiveAt(atTime)) {
+      yield n;
+    }
+  }
+}
+
 /**
  * Generator function to access all stations within all networks in the array.
  *
@@ -1467,6 +1502,25 @@ export function* allStations(
 ): Generator<Station, void, unknown> {
   for (const n of networks) {
     for (const s of n.stations) {
+      yield s;
+    }
+  }
+}
+
+
+/**
+ * Generator function to access all active stations within all networks in the array.
+ *
+ * @param      networks array of Networks
+ * @param      atTime time for station to be active, defaults to now
+ * @yields           generator yeiding stations
+ */
+export function* activeStations(
+  networks: Array<Network>,
+  atTime?: DateTime
+): Generator<Station, void, unknown> {
+  for (const s of allStations(networks)) {
+    if (s.isActiveAt(atTime)) {
       yield s;
     }
   }
@@ -1484,6 +1538,25 @@ export function* allChannels(
 ): Generator<Channel, void, unknown> {
   for (const s of allStations(networks)) {
     for (const c of s.channels) {
+      yield c;
+    }
+  }
+}
+
+
+/**
+ * Generator function to access all active channels within all networks in the array.
+ *
+ * @param      networks array of Networks
+ * @param      atTime time for channel to be active, defaults to now
+ * @yields           generator yeiding channels
+ */
+export function* activeChannels(
+  networks: Array<Network>,
+  atTime?: DateTime
+): Generator<Channel, void, unknown> {
+  for (const c of allChannels(networks)) {
+    if (c.isActiveAt(atTime)) {
       yield c;
     }
   }
@@ -1523,6 +1596,32 @@ export function* findChannels(
   }
 }
 
+export function* findChannelsForSourceId(
+  networks: Array<Network>,
+  sid: FDSNSourceId,
+): Generator<Channel, void, unknown> {
+  const netRE = new RegExp(`^${sid.networkCode}$`);
+  const staRE = new RegExp(`^${sid.stationCode}$`);
+  const locRE = new RegExp(`^${sid.locationCode}$`);
+  const bandRE = new RegExp(`^${sid.bandCode}$`);
+  const sourceRE = new RegExp(`^${sid.sourceCode}$`);
+  const subsourceRE = new RegExp(`^${sid.subsourceCode}$`);
+  for (const n of networks.filter((n) => netRE.test(n.networkCode))) {
+    for (const s of n.stations.filter((s) => staRE.test(s.stationCode))) {
+      for (const c of s.channels.filter(
+        (c) => locRE.test(c.locationCode),
+      )) {
+        const chanSid = c.sourceId;
+        if (bandRE.test(chanSid.bandCode)
+          && sourceRE.test(chanSid.sourceCode)
+          && subsourceRE.test(chanSid.subsourceCode)) {
+          yield c;
+        }
+      }
+    }
+  }
+}
+
 export function uniqueSourceIds(
   channelList: Iterable<Channel>,
 ): Array<FDSNSourceId> {
@@ -1545,11 +1644,17 @@ export function uniqueStations(channelList: Iterable<Channel>): Array<Station> {
   return Array.from(out.values());
 }
 
-export function uniqueNetworks(channelList: Iterable<Channel>): Array<Network> {
+export function uniqueNetworks(channelList: Iterable<Channel|Station>): Array<Network> {
   const out = new Set<Network>();
   for (const c of channelList) {
     if (c) {
-      out.add(c.station.network);
+      if (c instanceof Station) {
+        out.add(c.network);
+      } else if (c instanceof Channel) {
+        out.add(c.station.network);
+      } else {
+        throw new Error(`unknown type for uniqueNetworks: ${c}`);
+      }
     }
   }
   return Array.from(out.values());
@@ -1592,27 +1697,38 @@ export function fetchStationXml(
     });
 }
 
+
+
+export function mightBeStatonXml(buf: ArrayBufferLike) {
+  if ( ! mightBeXml(buf)) {
+    return false;
+  }
+  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
+  if ( ! initialChars.includes("FDSNStationXML")) {
+    return false;
+  }
+  return true;
+}
+
 // these are similar methods as in seisplotjs.quakeml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 const _grabFirstEl = function (
   xml: Element | null | void,
   tagName: string,
 ): Element | null {
-  let out = null;
-
   if (xml instanceof Element) {
-    const el = xml.getElementsByTagName(tagName);
-
-    if (isObject(el) && el.length > 0) {
-      const e = el.item(0);
-
+    const elList = Array.from(xml.children).filter(
+      (e) => e.tagName === tagName,
+    );
+    if (elList.length > 0) {
+      const e = elList[0];
       if (e) {
-        out = e;
+        return e;
       }
     }
   }
 
-  return out;
+  return null;
 };
 
 const _grabFirstElText = function _grabFirstElText(

@@ -367,7 +367,7 @@ export class Seismogram {
   /**
    * Merges all segments into a single array of the same type as the first
    * segment. No checking is done for gaps or overlaps, this is a simple
-   * congatination. Be careful!
+   * concatination. Be careful!
    *
    * @returns contatenated data
    */
@@ -656,7 +656,12 @@ export class SeismogramDisplayData {
   }
 
   addMarker(marker: MarkerType) {
-    this.addMarkers([marker]);
+    let mlist = [ marker ];
+    if (Array.isArray(marker)) {
+      // already an array, typeless languages gumble grumble ...
+      mlist = marker;
+    }
+    this.addMarkers(mlist);
   }
 
   addMarkers(markers: MarkerType | Array<MarkerType>) {
@@ -669,6 +674,10 @@ export class SeismogramDisplayData {
 
   getMarkers(): Array<MarkerType> {
     return this.markerList;
+  }
+
+  clearMarkers() {
+    this.markerList = [];
   }
 
   addTravelTimes(
@@ -787,12 +796,12 @@ export class SeismogramDisplayData {
 
   /**
    * return location code a a string.
-   * Uses this.channel if it exists, this.seismogram if not.
+   * Uses this.sourceId if it exists, this.seismogram if not.
    *
    * @returns location code
    */
   get locationCode(): string {
-    let out = this.sourceId.locationCode;
+    let out = this?.sourceId.locationCode;
     if (!isDef(out)) {
       out = "unknown";
     }
@@ -801,12 +810,12 @@ export class SeismogramDisplayData {
 
   /**
    * return channels code as a string.
-   * Uses this.channel if it exists, this.seismogram if not.
+   * Uses this.sourceId if it exists, this.seismogram if not.
    *
    * @returns channel code
    */
   get channelCode(): string {
-    let out = this.sourceId.formChannelCode();
+    let out = this?.sourceId.formChannelCode();
     if (!isDef(out)) {
       out = "unknown";
     }

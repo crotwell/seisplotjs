@@ -6,10 +6,11 @@ import {
   EventDescription,
   EventParameters,
 } from "./quakeml";
-import { JSON_MIME, doFetchWithTimeout, defaultFetchInitObj } from "./util";
+import { JSON_MIME, doFetchWithTimeout, UTC_OPTIONS,
+  defaultFetchInitObj, stringify } from "./util";
 import { DateTime } from "luxon";
 
-import type { Feature, Point } from "geojson";
+import type { Feature, Point, Polygon, FeatureCollection } from "geojson";
 
 const timeoutSec = 10;
 export const hourSummarySignificantUrl =
@@ -55,6 +56,12 @@ export const monthSummaryM1_0Url =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_month.geojson";
 export const monthSummaryAllUrl =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
+
+export const yearSignificant =
+  "https://earthquake.usgs.gov/fdsnws/event/1/query.geojson?minsig=600";
+
+export const USGS_TECTONIC_SUMMARY_URL =
+  "https://earthquake.usgs.gov/ws/geoserve/layers.json?type=tectonic";
 
 export function loadHourSummarySignificant(): Promise<Array<Quake>> {
   return loadUSGSSummary(hourSummarySignificantUrl);
@@ -118,6 +125,22 @@ export function loadMonthSummaryM1_0(): Promise<Array<Quake>> {
 }
 export function loadMonthSummaryAll(): Promise<Array<Quake>> {
   return loadUSGSSummary(monthSummaryAllUrl);
+}
+
+export function loadMonthSignificant(): Promise<Array<Quake>> {
+  const now = DateTime.utc();
+  const monthAgo = now.minus({month: 1});
+  return loadSignificant(monthAgo, now);
+}
+
+export function loadYearSignificant(): Promise<Array<Quake>> {
+  const now = DateTime.utc();
+  const yearAgo = now.minus({years: 1});
+  return loadSignificant(yearAgo, now);
+}
+
+export function loadSignificant(start: DateTime, end: DateTime): Promise<Array<Quake>> {
+  return loadUSGSSummary(`${yearSignificant}&starttime=${start.toISO()}&endtime=${end.toISO()}`);
 }
 
 export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
@@ -216,7 +239,7 @@ export function parseGeoJSON(geojson: USGSGeoJsonSummary): EventParameters {
   out.creationInfo = new CreationInfo();
   out.creationInfo.agencyURI = geojson.metadata.url;
   out.creationInfo.creationTime = DateTime.fromMillis(
-    geojson.metadata.generated,
+    geojson.metadata.generated, UTC_OPTIONS
   );
   out.eventList = quakeList;
   out.description = description;
@@ -231,14 +254,15 @@ export function parseGeoJSON(geojson: USGSGeoJsonSummary): EventParameters {
  */
 export function parseFeatureAsQuake(feature: USGSGeoJsonFeature): Quake {
   const quake = new Quake();
-  quake.publicId = `quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid={feature.id}`;
+  quake.publicId = `quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid=${feature.id}`;
   const p = feature.properties;
   if (p == null) {
     throw new Error("Geojson missing properties");
   }
+  quake.eventId=stringify(feature.id);
   quake.descriptionList.push(new EventDescription(p.title));
   const origin = new Origin(
-    DateTime.fromMillis(p.time),
+    DateTime.fromMillis(p.time, UTC_OPTIONS),
     feature.geometry.coordinates[1],
     feature.geometry.coordinates[0],
   );
@@ -351,6 +375,115 @@ export function isValidUSGSGeoJsonQuake(
     );
   }
   if (!(typeof jsonObj.id === "string")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, id should be string",
+    );
+  }
+  return true;
+}
+
+
+export interface USGSTectonicGeoJsonProperties {
+  name: string;
+  summary: string;
+  type: string;
+}
+
+export interface USGSTectonicGeoJsonFeature
+  extends FeatureCollection<Polygon, USGSTectonicGeoJsonProperties> {}
+
+// subtype of FeatureCollection
+export interface USGSTectonicGeoJsonSummary {
+  type: "FeatureCollection";
+  metadata: USGSGeoJsonMetaData;
+  tectonic: USGSTectonicGeoJsonFeature;
+}
+
+export function loadUSGSTectonicLayer(
+  url?: string,
+): Promise<USGSTectonicGeoJsonSummary> {
+  if (! url) {
+    url = USGS_TECTONIC_SUMMARY_URL;
+  }
+  const fetchInit = defaultFetchInitObj(JSON_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
+    .then((response) => {
+      if (response.status !== 200) {
+        // no data
+        return [];
+      } else {
+        return response.json();
+      }
+    })
+    .then((jsonValue) => {
+      if (isValidUSGSTectonicGeoJsonSummary(jsonValue)) {
+        return jsonValue;
+      } else {
+        throw new TypeError(`Oops, we did not get roottype JSON!`);
+      }
+    });
+}
+
+
+export function isValidUSGSTectonicGeoJsonSummary(
+  jsonValue: unknown,
+): jsonValue is USGSTectonicGeoJsonSummary {
+  if (!jsonValue || typeof jsonValue !== "object") {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+
+  if (!jsonObj.tectonic || typeof jsonObj.tectonic !== "object") {
+    throw new TypeError("json.tectonic is not object");
+  }
+  const tectonic = jsonObj.tectonic as Record<string, unknown>;
+  if (
+    !(typeof tectonic.type === "string"
+        && tectonic.type === "FeatureCollection")
+  ) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, tectonic should be FeatureCollection",
+    );
+  }
+  if (!(typeof jsonObj.metadata === "object")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, missing metadata",
+    );
+  }
+  if (!Array.isArray(tectonic.features)) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, features should be array",
+    );
+  } else {
+    // should check for subobjects have name, summary, type
+    if (!tectonic.features.every(isValidUSGSTectonic)) {
+      throw new TypeError(
+        "geojson is not valid for USGS GeoJson, feature should be USGSTectonicGeoJsonFeature",
+      );
+    }
+  }
+  return true;
+}
+
+
+export function isValidUSGSTectonic(
+  jsonValue: unknown,
+): jsonValue is USGSTectonicGeoJsonFeature {
+  if (!jsonValue || typeof jsonValue !== "object") {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+  if (!(typeof jsonObj.type === "string" && jsonObj.type === "Feature")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, type should be Feature",
+    );
+  }
+  if (!(typeof jsonObj.properties === "object")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, missing properties",
+    );
+  }
+  if (!(typeof jsonObj.id === "string" || typeof jsonObj.id === "number")) {
     throw new TypeError(
       "geojson is not valid for USGS GeoJson, id should be string",
     );

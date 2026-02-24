@@ -84,7 +84,7 @@ export function calcDFT(
  * @returns           inverse of DFT as a timeseries array
  */
 export function inverseDFT(
-  packedFreq: Float32Array,
+  packedFreq: Float32Array<ArrayBufferLike>,
   numPoints: number,
 ): Float32Array {
   if (numPoints > packedFreq.length) {

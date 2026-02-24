@@ -10,7 +10,6 @@ import * as mseed3 from '../src/mseed3';
 import { scaleLinear as d3scaleLinear } from "d3-scale";
 
 import { TextDecoder } from 'util';
-// @ts-expect-error browser and node TextDecoder are somehow different???
 global.TextDecoder = TextDecoder;
 
 import fs from 'fs';
@@ -44,11 +43,12 @@ test("line create test", () => {
   const graph = new Seismograph([seisData], seisConfig);
   graph.width = width;
   graph.height = height;
+  const canvasHeight = seisConfig.resolutionScale*height;
   const maxSamplePerPixelForLineDraw = 3;
   const tScale = graph.timeScaleForSeisDisplayData(seisData);
   const yScale = graph.ampScaleForSeisDisplayData(seisData);
   expect(yScale.range()[1]).toBe(1);
-  expect(yScale.range()[0]).toBe(height-1);
+  expect(yScale.range()[0]).toBe(canvasHeight-1);
   const drawn = seismogramSegmentAsLine(segment,
     width,
     tScale,
@@ -59,15 +59,15 @@ test("line create test", () => {
   expect(drawn.y.length).toEqual(drawn.x.length);
   expect(drawn.x.length).toEqual(5);
   expect(drawn.x[0]).toEqual(0);
-  expect(drawn.y[0]).toEqual(height-1);
+  expect(drawn.y[0]).toEqual(canvasHeight-1);
   expect(drawn.x[1]).toEqual(89);
-  expect(drawn.y[1]).toEqual(height-1);
+  expect(drawn.y[1]).toEqual(canvasHeight-1);
   expect(drawn.x[2]).toEqual(90);
-  expect(drawn.y[2]).toEqual(height-amp+1);
+  expect(drawn.y[2]).toEqual(canvasHeight-seisConfig.resolutionScale*amp+1);
   expect(drawn.x[3]).toEqual(90);
-  expect(drawn.y[3]).toEqual(height-1);
+  expect(drawn.y[3]).toEqual(canvasHeight-1);
   expect(drawn.x[4]).toEqual(width-1);
-  expect(drawn.y[4]).toEqual(height-1);
+  expect(drawn.y[4]).toEqual(canvasHeight-1);
 });
 
 
@@ -97,11 +97,12 @@ test("ref badspike mseed3 file", () => {
   const graph = new Seismograph([seisData], seisConfig);
   graph.width = width;
   graph.height = 100;
+  const canvasHeight = seisConfig.resolutionScale*height;
   //const maxSamplePerPixelForLineDraw = 3;
   const tScale = graph.timeScaleForSeisDisplayData(seisData);
   const yScale = graph.ampScaleForSeisDisplayData(seisData);
   expect(yScale.range()[1]).toBe(1);
-  expect(yScale.range()[0]).toBe(height-1);
+  expect(yScale.range()[0]).toBe(canvasHeight-1);
 
   const segment = seisData.seismogram ? seisData.seismogram.segments[0] : null;
   const drawn = seismogramSegmentAsLine(segment,
@@ -109,28 +110,33 @@ test("ref badspike mseed3 file", () => {
     tScale,
     yScale,
   );
+  expect(drawn.samplesPerPixel).toBeCloseTo(13.5, 0.1);
   expect(drawn.maxSamplePerPixelForLineDraw).toBe(3);
   const dataArray = segment ? segment.y : [];
   expect(dataArray).not.toBeNull();
   expect(drawn.samplesPerPixel).toBeCloseTo(dataArray.length/width, 1);
   expect(drawn.y.length).toEqual(drawn.x.length);
-  expect(drawn.x.length).toEqual(8);
+  expect(drawn.x.length).toEqual(10);
   expect(drawn.x[0]).toEqual(0);
-  expect(drawn.y[0]).toEqual(height-1);
-  expect(drawn.x[1]).toEqual(611);
-  expect(drawn.y[1]).toEqual(height-1);
+  expect(drawn.y[0]).toEqual(canvasHeight-1);
+  expect(drawn.x[1]).toEqual(610);
+  expect(drawn.y[1]).toEqual(canvasHeight-1);
   expect(drawn.x[2]).toEqual(611);
-  expect(drawn.y[2]).toEqual(height-amp+1);
-  expect(drawn.x[3]).toEqual(612);
-  expect(drawn.y[3]).toEqual(height-1);
-  expect(drawn.x[4]).toEqual(1105);
-  expect(drawn.y[4]).toEqual(height-1);
-  expect(drawn.x[5]).toEqual(1105);
-  expect(drawn.y[5]).toEqual(height-amp+1);
+  expect(drawn.y[2]).toEqual(canvasHeight-1);
+  expect(drawn.x[3]).toEqual(611);
+  expect(drawn.y[3]).toEqual(canvasHeight-seisConfig.resolutionScale*amp+1);
+  expect(drawn.x[4]).toEqual(612);
+  expect(drawn.y[4]).toEqual(canvasHeight-1);
+  expect(drawn.x[5]).toEqual(1104);
+  expect(drawn.y[5]).toEqual(canvasHeight-1);
   expect(drawn.x[6]).toEqual(1105);
-  expect(drawn.y[6]).toEqual(height-1);
-  expect(drawn.x[7]).toEqual(width);
-  expect(drawn.y[7]).toEqual(height-1);
+  expect(drawn.y[6]).toEqual(canvasHeight-1);
+  expect(drawn.x[7]).toEqual(1105);
+  expect(drawn.y[7]).toEqual(canvasHeight-seisConfig.resolutionScale*amp+1);
+  expect(drawn.x[8]).toEqual(1105);
+  expect(drawn.y[8]).toEqual(canvasHeight-1);
+  expect(drawn.x[9]).toEqual(width);
+  expect(drawn.y[9]).toEqual(canvasHeight-1);
 });
 
 

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST } from "./fdsncommon";
 import { DateTime, Interval } from "luxon";
 import { SeismogramDisplayData } from "./seismogram";
 import {
@@ -47,6 +47,9 @@ export const EMPTY_JSON: RootType = {
   datasources: [],
 };
 
+/** const for service name */
+export const AVAILABILITY_SERVICE = "availability";
+
 /**
  * Major version of the FDSN spec supported here.
  * Currently is 1.
@@ -57,10 +60,10 @@ export const SERVICE_VERSION = 1;
  * Service name as used in the FDSN DataCenters registry,
  * https://www.fdsn.org/datacenters
  */
-export const SERVICE_NAME = `fdsnws-availability-${SERVICE_VERSION}`;
+export const SERVICE_NAME = `fdsnws-${AVAILABILITY_SERVICE}-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export { IRIS_HOST };
+export { IRIS_HOST, EARTHSCOPE_HOST };
 
 /**
  * Query to a FDSN Availability web service.
@@ -124,9 +127,9 @@ export class AvailabilityQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = IRIS_HOST;
+      host = EARTHSCOPE_HOST;
     }
-    super(host);
+    super(AVAILABILITY_SERVICE, host);
   }
 
   /**
@@ -207,6 +210,16 @@ export class AvailabilityQuery extends FDSNCommon {
   getPort(): number {
     return this._port;
   }
+
+  pathBase(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
 
   /**
    * Gets/Sets the network code to check.
@@ -776,22 +789,21 @@ export class AvailabilityQuery extends FDSNCommon {
     return out;
   }
 
+
+  /**
+   * Forms the base of the url for accessing the dataselect service.
+   *
+   * @returns         URL as string
+   */
   formBaseURL(): string {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + stringify(this._port)) +
-      "/fdsnws/availability/" +
-      this._specVersion
-    );
+    const port = this.defaultPortStringForProtocol(this._protocol);
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formVersionURL(): string {

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -21,10 +21,13 @@ import {
 } from "./util";
 import { Station, Channel } from "./stationxml";
 import { Quake } from "./quakeml";
-export const IRIS_HOST = "service.iris.edu";
 export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";
 export const SVG_FORMAT = "svg";
+
+
+/** const for service name */
+export const TRAVELTIME_SERVICE = "traveltime";
 
 /**
  * Type for json returned by iris traveltime web service
@@ -198,7 +201,8 @@ export class TraveltimeQuery extends FDSNCommon {
     if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
-    super(host);
+    super(TRAVELTIME_SERVICE, host);
+    this._path_base = IRISWS_PATH_BASE;
     this._evdepth = 0;
     this._format = JSON_FORMAT;
     this._noheader = false; // only for text format
@@ -235,6 +239,15 @@ export class TraveltimeQuery extends FDSNCommon {
 
   getPort(): number | undefined {
     return this._port;
+  }
+
+  pathBase(value?: string): TraveltimeQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
   }
 
   /**
@@ -519,27 +532,25 @@ export class TraveltimeQuery extends FDSNCommon {
     }
   }
 
+
+  /**
+   * Forms the basic URL to contact the web service, without any query paramters
+   *
+   * @returns the url
+   */
   formBaseURL(): string {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
-      colon = "";
+    colon = "";
     }
-
-    const url =
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
-      "/irisws/traveltime/" +
-      this._specVersion +
-      "/";
-    return url;
+    const port = this.defaultPortStringForProtocol(this._protocol);
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formURL(): string {
-    let url = this.formBaseURL() + "query?";
+    let url = this.formBaseURL() + "/query?";
 
     if (isDef(this._noheader) && this._noheader) {
       url = url + "noheader=true&";
@@ -614,11 +625,11 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   formTauPVersionURL(): string {
-    return this.formBaseURL() + "taupversion";
+    return this.formBaseURL() + "/taupversion";
   }
 
   formWadlURL(): string {
-    return this.formBaseURL() + "application.wadl";
+    return this.formBaseURL() + "/application.wadl";
   }
 }
 export const FAKE_EMPTY_TEXT_MODEL = `Model: `;

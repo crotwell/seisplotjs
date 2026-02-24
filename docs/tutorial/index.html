@@ -99,7 +99,7 @@
       <h1>
        Seisplotjs Tutorial
        <span class="sp_version">
-        3.1.5-SNAPSHOT
+        3.2.0
        </span>
       </h1>
       <h3>
@@ -132,7 +132,7 @@
     &lt;/div&gt;
 
     &lt;script  type="module" &gt;
-    import * as sp from '../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs';
+    import * as sp from '../seisplotjs_3.2.0_standalone.mjs';
     // your code goes here...
     &lt;/script&gt;
   &lt;/body&gt;
@@ -141,8 +141,8 @@
       <p>
        If this is to be hosted locally, then we need to download the
               standalone version of seisplotjs, from here
-       <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.1.5-SNAPSHOT_standalone.mjs">
-        http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.1.5-SNAPSHOT_standalone.mjs
+       <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.2.0_standalone.mjs">
+        http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.2.0_standalone.mjs
        </a>
        and put it in the same directory as our html file. The
        <code class="language-javascript">
@@ -170,7 +170,7 @@
        element.
       </p>
       <pre><code class="language-javascript" snippet="createseis">
-import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../seisplotjs_3.2.0_standalone.mjs";
 sp.util.updateVersionText(".sp_version");
 
 let sampleRate = 20;
@@ -231,6 +231,7 @@ let myseismogram = sp.seismogram.Seismogram.fromContiguousData(
       <pre><code class="language-javascript" snippet="draw">
 let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 const graph = document.querySelector("sp-seismograph");
+const timeScale = graph.seismographConfig.linkedTimeScale
 graph.seismographConfig.title = "A sine wave!";
 graph.seismographConfig.margin.top = 25;
 graph.seisData = [seisData];
@@ -251,8 +252,6 @@ const div = document.querySelector("div#sinewave");
 const seisConfig = new sp.seismographconfig.SeismographConfig();
 seisConfig.title = "Another sine wave!";
 seisConfig.margin.top = 25;
-const div_graph = new sp.seismograph.Seismograph([seisData], seisConfig);
-div.appendChild(div_graph);
 </code></pre>
       <p>
        We should have a seismograph displayed. But it might be a bit
@@ -283,7 +282,9 @@ div.appendChild(div_graph);
               two seismographs so that they zoom and drag together.
       </p>
       <pre><code class="language-javascript" snippet="timescale">
-graph.seismographConfig.linkedTimeScale.link(div_graph);
+seisConfig.linkedTimeScale = timeScale
+const div_graph = new sp.seismograph.Seismograph([seisData], seisConfig);
+div.appendChild(div_graph);
 </code></pre>
       <h3>
        See it live in
@@ -303,7 +304,7 @@ graph.seismographConfig.linkedTimeScale.link(div_graph);
    </div>
   </div>
   <script type="module">
-   import * as sp from "./seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+   import * as sp from "./seisplotjs_3.2.0_standalone.mjs";
       sp.util.updateVersionText(".sp_version");
   </script>
   <script src="../prism.js">

@@ -94,7 +94,7 @@
       <h1>
        Seisplotjs Tutorial
        <span class="sp_version">
-        3.1.5-SNAPSHOT
+        3.2.0
        </span>
       </h1>
       <h3>
@@ -109,8 +109,8 @@
       </h5>
       <p>
        It would be nice to know where the P and S wave are predicted to
-              arrive. We can use the IRIS
-       <a href="https://service.iris.edu/irisws/traveltime/1/">
+              arrive. We can use the EarthScope
+       <a href="https://service.earthscope.org/irisws/traveltime/1/">
         traveltime
        </a>
        web service to to get travel times for seismic phases. The
@@ -119,7 +119,7 @@
         The TauP Toolkit
        </a>
        under the hood, and so the documentation for it can help. We will
-              keep things simple and just ask for
+        keep things simple and just ask for
        <em>
         P
        </em>
@@ -128,7 +128,7 @@
         S
        </em>
        phases. Again, this is a remote service, therefore asynchronous,
-              and we will need to use promises again. We put an additional
+        and we will need to use promises again. We put an additional
        <code class="language-javascript">
         then()
        </code>
@@ -359,7 +359,7 @@ const ttimePromise = Promise.all([quakePromise, stationsPromise])
    </div>
   </div>
   <script type="module">
-   import * as sp from "./seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+   import * as sp from "./seisplotjs_3.2.0_standalone.mjs";
       sp.util.updateVersionText(".sp_version");
   </script>
   <script src="../prism.js">

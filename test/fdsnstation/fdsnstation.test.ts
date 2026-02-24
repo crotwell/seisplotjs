@@ -94,7 +94,7 @@ test("form url test", () => {
     'updatedafter', 'matchtimeseries', 'format', 'nodata']) {
      expect(url).toContain('&'+k+'=');
    }
-   expect(url).toContain(fdsnstation.IRIS_HOST);
+   expect(url).toContain(fdsnstation.EARTHSCOPE_HOST);
   });
 
 

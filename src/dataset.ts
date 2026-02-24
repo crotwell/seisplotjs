@@ -1,5 +1,9 @@
 import { Duration } from "luxon";
 import * as mseed3 from "./mseed3";
+import {
+  ehToMarkers, ehToQuake, extractBagEH, createBagEH,
+  quakeToEH, markerToEH
+} from "./mseed3eh";
 import { Quake, parseQuakeML } from "./quakeml";
 import { Network, parseStationXml, allChannels } from "./stationxml";
 import { SeismogramDisplayData } from "./seismogram";
@@ -16,6 +20,10 @@ import {
   startDuration,
 } from "./util";
 import JSZip from "jszip";
+
+import type {
+  BagExtraHeader as EHBag,
+} from "./ms3ehtypes";
 
 export const DATASET_DIR = "dataset";
 export const DOT_ZIP_EXT = ".zip";
@@ -49,8 +57,6 @@ export class Dataset {
       throw new Error("unable to create subfolder in zip file: " + dirname);
     }
 
-    zip.file("Hello.txt", "Hello World\n");
-
     const seisFolder = zip.folder(SEISMOGRAM_DIR);
     if (seisFolder === null) {
       throw new Error("can't make folder");
@@ -62,7 +68,7 @@ export class Dataset {
       type: "uint8array",
       compression: "DEFLATE",
     });
-    downloadBlobAsFile(content, filename);
+    downloadBlobAsFile(content as Uint8Array<ArrayBuffer>, filename);
   }
   waveformsToMSeed3(): Map<string, ArrayBuffer> {
     const out = new Map<string, ArrayBuffer>();
@@ -71,7 +77,7 @@ export class Dataset {
       if (sdd.seismogram) {
         const mseed3Records = mseed3.toMSeed3(
           sdd.seismogram,
-          createExtraHeaders("spjs", sdd),
+          createBagExtraHeaders(sdd),
         );
         const byteSize = mseed3Records.reduce(
           (acc, cur) => acc + cur.calcSize(),
@@ -188,7 +194,7 @@ export async function loadFromZip(zip: JSZip): Promise<Dataset> {
         if (file.name.endsWith(".ms3")) {
           const seisPromise = file.async("arraybuffer").then(function (buffer) {
             const ms3records = mseed3.parseMSeed3Records(buffer);
-            return sddFromMSeed3(ms3records);
+            return mseed3.sddPerChannel(ms3records);
           });
           promiseArray.push(seisPromise);
         }
@@ -265,11 +271,17 @@ export function insertExtraHeaders(
   key: string,
   ds?: Dataset,
 ) {
-  const myEH = eh[key];
+  const myEH = extractBagEH(eh);
   if (!myEH) {
     // key not in extra headers
     return;
   }
+  // use ehToQuake
+  const quake = ehToQuake(myEH);
+  if (quake) {
+    sdd.addQuake(quake);
+  }
+  sdd.addMarkers(ehToMarkers(myEH));
   if (typeof myEH === "object") {
     if ("quake" in myEH) {
       const qList = myEH["quake"];
@@ -288,6 +300,11 @@ export function insertExtraHeaders(
         }
       }
     }
+    // non-bag extra headers
+    // default TauP full json
+    if ("taup" in eh) {
+
+    }
     if ("traveltimes" in myEH && Array.isArray(myEH["traveltimes"])) {
       for (const tt of myEH["traveltimes"]) {
         if (isValidTraveltimeArrivalType(tt)) {
@@ -295,6 +312,7 @@ export function insertExtraHeaders(
         }
       }
     }
+
     if ("markers" in myEH && Array.isArray(myEH["markers"])) {
       const markers = myEH["markers"];
       markers.forEach((m: unknown) => {
@@ -311,6 +329,22 @@ export function insertExtraHeaders(
   }
 }
 
+export function createBagExtraHeaders(sdd: SeismogramDisplayData): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const bag: EHBag = createBagEH();
+
+  if (sdd.quakeList && sdd.quakeList.length > 0) {
+    bag.ev = quakeToEH(sdd.quakeList[0]);
+  }
+  if (sdd.traveltimeList && sdd.traveltimeList.length > 0) {
+    out["traveltimes"] = sdd.traveltimeList;
+  }
+  if (sdd.markerList && sdd.markerList.length > 0) {
+    bag.mark = sdd.markerList.map( markerToEH );
+  }
+  out.bag = bag;
+  return out;
+}
 export function createExtraHeaders(
   key: string,
   sdd: SeismogramDisplayData,
@@ -328,4 +362,17 @@ export function createExtraHeaders(
     h["markers"] = sdd.markerList;
   }
   return out;
+}
+
+export function mightBeZipFile(buf: ArrayBufferLike): boolean {
+  const dataView = new DataView(buf);
+
+  if (!(dataView.getUint8(0) === 0x50
+        && dataView.getUint8(1) === 0x4b
+        && dataView.getUint8(2) === 0x03
+        && dataView.getUint8(3) === 0x04)) {
+    //First bytes must be \x50\x4b\x03\x04
+    return false;
+  }
+  return true;
 }

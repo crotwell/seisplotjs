@@ -2,10 +2,12 @@
 
 # compile once to start
 WEBPID=0
-
+SKIPTEST=true
+COMPILE=compile
+#COMPILE=standalone
 
 function doit {
-  (npm run compile || npm run tsc) && npm run test && \
+  (npm run $COMPILE ) && ($SKIPTEST || npm test) && \
   npm run servedocs &
   WEBPID=$!
 
@@ -34,17 +36,3 @@ if [ $WEBPID -ne 0 ]; then
     echo "OK $WEBPID"
   done
 fi
-
-
-# compile once to start
-npm run compile || npm run tsc
-date
-echo "OK"
-
-# recompile on file change within 1 seconds, except version.ts
-fswatch -o -l 1 --exclude version.ts --exclude handlebarsimport.ts src | while read stuff; do
-  echo $stuff
-  npm run compile && npm run test
-  date
-  echo "OK"
-done

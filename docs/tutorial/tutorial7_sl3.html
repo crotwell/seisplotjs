@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tutorial 7: Realtime (Seedlink3)</title>
+    <link href="style.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <style>
+      sp-organized-display {
+        --sp-seismograph-height: 250px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h3>Tutorial 7: Realtime (Seedlink3) <span class="sp_version">3.2.0</span></h3>
+    <h3>Seedlink3 Realtime display for <span id="station"></span> </h3>
+
+    <h5 >Now: <span id="nt"></span></h5>
+    <button id="disconnect">Disconnect</button>
+    <button id="pause">Pause</button>
+    Packets: <span id="numPackets">0</span>
+    <div id="realtime"></div>
+
+    <div id="debug"></div>
+    <script type="module" src="tutorial7_sl3.js"></script>
+  </body>
+</html>

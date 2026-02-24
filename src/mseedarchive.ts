@@ -8,7 +8,7 @@ import * as util from "./util";
 import * as miniseed from "./miniseed";
 import { SeismogramDisplayData } from "./seismogram";
 import { Channel } from "./stationxml";
-import { isDef } from "./util";
+import { isDef, fixProtocolInUrl } from "./util";
 
 export const Allowed_Flags = ["n", "s", "l", "c", "Y", "j", "H"];
 
@@ -38,7 +38,7 @@ export class MSeedArchive {
   _timeoutSec: number;
 
   constructor(rootUrl: string, pattern: string) {
-    this._rootUrl = rootUrl;
+    this._rootUrl = fixProtocolInUrl(rootUrl);
     this._pattern = pattern;
     this._recordSize = 512;
     this._timeoutSec = 30;
@@ -56,8 +56,6 @@ export class MSeedArchive {
   get recordSize(): number {
     return this._recordSize;
   }
-
-  /* eslint-disable jsdoc/no-multi-asterisks */
 
   /**
    * checks pattern for allowed flags as not all that are supported
@@ -89,8 +87,6 @@ export class MSeedArchive {
 
     return true;
   }
-
-  /* eslint-enable jsdoc/no-multi-asterisks */
 
   /**
    * Loads seismograms from the remote miniseed archive via

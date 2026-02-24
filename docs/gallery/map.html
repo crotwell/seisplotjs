@@ -15,7 +15,7 @@
     <h5>
       <a href="../index.html" class="">Seisplotjs</a> -
       <a href="index.html" class="">Gallery</a>
-      <span class="sp_version">3.1.5-SNAPSHOT</span>
+      <span class="sp_version">3.2.0</span>
     </h5>
 
     <h3>Map:</h3>
@@ -30,7 +30,7 @@
       <sp-quake-table></sp-quake-table>
     </div>
     <script type="module">
-      import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+      import * as sp from "../seisplotjs_3.2.0_standalone.mjs";
       sp.util.updateVersionText(".sp_version");
 
       const tileURL =
@@ -56,13 +56,13 @@
           map.addQuake(quakesWithPicks, "withpicks");
           // or plot other stations
           allStations = Array.from(sp.stationxml.allStations(ds.inventory));
+          map.colorClass("sta_CO_BIRD", "orange");
           map.addStation(allStations, "customcolor");
-          map.colorClass("CO_BIRD", "orange");
           map.colorClass("customcolor", "green");
           map.colorClass("myquake", "green");
           //map.colorClass("quakecolor", "blue");
           map.colorClass("withpicks", "red");
-          map.colorClass("CO_JSC", "rebeccapurple");
+          map.colorClass("sta_CO_JSC", "rebeccapurple");
           map.draw();
         });
         document.querySelector("#changecolor").addEventListener("click", () => {

@@ -1,7 +1,6 @@
 
 
 import { TextDecoder } from 'util';
-// @ts-expect-error browser and node TextDecoder are somehow different???
 global.TextDecoder = TextDecoder;
 
 import {isoToDateTime} from '../../src/util';

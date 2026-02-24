@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.0_standalone.mjs";
 import {
   HOURS_PER_LINE,
   doPlot,
@@ -19,14 +19,15 @@ const luxon = sp.luxon;
 
 const staList = [
   "BARN",
+  "BELLE",
   "BIRD",
   "C1SC",
   "CASEE",
   "CSB",
   "HAW",
   "HODGE",
-  "JKYD",
   "JSC",
+  "PARR",
   "PAULI",
   "SUMMV",
   "TEEBA",

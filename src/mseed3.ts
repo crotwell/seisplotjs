@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh";
+import {ehToChannel, ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh";
 import { FDSNSourceId } from "./fdsnsourceid";
 import { isDef, UTC_OPTIONS } from "./util";
 import {
@@ -82,7 +82,8 @@ export function toMSeed3(
         if (!encoding) {
           throw new Error(`encoding is undefined`);
         }
-        if (INTEGER || FLOAT || DOUBLE) {
+        if (encoding === INTEGER || encoding === FLOAT || encoding === DOUBLE
+            || encoding === STEIM1 || encoding === STEIM2) {
           // safe to concat
           const totSize = encoded.reduce(
             (acc, cur) => acc + cur.dataView.byteLength,
@@ -156,7 +157,7 @@ export function toMSeed3(
  * @returns array of all miniseed3 records contained in the buffer
  */
 export function parseMSeed3Records(
-  arrayBuffer: ArrayBuffer,
+  arrayBuffer: ArrayBufferLike,
 ): Array<MSeed3Record> {
   const dataRecords = [];
   let offset = 0;
@@ -184,6 +185,37 @@ export function parseMSeed3Records(
   }
 
   return dataRecords;
+}
+
+
+/**
+ * parse arrayBuffer into an array of MSeed3Records.
+ *
+ * @param arrayBuffer bytes to extract miniseed3 records from
+ * @returns array of all miniseed3 records contained in the buffer
+ */
+export function mightBeMSeed3Records(
+  arrayBuffer: ArrayBufferLike,
+): boolean {
+
+  const dataView = new DataView(arrayBuffer);
+
+  if (!(dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
+    //First bytes must be M=77 S=83
+    return false;
+  }
+  const header = MSeed3Header.createFromDataView(dataView);
+  if (header.formatVersion !== 3) { return false;}
+  if (header.year < 1900 || header.year > 2500) {
+    return false;
+  }
+  if (header.dayOfYear <= 0 || header.dayOfYear > 366) {
+    return false;
+  }
+  if (header.hour <= 0 || header.hour > 24) {
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -309,6 +341,15 @@ export class MSeed3Record {
    */
   codes(): string {
     return this.header.identifier;
+  }
+
+  /**
+   * Parses the identifier into an FDSNSourceId.
+   *
+   * @returns header identifier as source id
+   */
+  getSourceId() {
+    return FDSNSourceId.parse(this.header.identifier);
   }
 
   /**
@@ -738,8 +779,8 @@ export class MSeed3Header {
    */
   startAsDateTime(): DateTime {
     // in case millis rounds to 1000, use plus to avoid luxon invalid
-    let millis = Math.round(this.nanosecond / 1000000);
-    const d = DateTime.fromObject(
+    const millis = Math.round(this.nanosecond / 1000000);
+    let d = DateTime.fromObject(
       {
         year: this.year,
         ordinal: this.dayOfYear,
@@ -750,9 +791,9 @@ export class MSeed3Header {
       },
       UTC_OPTIONS,
     );
-    return d.plus(millis);
+    d = d.plus(millis);
     if ( ! d.isValid) {
-      throw new Error(`Start is invalid: ${this.startFieldsInUtilFormat()} ${d.invalidReason} ${d.invalidExplanation}`)
+      throw new Error(`Start is invalid: ${this.startFieldsInUtilFormat()} ${d.invalidReason} ${d.invalidExplanation}`);
     }
     return d;
   }
@@ -874,14 +915,17 @@ export function areContiguous(
  * @returns seismogram segment for the records
  */
 export function createSeismogramSegment(
-  contig: Array<MSeed3Record>,
+  contig: Array<MSeed3Record>|MSeed3Record,
 ): SeismogramSegment {
+  if (!Array.isArray(contig)) {
+    contig = [contig];
+  }
   const contigData = contig.map((dr) => dr.asEncodedDataSegment());
   const out = new SeismogramSegment(
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.start,
-    FDSNSourceId.parse(contig[0].header.identifier),
+    contig[0].getSourceId()
   );
   const bag = extractBagEH(contig[0].extraHeaders);
   if (bag?.y?.si) {
@@ -1025,6 +1069,10 @@ export function sddPerChannel(
       if (q != null) {
         sdd.addQuake(q);
       }
+      const c = ehToChannel(seg.extraHeaders, seg.getSourceId());
+      if (c != null) {
+        sdd.channel =c;
+      }
       const marks = ehToMarkers(seg.extraHeaders);
       marks.forEach(mark => sdd.addMarker(mark));
             // maybe should dedup list???
@@ -1080,16 +1128,8 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   xHeader.encoding = ms2record.header.encoding;
   xHeader.publicationVersion = UNKNOWN_DATA_VERSION;
   xHeader.dataLength = ms2record.data.byteLength;
-  xHeader.identifier =
-    FDSN_PREFIX +
-    ":" +
-    ms2H.netCode +
-    SEP +
-    ms2H.staCode +
-    SEP +
-    (ms2H.locCode ? ms2H.locCode : "") +
-    SEP +
-    ms2H.chanCode;
+  const sid = FDSNSourceId.fromNslc(ms2H.netCode, ms2H.staCode, (ms2H.locCode ? ms2H.locCode : ""),  ms2H.chanCode);
+  xHeader.identifier = sid.toString();
   xHeader.identifierLength = xHeader.identifier.length;
   xHeader.numSamples = ms2H.numSamples;
   xHeader.crc = 0;
@@ -1138,15 +1178,25 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   }
 
   xHeader.extraHeadersLength = JSON.stringify(xExtras).length;
-  // need to convert if not steim1 or 2
-  const out = new MSeed3Record(xHeader, xExtras, ms2record.data);
+  // need to convert if not steim1 or 2 or little endian
+  let data;
+  if (ms2record.header.encoding===11 || ms2record.header.encoding === 12 ||
+    (ms2record.header.encoding<=5 && ms2record.header.littleEndian)) {
+    data = ms2record.data;
+  } else {
+    data = ms2record.decompress();
+    if (data instanceof Float32Array) {
+      xHeader.encoding = FLOAT;
+    } else if (data instanceof Int32Array) {
+      xHeader.encoding = INTEGER;
+    } else {
+      //data instanceof Float64Array
+      xHeader.encoding = DOUBLE;
+    }
+  }
+  const out = new MSeed3Record(xHeader, xExtras, new DataView(data.buffer));
   return out;
 }
-
-/**
- * Default separator for channel id.
- */
-const SEP = "_";
 
 /**
  * Copy from https://github.com/ashi009/node-fast-crc32c/blob/master/impls/js_crc32c.js
@@ -1215,16 +1265,16 @@ const kCRCTable = new Int32Array([
  * @returns calculated crc32c value
  */
 export function calculateCRC32C(
-  buf: ArrayBuffer | Uint8Array,
+  buf: ArrayBufferLike | Uint8Array,
   initial = 0,
 ): number {
   let ubuf: Uint8Array;
-  if (buf instanceof ArrayBuffer) {
+  if (buf instanceof ArrayBuffer || buf instanceof SharedArrayBuffer) {
     ubuf = new Uint8Array(buf);
   } else if (buf instanceof Uint8Array) {
     ubuf = buf;
   } else {
-    throw new Error("arg must be ArrayBuffer or Uint8Array");
+    throw new Error("arg must be ArrayBufferLike or Uint8Array");
   }
 
   let crc = (initial | 0) ^ -1;

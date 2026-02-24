@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST } from "./fdsncommon";
 import { NslcId } from "./fdsnsourceid";
 import * as util from "./util"; // for util.log
 import { DateTime, Interval } from "luxon";
@@ -35,6 +35,9 @@ export const FORMAT_MINISEED = "miniseed";
 /** const for miniseed format, mseed */
 export const FORMAT_MINISEED_THREE = "miniseed3";
 
+/** const for service name */
+export const DATASELECT_SERVICE = "dataselect";
+
 /**
  * Major version of the FDSN spec supported here.
  * Currently is 1.
@@ -45,10 +48,10 @@ export const SERVICE_VERSION = 1;
  * Service name as used in the FDSN DataCenters registry,
  * https://www.fdsn.org/datacenters
  */
-export const SERVICE_NAME = `fdsnws-dataselect-${SERVICE_VERSION}`;
+export const SERVICE_NAME = `fdsnws-${DATASELECT_SERVICE}-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export { IRIS_HOST };
+export { IRIS_HOST, EARTHSCOPE_HOST };
 
 /**
  * Query to a FDSN Dataselect web service.
@@ -92,9 +95,12 @@ export class DataSelectQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = IRIS_HOST;
+      host = EARTHSCOPE_HOST;
     }
-    super(host);
+    super(DATASELECT_SERVICE, host);
+    if (host === EARTHSCOPE_HOST) {
+      this.protocol("https:");
+    }
   }
 
   /**
@@ -175,6 +181,16 @@ export class DataSelectQuery extends FDSNCommon {
   getPort(): number | undefined {
     return this._port;
   }
+
+  pathBase(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
 
   /**
    * Get/Set the network query parameter.
@@ -408,9 +424,9 @@ export class DataSelectQuery extends FDSNCommon {
 
   /**
    * queries the web service using the configured parameters, parsing the response
-   * into miniseed data records.
+   * into miniseed3 data records.
    *
-   * @returns Promise to Array of miniseed.DataRecords
+   * @returns Promise to Array of mseed3.MSeed3Record
    */
   queryMS3Records(): Promise<Array<mseed3.MSeed3Record>> {
     this.format(FORMAT_MINISEED_THREE);
@@ -570,22 +586,21 @@ export class DataSelectQuery extends FDSNCommon {
     return out;
   }
 
+  /**
+   * Forms the base of the url for accessing the dataselect service.
+   *
+   * @returns         URL as string
+   */
   formBaseURL(): string {
     let colon = ":";
-
-    if (this._protocol.endsWith(colon)) {
+    const protocol = this._host === EARTHSCOPE_HOST ? "https:" : this._protocol;
+    if (protocol.endsWith(colon)) {
       colon = "";
     }
+    const port = this.defaultPortStringForProtocol(protocol);
 
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + String(this._port)) +
-      "/fdsnws/dataselect/" +
-      this._specVersion
-    );
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formVersionURL(): string {

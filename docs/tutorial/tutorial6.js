@@ -1,4 +1,4 @@
-import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../seisplotjs_3.2.0_standalone.mjs";
 sp.util.updateVersionText(".sp_version");
 
 // snip start window
@@ -17,12 +17,12 @@ document.querySelector("span#starttime").textContent =
 document.querySelector("span#endtime").textContent =
   timeWindow.end.toISO(luxOpts);
 new sp.fdsndatacenters.DataCentersQuery()
-  .findFdsnDataSelect("IRISDMC")
+  .findFdsnDataSelect("EarthScope")
   // snip start seismogram
   .then((dataSelectArray) => {
     return dataSelectArray[0]
       .networkCode("CO")
-      .stationCode("JSC")
+      .stationCode("HAW")
       .locationCode("00")
       .channelCode("LHZ")
       .timeRange(timeWindow)

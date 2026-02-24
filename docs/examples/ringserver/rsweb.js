@@ -1,8 +1,10 @@
-import * as sp from "../../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.0_standalone.mjs";
 
-const hostUrl = "https://eeyore.seis.sc.edu/ringserver";
+const hostUrl = "https://rtserve.iris.washington.edu";
 const rs = new sp.ringserverweb.RingserverConnection(hostUrl);
 let numPackets = 0;
+
+document.querySelector("#hostid").textContent = hostUrl;
 document.querySelector("div.results pre").textContent =
   hostUrl + "\n" + rs.getDataLinkURL();
 
@@ -11,7 +13,7 @@ document.querySelector("button#id").addEventListener("click", function (evt) {
   document.querySelector("div.results pre").textContent = "...loading";
   rs.pullId().then((o) => {
     document.querySelector("div.results pre").textContent =
-      o.ringserverVersion + "\n" + o.serverId;
+      o.ringserverVersion + "\n" + o.serverId + "\n" + o.datalink +"\n" + o.seedlink;
   });
 });
 document
@@ -25,6 +27,7 @@ document
       document.querySelector("div.results pre").textContent = o.join("\n");
     });
   });
+
 document
   .querySelector("button#streams")
   .addEventListener("click", function (evt) {
@@ -115,6 +118,10 @@ document
   });
 
 let toggleConnect = function (streamstat) {
+  if ( streamstat == null && stopped) {
+    // don't start up without channels
+    return;
+  }
   stopped = !stopped;
   if (stopped) {
     if (datalink) {

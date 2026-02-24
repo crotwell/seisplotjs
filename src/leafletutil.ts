@@ -10,6 +10,7 @@ import {
 } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
 import { LatLonBox, LatLonRadius } from "./fdsncommon";
+import { fixProtocolInUrl } from "./util";
 
 import * as L from "leaflet";
 import { LatLngTuple } from "leaflet";
@@ -25,7 +26,7 @@ export const stationIcon = L.divIcon({
 export const inactiveStationIcon = L.divIcon({
   className: InactiveStationMarkerClassName,
 });
-// note currentcolor is svg var that lets use use css, otherwise leaflet will
+// note currentcolor is svg var that lets us use css, otherwise leaflet will
 // put its default color, blue, which can't be overridden
 export const stationMarker_css = `
 
@@ -68,6 +69,9 @@ div.wrapper {
   fill-opacity: 0.15;
 }
 `;
+export function cssClassForStationCodes(station: Station): string {
+  return `sta_${station.codes(STATION_CODE_SEP)}`;
+}
 export function createStationMarker(
   station: Station,
   classList?: Array<string>,
@@ -78,7 +82,7 @@ export function createStationMarker(
   allClassList.push(
     isactive ? StationMarkerClassName : InactiveStationMarkerClassName,
   );
-  allClassList.push(station.codes(STATION_CODE_SEP));
+  allClassList.push(cssClassForStationCodes(station));
   const icon = L.divIcon({
     className: allClassList.join(" "),
   });
@@ -93,6 +97,14 @@ export function createStationMarker(
   return m;
 }
 
+export function getRadiusForMag(magnitude: number, magScaleFactor: number): number {
+  // in case no mag
+  let radius = magnitude ? magnitude * magScaleFactor : 1;
+  if (radius < 1) {
+    radius = 1;
+  }
+  return radius;
+}
 /**
  * Create a circle marker for Quake. Radius is linearly scaled by magnitude,
  * with min radius of 1 for very small magnitudes. Longitudes are adjusted
@@ -109,6 +121,7 @@ export function createQuakeMarker(
   magScaleFactor = 5,
   classList?: Array<string>,
   centerLon = 0,
+  magToRadius:(magnitude: number, magScaleFactor: number)=> number = getRadiusForMag
 ) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(QuakeMarkerClassName);
@@ -118,12 +131,9 @@ export function createQuakeMarker(
       ? quake.longitude
       : quake.longitude - 360;
   // in case no mag
-  let radius = quake.magnitude
-    ? quake.magnitude.mag * magScaleFactor
-    : magScaleFactor;
-  if (radius < 1) {
-    radius = 1;
-  }
+  const magnitude = quake.magnitude ? quake.magnitude.mag : 1;
+  const radius = magToRadius(magnitude, magScaleFactor);
+
   const circle = L.circleMarker([quake.latitude, qLon], {
     color: "currentColor",
     radius: radius,
@@ -133,6 +143,7 @@ export function createQuakeMarker(
   circle.bindTooltip(`${quake.time.toISO()} ${magStr}`);
   return circle;
 }
+
 export const leaflet_css = import_leaflet_css.leaflet_css;
 export const TILE_TEMPLATE = "tileUrl";
 export const DEFAULT_TILE_TEMPLATE =
@@ -158,10 +169,18 @@ export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
   stationList: Array<Station> = [];
   geoRegionList: Array<LatLonBox | LatLonRadius> = [];
+
   map: L.Map | null;
   classToColor: Map<string, string>;
+  mapItems: Array<LatLngTuple> = [];
+
   stationClassMap: Map<string, Array<string>>;
   quakeClassMap: Map<string, Array<string>>;
+  quakeLayer = L.layerGroup();
+
+  quakeLayerName = "Quakes";
+  stationLayer = L.layerGroup();
+  stationLayerName = "Stations";
   constructor(
     seisData?: Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
@@ -282,7 +301,7 @@ export class QuakeStationMap extends SeisPlotElement {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), [classname]);
     }
     const markerList = this.getShadowRoot().querySelectorAll(
-      `div.${station.codes(STATION_CODE_SEP)}`,
+      `div.${cssClassForStationCodes(station)}`,
     );
     markerList.forEach((c) => {
       c.classList.add(classname);
@@ -417,11 +436,13 @@ export class QuakeStationMap extends SeisPlotElement {
       wrapper.removeChild(wrapper.lastChild);
     }
     const divElement = wrapper.appendChild(document.createElement("div"));
-    const mymap = L.map(divElement).setView(
+    const mymap = L.map(divElement,
+      {layers:[ this.quakeLayer, this.stationLayer]}).setView(
       [this.centerLat, this.centerLon],
       this.zoomLevel,
     );
     this.map = mymap;
+
     if (this.seismographConfig.wheelZoom) {
       mymap.scrollWheelZoom.enable();
     } else {
@@ -433,6 +454,7 @@ export class QuakeStationMap extends SeisPlotElement {
     if (tileUrlAttr) {
       tileUrl = tileUrlAttr;
     }
+    tileUrl = fixProtocolInUrl(tileUrl);
     const maxZoomAttr = this.getAttribute(MAX_ZOOM);
     if (maxZoomAttr) {
       maxZoom = Number.parseInt(maxZoomAttr);
@@ -445,42 +467,66 @@ export class QuakeStationMap extends SeisPlotElement {
       tileOptions.attribution = tileAttributionAttr;
     }
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
-    const magScale = this.magScale;
-    const mapItems: Array<LatLngTuple> = [];
-    this.quakeList.concat(uniqueQuakes(this.seisData)).forEach((q) => {
+
+    const regionBounds = this.drawGeoRegions(mymap);
+    regionBounds.forEach((b) => this.mapItems.push(b));
+    this.drawStationLayer(); //updates this.mapItems
+    // Draw quakeLayer last so it is the layer on the very top and will respond to click events.
+    this.drawQuakeLayer(); //updates this.mapItems
+
+    if (this.fitBounds && this.mapItems.length > 1) {
+      mymap.fitBounds(this.mapItems);
+    }
+  }
+
+  drawQuakeLayer(){
+    this.quakeLayer.clearLayers();
+    const quakes = this.quakeList.concat(uniqueQuakes(this.seisData));
+
+    quakes.forEach((q) => {
       const circle = createQuakeMarker(
         q,
-        magScale,
+        this.magScale,
         this.quakeClassMap.get(cssClassForQuake(q)),
         this.centerLon,
       );
-      circle.addTo(mymap);
-      mapItems.push([q.latitude, q.longitude]);
+      //circle.addTo(mymap);
+      circle.addTo(this.quakeLayer);
+      this.mapItems.push([q.latitude, q.longitude]);
       circle.addEventListener("click", (evt) => {
         const ce = createQuakeClickEvent(q, evt.originalEvent);
         this.dispatchEvent(ce);
       });
     });
-    this.stationList.concat(uniqueStations(this.seisData)).forEach((s) => {
+    if (this.map){
+      this.quakeLayer.addTo(this.map);
+    }
+  }
+  drawStationLayer(){
+    this.stationLayer.clearLayers();
+    const stations = this.stationList.concat(uniqueStations(this.seisData));
+
+    stations.forEach((s) => {
       const m = createStationMarker(
         s,
         this.stationClassMap.get(s.codes(STATION_CODE_SEP)),
         true,
         this.centerLon,
       );
-      m.addTo(mymap);
-      mapItems.push([s.latitude, s.longitude]);
+      //m.addTo(mymap);
+      m.addTo(this.stationLayer);
+      this.mapItems.push([s.latitude, s.longitude]);
       m.addEventListener("click", (evt) => {
         const ce = createStationClickEvent(s, evt.originalEvent);
         this.dispatchEvent(ce);
       });
     });
-    const regionBounds = this.drawGeoRegions(mymap);
-    regionBounds.forEach((b) => mapItems.push(b));
-    if (this.fitBounds && mapItems.length > 1) {
-      mymap.fitBounds(mapItems);
+
+    if (this.map){
+      this.stationLayer.addTo(this.map);
     }
   }
+
   updateQuakeMarkerStyle() {
     const quakeMarkerStyle = this.createQuakeMarkerColorStyle();
     const quakeMarkerStyleEl = this.getShadowRoot().querySelector(
@@ -567,7 +613,7 @@ path.${classname} {
     return style;
   }
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
-    this.draw();
+    this.redraw();
   }
   static get observedAttributes() {
     return [
