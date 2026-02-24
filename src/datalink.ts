@@ -60,7 +60,7 @@ export const ENDSTREAM = "ENDSTREAM";
 export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
 export const JSON_TYPE = "/JSON";
-export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
+export const IRIS_RINGSERVER_URL = "wss://rtserve.iris.washington.edu/datalink";
 
 export function extractDLProto(lines: Array<string>): string {
   for (let line of lines) {
