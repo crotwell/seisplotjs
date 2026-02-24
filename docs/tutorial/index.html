@@ -231,6 +231,7 @@ let myseismogram = sp.seismogram.Seismogram.fromContiguousData(
       <pre><code class="language-javascript" snippet="draw">
 let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 const graph = document.querySelector("sp-seismograph");
+const timeScale = graph.seismographConfig.linkedTimeScale
 graph.seismographConfig.title = "A sine wave!";
 graph.seismographConfig.margin.top = 25;
 graph.seisData = [seisData];
@@ -251,8 +252,6 @@ const div = document.querySelector("div#sinewave");
 const seisConfig = new sp.seismographconfig.SeismographConfig();
 seisConfig.title = "Another sine wave!";
 seisConfig.margin.top = 25;
-const div_graph = new sp.seismograph.Seismograph([seisData], seisConfig);
-div.appendChild(div_graph);
 </code></pre>
       <p>
        We should have a seismograph displayed. But it might be a bit
@@ -283,7 +282,9 @@ div.appendChild(div_graph);
               two seismographs so that they zoom and drag together.
       </p>
       <pre><code class="language-javascript" snippet="timescale">
-graph.seismographConfig.linkedTimeScale.link(div_graph);
+seisConfig.linkedTimeScale = timeScale
+const div_graph = new sp.seismograph.Seismograph([seisData], seisConfig);
+div.appendChild(div_graph);
 </code></pre>
       <h3>
        See it live in
