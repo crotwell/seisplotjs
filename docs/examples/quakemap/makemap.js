@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.2.0-SNAPSHOT_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.0_standalone.mjs";
 
 const WORLD_OCEAN =
   "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}";

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs 3.1.4 | Documentation</title>
+  <title>seisplotjs 3.2.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>seisplotjs</h3>
-          <div class='mb1'><code>3.1.4</code></div>
+          <div class='mb1'><code>3.2.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -29,9 +29,9 @@
               
                 
                 <li><a
-                  href='#datalink_protocol'
+                  href='#ws_datalink_subprotocol'
                   class="">
-                  DATALINK_PROTOCOL
+                  WS_DATALINK_SUBPROTOCOL
                   
                 </a>
                 
@@ -199,9 +199,29 @@
               
                 
                 <li><a
+                  href='#json_type'
+                  class="">
+                  JSON_TYPE
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#iris_ringserver_url'
                   class="">
                   IRIS_RINGSERVER_URL
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#extractdlproto'
+                  class="">
+                  extractDLProto
                   
                 </a>
                 
@@ -296,6 +316,18 @@
                         href='#datalinkconnectionwebsocket'
                         class='regular pre-open'>
                         #webSocket
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkconnectionsubprotocol'
+                        class='regular pre-open'>
+                        #subprotocol
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkconnectiondlproto'
+                        class='regular pre-open'>
+                        #dlproto
                       </a></li>
                       
                       <li><a
@@ -594,6 +626,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#datalinkpacket_json'
+                        class='regular pre-open'>
+                        #_json
+                      </a></li>
+                      
+                      <li><a
                         href='#datalinkpacketpacketstart'
                         class='regular pre-open'>
                         #packetStart
@@ -633,6 +671,18 @@
                         href='#datalinkpacketasminiseed3'
                         class='regular pre-open'>
                         #asMiniseed3
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkpacketisjson'
+                        class='regular pre-open'>
+                        #isJson
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkpacketasjson'
+                        class='regular pre-open'>
+                        #asJson
                       </a></li>
                       
                     </ul>
@@ -1247,21 +1297,21 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='datalink_protocol'>
-      DATALINK_PROTOCOL
+    <h3 class='fl m0' id='ws_datalink_subprotocol'>
+      WS_DATALINK_SUBPROTOCOL
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L23-L23'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L23-L23'>
       <span>src/datalink.ts</span>
       </a>
     
   </div>
   
 
-  <p>const for datalink protocol for web sockets, DataLink1.0</p>
+  <p>const for websocket subprotocol for datalink, DataLink1.0</p>
 
-    <div class='pre p1 fill-light mt0'>DATALINK_PROTOCOL</div>
+    <div class='pre p1 fill-light mt0'>WS_DATALINK_SUBPROTOCOL</div>
   
     <p>
       Type:
@@ -1311,7 +1361,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L26-L29'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L26-L29'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1365,7 +1415,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L31-L31'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L31-L31'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1419,7 +1469,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L34-L34'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L34-L34'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1473,7 +1523,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L37-L37'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L37-L37'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1527,7 +1577,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L40-L40'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L40-L40'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1586,7 +1636,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L43-L43'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L43-L43'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1645,7 +1695,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L46-L46'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L46-L46'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1704,7 +1754,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L49-L49'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L49-L49'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1763,7 +1813,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L51-L51'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L51-L51'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1822,7 +1872,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L53-L53'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L53-L53'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1881,7 +1931,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L55-L55'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L55-L55'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1940,7 +1990,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L57-L57'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L57-L57'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1998,7 +2048,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L58-L58'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L58-L58'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2056,7 +2106,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L59-L59'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L59-L59'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2114,7 +2164,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L60-L60'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L60-L60'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2172,7 +2222,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L61-L61'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L61-L61'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2225,12 +2275,70 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='json_type'>
+      JSON_TYPE
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L62-L62'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>JSON_TYPE</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='iris_ringserver_url'>
       IRIS_RINGSERVER_URL
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L62-L62'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L63-L63'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2283,12 +2391,83 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='extractdlproto'>
+      extractDLProto
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L65-L76'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>extractDLProto(lines: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>lines</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='datalinkconnection'>
       DataLinkConnection
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L86-L654'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L100-L678'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2300,7 +2479,7 @@
 sends the datalink protocol over a websocket.</p>
 <p>Currently only the IRIS
 ringserver, <a href="https://github.com/iris-edu/ringserver">https://github.com/iris-edu/ringserver</a>,
-supports websockets, but it may be possible to use thrid party
+supports websockets, but it may be possible to use third party
 tools to proxy the websocket to a TCP datalink socket.</p>
 <p>The datalink protocol is documented here
 <a href="https://earthscope.github.io/libdali/datalink-protocol.html">https://earthscope.github.io/libdali/datalink-protocol.html</a></p>
@@ -2378,7 +2557,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L427-L435'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L451-L459'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2466,7 +2645,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L444-L452'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L468-L476'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2562,7 +2741,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L87-L87'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L101-L101'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2624,7 +2803,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L91-L91'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L105-L105'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2686,7 +2865,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L92-L92'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L106-L106'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2748,7 +2927,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L93-L93'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L107-L107'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2810,7 +2989,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L94-L94'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L108-L108'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2872,7 +3051,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L95-L95'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L109-L109'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2934,7 +3113,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L96-L96'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L110-L110'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2996,7 +3175,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L97-L97'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L111-L111'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3058,7 +3237,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L98-L98'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L112-L112'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3120,7 +3299,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L103-L103'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L117-L117'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3133,6 +3312,130 @@ tools to proxy the websocket to a TCP datalink socket.</p>
     <p>
       Type:
       (<a href="https://developer.mozilla.org/docs/WebSockets">WebSocket</a> | null)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkconnectionsubprotocol'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>subprotocol</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L118-L118'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>subprotocol</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkconnectiondlproto'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>dlproto</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L119-L119'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>dlproto</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
     </p>
   
   
@@ -3182,7 +3485,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L131-L133'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L149-L151'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3254,7 +3557,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L140-L183'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L158-L205'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3320,7 +3623,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L188-L190'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L210-L212'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3385,7 +3688,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L195-L197'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L217-L219'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3455,7 +3758,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L204-L209'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L226-L231'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3521,7 +3824,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L214-L225'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L236-L247'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3584,7 +3887,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L231-L242'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L253-L264'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3648,7 +3951,7 @@ is possible until connect() is called again.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L249-L267'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L271-L291'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3714,7 +4017,7 @@ is possible until connect() is called again.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L278-L321'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L302-L345'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3725,7 +4028,7 @@ is possible until connect() is called again.</p>
 binary Uint8Array. Size of the binary data is appended
 to the header if present.</p>
 
-    <div class='pre p1 fill-light mt0'>encodeDL(header: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></div>
+    <div class='pre p1 fill-light mt0'>encodeDL(header: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>?): ArrayBufferLike</div>
   
   
 
@@ -3766,8 +4069,8 @@ to the header if present.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></code>:
-        datalink packet as an ArrayBuffer
+      <code>ArrayBufferLike</code>:
+        datalink packet as an ArrayBufferLike
 
       
     
@@ -3805,7 +4108,7 @@ to the header if present.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L331-L339'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L355-L363'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3893,7 +4196,7 @@ to the header before sending if present.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L349-L351'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L373-L375'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3981,7 +4284,7 @@ to the header before sending.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L360-L382'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L384-L406'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4070,7 +4373,7 @@ to the header before sending.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L392-L397'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L416-L421'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4160,7 +4463,7 @@ Returns a Promise that resolves with the webSocket MessageEvent.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L408-L418'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L432-L442'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4267,7 +4570,7 @@ Returns a Promise that resolves with the webSocket MessageEvent.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L465-L475'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L489-L499'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4376,7 +4679,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L483-L488'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L507-L512'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4456,7 +4759,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L490-L495'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L514-L519'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4518,7 +4821,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L497-L502'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L521-L526'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4580,7 +4883,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L504-L509'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L528-L533'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4642,7 +4945,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L517-L521'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L541-L545'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4722,7 +5025,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L529-L534'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L553-L558'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4802,7 +5105,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L542-L547'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L566-L571'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4882,7 +5185,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L555-L560'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L579-L584'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4962,7 +5265,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L568-L573'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L592-L597'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5042,7 +5345,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L588-L635'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L612-L659'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5050,7 +5353,7 @@ on the server side.</p>
   
 
   
-    <div class='pre p1 fill-light mt0'>handleArrayBuffer(rawData: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>): void</div>
+    <div class='pre p1 fill-light mt0'>handleArrayBuffer(rawData: ArrayBufferLike): void</div>
   
   
 
@@ -5067,7 +5370,7 @@ on the server side.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>rawData</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>)</code>
+            <span class='code bold'>rawData</span> <code class='quiet'>(ArrayBufferLike)</code>
 	    
           </div>
           
@@ -5125,7 +5428,7 @@ on the server side.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L659-L704'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L683-L728'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5204,7 +5507,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L676-L703'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L700-L727'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5295,7 +5598,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L660-L660'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L684-L684'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5357,7 +5660,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L661-L661'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L685-L685'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5419,7 +5722,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L662-L662'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L686-L686'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5481,7 +5784,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L669-L671'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L693-L695'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5543,7 +5846,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L672-L674'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L696-L698'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5613,7 +5916,7 @@ on the server side.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L710-L826'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L734-L880'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5686,7 +5989,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L711-L711'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L735-L735'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5748,7 +6051,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L712-L712'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L736-L736'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5810,7 +6113,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L713-L713'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L737-L737'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5872,7 +6175,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L714-L714'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L738-L738'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5934,7 +6237,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L715-L715'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L739-L739'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5996,7 +6299,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L716-L716'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L740-L740'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6058,7 +6361,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L717-L717'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L741-L741'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6120,7 +6423,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L718-L718'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L742-L742'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6182,7 +6485,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L719-L719'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L743-L743'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6244,7 +6547,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L720-L720'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L744-L744'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6257,6 +6560,68 @@ on the server side.</p>
     <p>
       Type:
       (null | mseed3.MSeed3Record)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkpacket_json'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_json</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L745-L745'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_json</div>
+  
+    <p>
+      Type:
+      (null | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)
     </p>
   
   
@@ -6306,7 +6671,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L747-L749'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L773-L775'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6377,7 +6742,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L756-L758'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L782-L784'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6448,7 +6813,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L765-L767'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L791-L793'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6519,7 +6884,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L774-L776'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L800-L802'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6585,7 +6950,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L784-L794'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L810-L820'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6652,7 +7017,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L801-L803'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L827-L829'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6718,7 +7083,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L810-L825'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L836-L851'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6770,6 +7135,138 @@ ends with '/MSEED', null otherwise.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='datalinkpacketisjson'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>isJson()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L860-L862'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>is this packet a json packet</p>
+
+    <div class='pre p1 fill-light mt0'>isJson(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
+        true if it is json
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkpacketasjson'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>asJson()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L869-L879'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Parsed payload as a json if is json, null otherwise.</p>
+
+    <div class='pre p1 fill-light mt0'>asJson(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a> | null)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a> | null)</code>:
+        JSON object or null
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
 
   
@@ -6792,7 +7289,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L831-L861'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L885-L915'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6870,7 +7367,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L846-L853'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L900-L907'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -6958,7 +7455,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L832-L832'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L886-L886'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7020,7 +7517,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L833-L833'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L887-L887'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7082,7 +7579,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L834-L834'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L888-L888'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7144,7 +7641,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L854-L860'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L908-L914'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7214,7 +7711,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L897-L1042'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L951-L1101'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7444,7 +7941,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L974-L1014'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1028-L1073'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7533,7 +8030,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L898-L898'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L952-L952'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7595,7 +8092,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L899-L899'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L953-L953'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7657,7 +8154,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L900-L900'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L954-L954'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7719,7 +8216,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L901-L901'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L955-L955'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7781,7 +8278,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L902-L902'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L956-L956'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7843,7 +8340,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L903-L903'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L957-L957'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7905,7 +8402,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L904-L904'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L958-L958'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -7967,7 +8464,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L905-L905'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L959-L959'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8029,7 +8526,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L906-L906'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L960-L960'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8091,7 +8588,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L907-L907'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L961-L961'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8153,7 +8650,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L908-L908'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L962-L962'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8215,7 +8712,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L909-L909'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L963-L963'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8277,7 +8774,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L910-L910'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L964-L964'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8339,7 +8836,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L911-L911'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L965-L965'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8401,7 +8898,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L912-L912'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L966-L966'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8463,7 +8960,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L913-L913'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L967-L967'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8525,7 +9022,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L914-L914'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L968-L968'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8587,7 +9084,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L915-L915'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L969-L969'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8649,7 +9146,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L916-L916'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L970-L970'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8711,7 +9208,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L917-L917'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L971-L971'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8773,7 +9270,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L918-L918'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L972-L972'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8835,7 +9332,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L919-L919'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L973-L973'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8897,7 +9394,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1015-L1041'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1074-L1100'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -8967,7 +9464,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1049-L1075'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1108-L1134'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9045,7 +9542,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1064-L1071'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1123-L1130'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9134,7 +9631,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1050-L1050'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1109-L1109'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9196,7 +9693,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1051-L1051'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1110-L1110'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9258,7 +9755,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1052-L1052'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1111-L1111'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9320,7 +9817,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1072-L1074'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1131-L1133'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9390,7 +9887,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1077-L1124'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1136-L1183'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9468,7 +9965,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1091-L1103'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1150-L1162'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9543,7 +10040,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1104-L1117'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1163-L1176'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9626,7 +10123,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1078-L1078'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1137-L1137'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9688,7 +10185,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1079-L1079'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1138-L1138'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9750,7 +10247,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1080-L1080'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1139-L1139'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9812,7 +10309,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1081-L1081'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1140-L1140'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9869,7 +10366,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1118-L1123'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1177-L1182'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -9939,7 +10436,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1137-L1198'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1196-L1263'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10057,7 +10554,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1165-L1185'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1224-L1250'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10140,7 +10637,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1138-L1138'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1197-L1197'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10202,7 +10699,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1139-L1139'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1198-L1198'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10264,7 +10761,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1140-L1140'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1199-L1199'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10326,7 +10823,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1141-L1141'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1200-L1200'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10388,7 +10885,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1142-L1142'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1201-L1201'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10450,7 +10947,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1143-L1143'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1202-L1202'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10512,7 +11009,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1144-L1144'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1203-L1203'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10574,7 +11071,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1145-L1145'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1204-L1204'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10636,7 +11133,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1186-L1197'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1251-L1262'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10706,7 +11203,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1200-L1268'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1265-L1333'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10776,7 +11273,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1207-L1217'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1272-L1282'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10851,7 +11348,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1252-L1262'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1317-L1327'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10934,7 +11431,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1201-L1201'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1266-L1266'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -10996,7 +11493,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1202-L1202'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1267-L1267'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11058,7 +11555,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1263-L1267'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1328-L1332'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11128,7 +11625,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1276-L1296'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1341-L1361'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11193,7 +11690,7 @@ to be useful remotely as ringserver doesn't allow.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1281-L1288'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1346-L1353'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11268,7 +11765,7 @@ to be useful remotely as ringserver doesn't allow.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1289-L1292'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1354-L1357'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11351,7 +11848,7 @@ to be useful remotely as ringserver doesn't allow.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1277-L1277'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1342-L1342'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11413,7 +11910,7 @@ to be useful remotely as ringserver doesn't allow.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1293-L1295'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1358-L1360'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11483,7 +11980,7 @@ to be useful remotely as ringserver doesn't allow.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1305-L1308'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1370-L1373'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11560,7 +12057,7 @@ to ISO form for DateTime</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1316-L1318'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1381-L1383'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11636,7 +12133,7 @@ to ISO form for DateTime</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1326-L1328'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1391-L1393'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -11712,7 +12209,7 @@ to ISO form for DateTime</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/datalink.ts#L1336-L1350'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/datalink.ts#L1401-L1415'>
       <span>src/datalink.ts</span>
       </a>
     

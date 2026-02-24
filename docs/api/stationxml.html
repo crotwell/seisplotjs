@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs 3.1.4 | Documentation</title>
+  <title>seisplotjs 3.2.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>seisplotjs</h3>
-          <div class='mb1'><code>3.1.4</code></div>
+          <div class='mb1'><code>3.2.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -26,6 +26,16 @@
             type='text' />
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
+              
+                
+                <li><a
+                  href='#staxml_mime'
+                  class="">
+                  STAXML_MIME
+                  
+                </a>
+                
+                </li>
               
                 
                 <li><a
@@ -555,6 +565,12 @@
                         href='#channeldatalogger'
                         class='regular pre-open'>
                         #datalogger
+                      </a></li>
+                      
+                      <li><a
+                        href='#channelsourceid'
+                        class='regular pre-open'>
+                        #sourceId
                       </a></li>
                       
                       <li><a
@@ -1457,9 +1473,29 @@
               
                 
                 <li><a
+                  href='#activenetworks'
+                  class="">
+                  activeNetworks
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#allstations'
                   class="">
                   allStations
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#activestations'
+                  class="">
+                  activeStations
                   
                 </a>
                 
@@ -1477,9 +1513,29 @@
               
                 
                 <li><a
+                  href='#activechannels'
+                  class="">
+                  activeChannels
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#findchannels'
                   class="">
                   findChannels
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#findchannelsforsourceid'
+                  class="">
+                  findChannelsForSourceId
                   
                 </a>
                 
@@ -1520,6 +1576,16 @@
                   href='#fetchstationxml'
                   class="">
                   fetchStationXml
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#mightbestatonxml'
+                  class="">
+                  mightBeStatonXml
                   
                 </a>
                 
@@ -1604,12 +1670,70 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='staxml_mime'>
+      STAXML_MIME
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L30-L30'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>STAXML_MIME</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='staml_ns'>
       STAML_NS
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L31-L31'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L32-L32'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -1668,7 +1792,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L32-L32'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L33-L33'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -1726,7 +1850,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L33-L33'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L34-L34'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -1784,7 +1908,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L34-L34'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L35-L35'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -1837,7 +1961,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L35-L35'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L36-L36'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -1890,7 +2014,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L38-L39'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L39-L40'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -1949,7 +2073,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L41-L41'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L42-L42'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2007,7 +2131,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L42-L42'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L43-L43'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2065,7 +2189,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L52-L61'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L53-L68'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2151,7 +2275,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L71-L80'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L78-L93'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2237,7 +2361,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L84-L151'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L97-L164'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2301,7 +2425,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L85-L85'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L98-L98'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2363,7 +2487,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L86-L86'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L99-L99'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2425,7 +2549,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L87-L87'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L100-L100'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2487,7 +2611,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L88-L88'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L101-L101'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2549,7 +2673,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L89-L89'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L102-L102'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2611,7 +2735,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L90-L90'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L103-L103'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2673,7 +2797,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L91-L91'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L104-L104'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2735,7 +2859,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L103-L105'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L116-L118'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2802,7 +2926,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L107-L109'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L120-L122'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2869,7 +2993,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L111-L113'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L124-L126'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -2944,7 +3068,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L115-L117'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L128-L130'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3011,7 +3135,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L119-L125'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L132-L138'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3086,7 +3210,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L127-L129'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L140-L142'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3153,7 +3277,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L131-L133'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L144-L146'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3215,7 +3339,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L135-L140'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L148-L153'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3290,7 +3414,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L142-L150'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L155-L163'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3360,7 +3484,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L152-L244'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L165-L257'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3432,7 +3556,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L153-L153'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L166-L166'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3494,7 +3618,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L154-L154'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L167-L167'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3556,7 +3680,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L155-L155'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L168-L168'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3618,7 +3742,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L162-L162'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L175-L175'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3680,7 +3804,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L163-L163'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L176-L176'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3742,7 +3866,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L164-L164'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L177-L177'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3804,7 +3928,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L165-L165'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L178-L178'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3866,7 +3990,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L166-L166'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L179-L179'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3928,7 +4052,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L167-L167'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L180-L180'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -3990,7 +4114,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L168-L168'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L181-L181'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4052,7 +4176,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L169-L169'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L182-L182'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4114,7 +4238,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L170-L170'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L183-L183'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4176,7 +4300,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L171-L171'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L184-L184'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4238,7 +4362,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L172-L172'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L185-L185'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4300,7 +4424,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L173-L173'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L186-L186'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4362,7 +4486,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L174-L174'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L187-L187'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4424,7 +4548,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L175-L175'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L188-L188'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4486,7 +4610,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L199-L204'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L212-L217'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4553,7 +4677,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L206-L208'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L219-L221'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4620,7 +4744,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L210-L212'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L223-L225'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4695,7 +4819,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L214-L216'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L227-L229'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4762,7 +4886,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L218-L224'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L231-L237'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4837,7 +4961,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L226-L228'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L239-L241'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4904,7 +5028,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L230-L232'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L243-L245'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -4971,7 +5095,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L234-L239'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L247-L252'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5046,7 +5170,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L241-L243'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L254-L256'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5130,7 +5254,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L245-L431'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L258-L448'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5210,7 +5334,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L246-L246'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L259-L259'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5272,7 +5396,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L250-L250'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L263-L263'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5334,7 +5458,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L258-L258'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L271-L271'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5396,7 +5520,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L259-L259'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L272-L272'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5458,7 +5582,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L260-L260'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L273-L273'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5520,7 +5644,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L261-L261'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L274-L274'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5582,7 +5706,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L262-L262'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L275-L275'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5644,7 +5768,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L263-L263'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L276-L276'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5706,7 +5830,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L264-L264'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L277-L277'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5768,7 +5892,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L265-L265'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L278-L278'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5830,7 +5954,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L266-L266'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L279-L279'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5887,7 +6011,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L267-L267'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L280-L280'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -5944,7 +6068,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L268-L268'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L281-L281'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6001,7 +6125,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L269-L269'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L282-L282'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6058,7 +6182,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L270-L270'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L283-L283'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6115,7 +6239,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L271-L271'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L284-L284'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6172,7 +6296,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L272-L272'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L285-L285'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6234,7 +6358,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L273-L273'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L286-L286'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6296,7 +6420,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L274-L274'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L287-L287'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6358,7 +6482,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L275-L275'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L288-L288'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6420,7 +6544,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L313-L323'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L326-L336'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6473,6 +6597,81 @@ in a map or table.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='channelsourceid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>sourceId</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L338-L340'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>sourceId</div>
+  
+    <p>
+      Type:
+      FDSNSourceId
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sid</span> <code class='quiet'>(FDSNSourceId)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='channelnslcid'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -6487,7 +6686,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L325-L332'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L342-L349'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6554,7 +6753,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L334-L336'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L351-L353'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6621,7 +6820,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L338-L340'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L355-L357'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6696,7 +6895,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L342-L344'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L359-L361'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6763,7 +6962,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L346-L352'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L363-L369'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6838,7 +7037,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L354-L356'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L371-L373'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6905,7 +7104,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L358-L360'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L375-L377'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -6972,7 +7171,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L362-L369'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L379-L386'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7047,7 +7246,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L371-L373'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L388-L390'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7114,7 +7313,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L375-L377'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L392-L394'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7181,7 +7380,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L384-L386'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L401-L403'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7247,7 +7446,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L388-L394'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L405-L411'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7322,7 +7521,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L396-L402'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L413-L419'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7389,7 +7588,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L409-L411'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L426-L428'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7460,7 +7659,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L419-L423'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L436-L440'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7541,7 +7740,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L425-L430'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L442-L447'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7624,7 +7823,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L433-L450'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L450-L467'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7712,7 +7911,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L434-L434'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L451-L451'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7774,7 +7973,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L435-L435'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L452-L452'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7836,7 +8035,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L436-L436'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L453-L453'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7898,7 +8097,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L437-L437'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L454-L454'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -7968,7 +8167,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L451-L474'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L468-L491'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8019,7 +8218,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L452-L452'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L469-L469'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8081,7 +8280,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L453-L453'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L470-L470'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8143,7 +8342,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L454-L454'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L471-L471'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8205,7 +8404,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L455-L455'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L472-L472'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8267,7 +8466,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L456-L456'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L473-L473'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8329,7 +8528,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L457-L457'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L474-L474'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8391,7 +8590,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L458-L458'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L475-L475'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8453,7 +8652,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L459-L459'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L476-L476'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8515,7 +8714,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L460-L460'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L477-L477'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8577,7 +8776,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L461-L461'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L478-L478'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8647,7 +8846,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L475-L495'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L492-L512'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8719,7 +8918,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L476-L476'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L493-L493'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8781,7 +8980,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L477-L477'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L494-L494'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8851,7 +9050,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L496-L510'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L513-L527'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8931,7 +9130,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L497-L497'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L514-L514'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -8993,7 +9192,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L498-L498'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L515-L515'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9055,7 +9254,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L499-L499'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L516-L516'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9125,7 +9324,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L511-L523'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L528-L540'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9197,7 +9396,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L512-L512'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L529-L529'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9259,7 +9458,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L513-L513'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L530-L530'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9321,7 +9520,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L514-L514'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L531-L531'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9383,7 +9582,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L515-L515'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L532-L532'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9453,7 +9652,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L524-L539'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L541-L556'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9532,7 +9731,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L525-L525'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L542-L542'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9594,7 +9793,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L526-L526'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L543-L543'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9656,7 +9855,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L527-L527'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L544-L544'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9718,7 +9917,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L528-L528'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L545-L545'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9780,7 +9979,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L529-L529'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L546-L546'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9850,7 +10049,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L540-L549'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L557-L566'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9929,7 +10128,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L541-L541'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L558-L558'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -9991,7 +10190,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L542-L542'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L559-L559'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10061,7 +10260,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L550-L561'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L567-L578'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10140,7 +10339,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L551-L551'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L568-L568'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10202,7 +10401,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L552-L552'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L569-L569'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10264,7 +10463,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L553-L553'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L570-L570'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10334,7 +10533,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L562-L572'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L579-L589'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10406,7 +10605,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L563-L563'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L580-L580'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10468,7 +10667,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L564-L564'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L581-L581'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10530,7 +10729,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L565-L565'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L582-L582'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10592,7 +10791,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L566-L566'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L583-L583'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10654,7 +10853,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L567-L567'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L584-L584'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10724,7 +10923,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L573-L580'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L590-L597'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10796,7 +10995,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L574-L574'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L591-L591'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10858,7 +11057,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L575-L575'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L592-L592'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10928,7 +11127,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L582-L590'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L599-L607'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -10992,7 +11191,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L583-L583'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L600-L600'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11054,7 +11253,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L584-L584'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L601-L601'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11111,7 +11310,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L585-L585'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L602-L602'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11181,7 +11380,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L591-L598'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L608-L615'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11232,7 +11431,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L592-L592'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L609-L609'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11294,7 +11493,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L593-L593'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L610-L610'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11364,7 +11563,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L600-L610'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L617-L627'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11428,7 +11627,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L601-L601'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L618-L618'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11485,7 +11684,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L602-L602'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L619-L619'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11542,7 +11741,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L603-L603'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L620-L620'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11604,7 +11803,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L604-L604'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L621-L621'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11661,7 +11860,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L605-L605'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L622-L622'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11718,7 +11917,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L606-L606'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L623-L623'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11783,7 +11982,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L612-L617'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L629-L634'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11834,7 +12033,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L613-L613'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L630-L630'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11891,7 +12090,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L614-L614'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L631-L631'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -11948,7 +12147,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L615-L615'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L632-L632'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12005,7 +12204,7 @@ in a map or table.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L616-L616'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L633-L633'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12070,7 +12269,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L625-L640'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L642-L657'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12146,7 +12345,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L648-L693'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L665-L710'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12222,7 +12421,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L702-L808'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L719-L825'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12307,7 +12506,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L817-L975'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L834-L992'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12392,7 +12591,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L977-L1014'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L994-L1031'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12463,7 +12662,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1016-L1041'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1033-L1058'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12534,7 +12733,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1043-L1058'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1060-L1075'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12605,7 +12804,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1060-L1126'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1077-L1143'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12676,7 +12875,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1134-L1165'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1151-L1182'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12752,7 +12951,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1173-L1208'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1190-L1225'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12828,7 +13027,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1216-L1383'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1233-L1399'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12904,7 +13103,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1391-L1409'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1407-L1425'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -12980,7 +13179,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1417-L1429'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1433-L1445'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13056,7 +13255,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1431-L1440'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1447-L1456'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13135,7 +13334,7 @@ in a map or table.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1447-L1457'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1463-L1473'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13206,12 +13405,94 @@ in a map or table.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='activenetworks'>
+      activeNetworks
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1483-L1492'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Generator function to access all active stations within all networks in the array.</p>
+
+    <div class='pre p1 fill-light mt0'>activeNetworks(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>, atTime: DateTime?): Generator&#x3C;<a href="#network">Network</a>, void, any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>networks</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>)</code>
+	    array of Networks
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>atTime</span> <code class='quiet'>(DateTime?)</code>
+	    time for station to be active, defaults to now
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Generator&#x3C;<a href="#network">Network</a>, void, any></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='allstations'>
       allStations
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1465-L1473'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1500-L1508'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13279,12 +13560,94 @@ in a map or table.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='activestations'>
+      activeStations
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1518-L1527'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Generator function to access all active stations within all networks in the array.</p>
+
+    <div class='pre p1 fill-light mt0'>activeStations(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>, atTime: DateTime?): Generator&#x3C;<a href="#station">Station</a>, void, any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>networks</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>)</code>
+	    array of Networks
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>atTime</span> <code class='quiet'>(DateTime?)</code>
+	    time for station to be active, defaults to now
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Generator&#x3C;<a href="#station">Station</a>, void, any></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='allchannels'>
       allChannels
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1482-L1490'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1536-L1544'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13353,12 +13716,94 @@ within all networks in the array.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='activechannels'>
+      activeChannels
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1554-L1563'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Generator function to access all active channels within all networks in the array.</p>
+
+    <div class='pre p1 fill-light mt0'>activeChannels(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>, atTime: DateTime?): Generator&#x3C;<a href="#channel">Channel</a>, void, any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>networks</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>)</code>
+	    array of Networks
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>atTime</span> <code class='quiet'>(DateTime?)</code>
+	    time for channel to be active, defaults to now
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Generator&#x3C;<a href="#channel">Channel</a>, void, any></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='findchannels'>
       findChannels
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1503-L1524'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1576-L1597'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13463,12 +13908,91 @@ Regular expressions may be used instaed of exact code matchs.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='findchannelsforsourceid'>
+      findChannelsForSourceId
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1599-L1623'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>findChannelsForSourceId(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>, sid: FDSNSourceId): Generator&#x3C;<a href="#channel">Channel</a>, void, any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>networks</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sid</span> <code class='quiet'>(FDSNSourceId)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Generator&#x3C;<a href="#channel">Channel</a>, void, any></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='uniquesourceids'>
       uniqueSourceIds
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1526-L1536'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1625-L1635'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13539,7 +14063,7 @@ Regular expressions may be used instaed of exact code matchs.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1538-L1546'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1637-L1645'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13610,7 +14134,7 @@ Regular expressions may be used instaed of exact code matchs.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1548-L1556'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1647-L1661'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13618,7 +14142,7 @@ Regular expressions may be used instaed of exact code matchs.</p>
   
 
   
-    <div class='pre p1 fill-light mt0'>uniqueNetworks(channelList: Iterable&#x3C;<a href="#channel">Channel</a>>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>></div>
+    <div class='pre p1 fill-light mt0'>uniqueNetworks(channelList: Iterable&#x3C;(<a href="#channel">Channel</a> | <a href="#station">Station</a>)>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>></div>
   
   
 
@@ -13635,7 +14159,7 @@ Regular expressions may be used instaed of exact code matchs.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>channelList</span> <code class='quiet'>(Iterable&#x3C;<a href="#channel">Channel</a>>)</code>
+            <span class='code bold'>channelList</span> <code class='quiet'>(Iterable&#x3C;(<a href="#channel">Channel</a> | <a href="#station">Station</a>)>)</code>
 	    
           </div>
           
@@ -13681,7 +14205,7 @@ Regular expressions may be used instaed of exact code matchs.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1567-L1593'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1672-L1698'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13774,12 +14298,78 @@ service with query paramters.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='mightbestatonxml'>
+      mightBeStatonXml
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1702-L1711'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>mightBeStatonXml(buf: ArrayBufferLike)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>buf</span> <code class='quiet'>(ArrayBufferLike)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='parseutil'>
       parseUtil
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1709-L1717'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1825-L1833'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13828,7 +14418,7 @@ service with query paramters.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1710-L1710'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1826-L1826'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13885,7 +14475,7 @@ service with query paramters.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1711-L1711'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1827-L1827'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13942,7 +14532,7 @@ service with query paramters.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1712-L1712'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1828-L1828'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -13999,7 +14589,7 @@ service with query paramters.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1713-L1713'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1829-L1829'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -14056,7 +14646,7 @@ service with query paramters.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1714-L1714'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1830-L1830'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -14113,7 +14703,7 @@ service with query paramters.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1715-L1715'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1831-L1831'>
       <span>src/stationxml.ts</span>
       </a>
     
@@ -14170,7 +14760,7 @@ service with query paramters.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/stationxml.ts#L1716-L1716'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/stationxml.ts#L1832-L1832'>
       <span>src/stationxml.ts</span>
       </a>
     

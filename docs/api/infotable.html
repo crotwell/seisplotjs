@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs 3.1.4 | Documentation</title>
+  <title>seisplotjs 3.2.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>seisplotjs</h3>
-          <div class='mb1'><code>3.1.4</code></div>
+          <div class='mb1'><code>3.2.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -167,9 +167,15 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
-                        href='#quaketablegetquakevalue'
+                        href='#quaketablecreatedefaultcolumnlabels'
                         class='regular pre-open'>
-                        .getQuakeValue
+                        .createDefaultColumnLabels
+                      </a></li>
+                    
+                      <li><a
+                        href='#quaketablecreatedefaultcolumnvalues'
+                        class='regular pre-open'>
+                        .createDefaultColumnValues
                       </a></li>
                     
                     </ul>
@@ -197,6 +203,18 @@
                       </a></li>
                       
                       <li><a
+                        href='#quaketable_timezone'
+                        class='regular pre-open'>
+                        #_timezone
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketable_timeformat'
+                        class='regular pre-open'>
+                        #_timeFormat
+                      </a></li>
+                      
+                      <li><a
                         href='#quaketablelastsortasc'
                         class='regular pre-open'>
                         #lastSortAsc
@@ -209,6 +227,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#quaketable_columnvalues'
+                        class='regular pre-open'>
+                        #_columnValues
+                      </a></li>
+                      
+                      <li><a
                         href='#quaketablequakelist'
                         class='regular pre-open'>
                         #quakeList
@@ -230,6 +254,42 @@
                         href='#quaketablecolumnlabels'
                         class='regular pre-open'>
                         #columnLabels
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketablecolumnvalues'
+                        class='regular pre-open'>
+                        #columnValues
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketablecolumnvalues'
+                        class='regular pre-open'>
+                        #columnValues
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketabletimezone'
+                        class='regular pre-open'>
+                        #timeZone
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketabletimezone'
+                        class='regular pre-open'>
+                        #timeZone
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketabletimeformat'
+                        class='regular pre-open'>
+                        #timeFormat
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketabletimeformat'
+                        class='regular pre-open'>
+                        #timeFormat
                       </a></li>
                       
                       <li><a
@@ -260,6 +320,12 @@
                         href='#quaketablepopulaterow'
                         class='regular pre-open'>
                         #populateRow
+                      </a></li>
+                      
+                      <li><a
+                        href='#quaketablegetquakevalue'
+                        class='regular pre-open'>
+                        #getQuakeValue
                       </a></li>
                       
                       <li><a
@@ -417,9 +483,15 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
-                        href='#stationtablegetstationvalue'
+                        href='#stationtablecreatedefaultcolumnlabels'
                         class='regular pre-open'>
-                        .getStationValue
+                        .createDefaultColumnLabels
+                      </a></li>
+                    
+                      <li><a
+                        href='#stationtablecreatedefaultcolumnvalues'
+                        class='regular pre-open'>
+                        .createDefaultColumnValues
                       </a></li>
                     
                     </ul>
@@ -459,6 +531,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationtable_columnvalues'
+                        class='regular pre-open'>
+                        #_columnValues
+                      </a></li>
+                      
+                      <li><a
                         href='#stationtablestationlist'
                         class='regular pre-open'>
                         #stationList
@@ -480,6 +558,18 @@
                         href='#stationtablecolumnlabels'
                         class='regular pre-open'>
                         #columnLabels
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationtablecolumnvalues'
+                        class='regular pre-open'>
+                        #columnValues
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationtablecolumnvalues'
+                        class='regular pre-open'>
+                        #columnValues
                       </a></li>
                       
                       <li><a
@@ -504,6 +594,12 @@
                         href='#stationtablepopulaterow'
                         class='regular pre-open'>
                         #populateRow
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationtablegetstationvalue'
+                        class='regular pre-open'>
+                        #getStationValue
                       </a></li>
                       
                       <li><a
@@ -689,6 +785,16 @@
               
                 
                 <li><a
+                  href='#depthnounitformat'
+                  class="">
+                  depthNoUnitFormat
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#depthmeterformat'
                   class="">
                   depthMeterFormat
@@ -717,7 +823,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L15-L15'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L16-L16'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -775,7 +881,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L16-L16'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L17-L17'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -833,7 +939,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L18-L27'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L19-L29'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -886,7 +992,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L29-L44'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L31-L46'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -939,7 +1045,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L46-L57'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L48-L59'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -992,7 +1098,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L59-L71'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L61-L73'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1045,7 +1151,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L73-L160'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L75-L162'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1098,7 +1204,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L162-L176'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L164-L178'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1151,7 +1257,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L187-L231'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L189-L233'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1235,7 +1341,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L188-L188'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L190-L190'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1297,7 +1403,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L202-L204'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L204-L206'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1364,7 +1470,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L205-L208'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L207-L210'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1439,7 +1545,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L209-L230'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L211-L232'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1504,7 +1610,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L235-L415'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L237-L498'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1512,7 +1618,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>new QuakeTable(quakeList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Quake>?, columnLabels: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</div>
+    <div class='pre p1 fill-light mt0'>new QuakeTable(quakeList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Quake>?, columnLabels: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?, columnValues: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (q: Quake): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</div>
   
   
     <p>
@@ -1544,7 +1650,15 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>columnLabels</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</code>
+            <span class='code bold'>columnLabels</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>columnValues</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (q: Quake): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</code>
 	    
           </div>
           
@@ -1567,11 +1681,11 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='quaketablegetquakevalue'>
+    <div class='border-bottom' id='quaketablecreatedefaultcolumnlabels'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>getQuakeValue(q, h)</span>
+            <span class='code strong strong truncate'>createDefaultColumnLabels()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1581,7 +1695,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L335-L360'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L331-L341'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1589,7 +1703,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>getQuakeValue(q: Quake, h: <a href="#quake_column">QUAKE_COLUMN</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+    <div class='pre p1 fill-light mt0'>createDefaultColumnLabels()</div>
   
   
 
@@ -1601,35 +1715,66 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>q</span> <code class='quiet'>(Quake)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>h</span> <code class='quiet'>(<a href="#quake_column">QUAKE_COLUMN</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
     </div>
   
+    <div class='border-bottom' id='quaketablecreatedefaultcolumnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createDefaultColumnValues()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
 
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L343-L362'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
   
 
   
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
-    
+    <div class='pre p1 fill-light mt0'>createDefaultColumnValues()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
   
 
   
@@ -1672,7 +1817,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L236-L236'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L238-L238'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1684,7 +1829,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
   
   
@@ -1734,7 +1879,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L237-L237'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L239-L239'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1796,7 +1941,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L238-L238'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L240-L240'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1809,6 +1954,130 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     <p>
       Type:
       <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/API/HTMLTableRowElement">HTMLTableRowElement</a>, Quake>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketable_timezone'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_timezone</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L241-L241'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_timezone</div>
+  
+    <p>
+      Type:
+      Zone
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketable_timeformat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_timeFormat</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L242-L242'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_timeFormat</div>
+  
+    <p>
+      Type:
+      any
     </p>
   
   
@@ -1858,7 +2127,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L239-L239'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L243-L243'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1915,7 +2184,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L240-L240'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L244-L244'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -1927,7 +2196,69 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      (<a href="#quake_column">QUAKE_COLUMN</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketable_columnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_columnValues</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L245-L245'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_columnValues</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (q: Quake): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
   
   
@@ -1977,7 +2308,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L270-L272'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L290-L292'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2044,7 +2375,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L273-L276'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L293-L296'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2119,7 +2450,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L277-L279'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L297-L299'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2131,7 +2462,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
   
   
@@ -2150,7 +2481,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
     
   
 
@@ -2186,7 +2517,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L280-L283'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L300-L303'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2198,7 +2529,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
   
   
@@ -2216,7 +2547,438 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cols</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+            <span class='code bold'>cols</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketablecolumnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>columnValues</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L304-L306'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>columnValues</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (q: Quake): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (q: Quake): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketablecolumnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>columnValues</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L307-L310'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>columnValues</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (q: Quake): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>cols</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (q: Quake): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketabletimezone'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeZone</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L311-L313'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>timeZone</div>
+  
+    <p>
+      Type:
+      (Zone | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(Zone | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketabletimezone'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeZone</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L314-L317'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>timeZone</div>
+  
+    <p>
+      Type:
+      (Zone | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>timezone</span> <code class='quiet'>((Zone | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketabletimeformat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeFormat</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L324-L326'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Time format, passed to luxon toLocaleString()
+<a href="https://moment.github.io/luxon/api-docs/index.html#datetimetolocalestring">https://moment.github.io/luxon/api-docs/index.html#datetimetolocalestring</a></p>
+
+    <div class='pre p1 fill-light mt0'>timeFormat</div>
+  
+    <p>
+      Type:
+      (any | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(any | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>:
+        time as a string
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketabletimeformat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeFormat</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L327-L330'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>timeFormat</div>
+  
+    <p>
+      Type:
+      (any | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>timeFormat</span> <code class='quiet'>((any | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>))</code>
 	    
           </div>
           
@@ -2261,7 +3023,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L284-L286'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L364-L366'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2344,7 +3106,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L287-L295'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L367-L375'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2419,7 +3181,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L296-L321'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L376-L409'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2476,7 +3238,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L322-L324'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L410-L412'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2484,7 +3246,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>headers(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>></div>
+    <div class='pre p1 fill-light mt0'>headers(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></div>
   
   
 
@@ -2502,7 +3264,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#quake_column">QUAKE_COLUMN</a>></code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
     
   
 
@@ -2538,7 +3300,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L325-L334'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L414-L433'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2610,11 +3372,11 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       </div>
     </div>
   
-    <div class='border-bottom' id='quaketablesort'>
+    <div class='border-bottom' id='quaketablegetquakevalue'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>sort(h, _headerCell)</span>
+            <span class='code strong strong truncate'>getQuakeValue(q, h)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2624,7 +3386,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L361-L414'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L435-L443'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2632,7 +3394,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>sort(h: <a href="#quake_column">QUAKE_COLUMN</a>, _headerCell: <a href="https://developer.mozilla.org/docs/Web/API/HTMLTableCellElement">HTMLTableCellElement</a>)</div>
+    <div class='pre p1 fill-light mt0'>getQuakeValue(q: Quake, h: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2649,7 +3411,90 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>h</span> <code class='quiet'>(<a href="#quake_column">QUAKE_COLUMN</a>)</code>
+            <span class='code bold'>q</span> <code class='quiet'>(Quake)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>h</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quaketablesort'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>sort(h, _headerCell)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L444-L497'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>sort(h: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, _headerCell: <a href="https://developer.mozilla.org/docs/Web/API/HTMLTableCellElement">HTMLTableCellElement</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>h</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
           </div>
           
@@ -2710,7 +3555,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L419-L612'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L502-L695'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2787,7 +3632,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L513-L545'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L596-L628'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2878,7 +3723,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L420-L420'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L503-L503'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -2940,7 +3785,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L421-L421'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L504-L504'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3002,7 +3847,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L422-L422'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L505-L505'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3064,7 +3909,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L423-L423'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L506-L506'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3121,7 +3966,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L424-L424'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L507-L507'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3183,7 +4028,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L457-L459'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L540-L542'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3250,7 +4095,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L460-L463'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L543-L546'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3325,7 +4170,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L464-L466'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L547-L549'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3392,7 +4237,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L467-L470'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L550-L553'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3467,7 +4312,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L471-L473'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L554-L556'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3550,7 +4395,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L474-L499'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L557-L582'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3607,7 +4452,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L500-L502'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L583-L585'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3669,7 +4514,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L503-L512'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L586-L595'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3755,7 +4600,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L546-L611'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L629-L694'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3841,7 +4686,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L614-L614'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L697-L697'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3899,7 +4744,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L617-L793'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L700-L932'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3907,7 +4752,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>new StationTable(stationList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Station>?, columnLabels: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</div>
+    <div class='pre p1 fill-light mt0'>new StationTable(stationList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Station>?, columnLabels: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?, columnValues: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (sta: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</div>
   
   
     <p>
@@ -3939,7 +4784,15 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>columnLabels</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</code>
+            <span class='code bold'>columnLabels</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>columnValues</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (sta: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>?)</code>
 	    
           </div>
           
@@ -3962,11 +4815,11 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='stationtablegetstationvalue'>
+    <div class='border-bottom' id='stationtablecreatedefaultcolumnlabels'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>getStationValue(q, h)</span>
+            <span class='code strong strong truncate'>createDefaultColumnLabels()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -3976,7 +4829,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L708-L732'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L816-L826'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -3984,7 +4837,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>getStationValue(q: Station, h: <a href="#station_column">STATION_COLUMN</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+    <div class='pre p1 fill-light mt0'>createDefaultColumnLabels()</div>
   
   
 
@@ -3996,35 +4849,66 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>q</span> <code class='quiet'>(Station)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>h</span> <code class='quiet'>(<a href="#station_column">STATION_COLUMN</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
     </div>
   
+    <div class='border-bottom' id='stationtablecreatedefaultcolumnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createDefaultColumnValues()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
 
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L827-L840'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
   
 
   
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
-    
+    <div class='pre p1 fill-light mt0'>createDefaultColumnValues()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
   
 
   
@@ -4067,7 +4951,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L618-L618'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L701-L701'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4076,11 +4960,6 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
 
   
     <div class='pre p1 fill-light mt0'>_columnLabels</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
-    </p>
   
   
 
@@ -4129,7 +5008,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L619-L619'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L702-L702'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4191,7 +5070,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L620-L620'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L703-L703'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4253,7 +5132,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L621-L621'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L704-L704'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4310,7 +5189,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L622-L622'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L705-L705'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4322,7 +5201,69 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      (<a href="#station_column">STATION_COLUMN</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationtable_columnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_columnValues</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L706-L706'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_columnValues</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (sta: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
   
   
@@ -4372,7 +5313,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L652-L654'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L751-L753'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4439,7 +5380,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L655-L658'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L754-L757'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4514,7 +5455,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L659-L661'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L758-L760'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4526,7 +5467,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
   
   
@@ -4545,7 +5486,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
     
   
 
@@ -4581,7 +5522,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L662-L665'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L761-L764'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4593,7 +5534,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
     </p>
   
   
@@ -4611,7 +5552,149 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cols</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+            <span class='code bold'>cols</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationtablecolumnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>columnValues</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L765-L767'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>columnValues</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (sta: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (sta: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationtablecolumnvalues'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>columnValues</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L768-L771'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>columnValues</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (sta: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>cols</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, function (sta: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
 	    
           </div>
           
@@ -4656,7 +5739,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L666-L668'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L773-L775'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4739,7 +5822,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L669-L694'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L776-L801'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4796,7 +5879,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L695-L697'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L802-L804'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4804,7 +5887,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>headers(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>></div>
+    <div class='pre p1 fill-light mt0'>headers(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></div>
   
   
 
@@ -4822,7 +5905,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#station_column">STATION_COLUMN</a>></code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
     
   
 
@@ -4858,7 +5941,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L698-L707'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L805-L814'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4930,11 +6013,11 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       </div>
     </div>
   
-    <div class='border-bottom' id='stationtablesort'>
+    <div class='border-bottom' id='stationtablegetstationvalue'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>sort(h, _headerCell)</span>
+            <span class='code strong strong truncate'>getStationValue(q, h)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -4944,7 +6027,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L733-L792'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L841-L871'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -4952,7 +6035,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
 
   
-    <div class='pre p1 fill-light mt0'>sort(h: <a href="#station_column">STATION_COLUMN</a>, _headerCell: <a href="https://developer.mozilla.org/docs/Web/API/HTMLTableCellElement">HTMLTableCellElement</a>)</div>
+    <div class='pre p1 fill-light mt0'>getStationValue(q: Station, h: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -4969,7 +6052,90 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>h</span> <code class='quiet'>(<a href="#station_column">STATION_COLUMN</a>)</code>
+            <span class='code bold'>q</span> <code class='quiet'>(Station)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>h</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationtablesort'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>sort(h, _headerCell)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L872-L931'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>sort(h: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, _headerCell: <a href="https://developer.mozilla.org/docs/Web/API/HTMLTableCellElement">HTMLTableCellElement</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>h</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
           </div>
           
@@ -5030,7 +6196,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L795-L795'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L934-L934'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5088,7 +6254,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L798-L988'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L937-L1127'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5165,7 +6331,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L892-L921'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1031-L1060'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5256,7 +6422,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L799-L799'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L938-L938'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5318,7 +6484,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L800-L800'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L939-L939'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5380,7 +6546,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L801-L801'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L940-L940'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5442,7 +6608,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L802-L802'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L941-L941'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5499,7 +6665,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L803-L803'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L942-L942'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5511,7 +6677,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
     <p>
       Type:
-      (<a href="#seismogram_column">SEISMOGRAM_COLUMN</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -5561,7 +6727,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L835-L837'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L974-L976'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5628,7 +6794,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L838-L841'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L977-L980'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5703,7 +6869,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L842-L844'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L981-L983'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5770,7 +6936,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L845-L848'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L984-L987'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5845,7 +7011,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L849-L851'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L988-L990'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5928,7 +7094,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L852-L874'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L991-L1013'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -5985,7 +7151,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L875-L877'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1014-L1016'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -6047,7 +7213,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L878-L891'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1017-L1030'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -6133,7 +7299,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L922-L987'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1061-L1126'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -6219,7 +7385,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L990-L990'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1129-L1129'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -6277,7 +7443,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L993-L993'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1132-L1132'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -6330,7 +7496,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L994-L994'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1133-L1133'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -6383,7 +7549,7 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L995-L995'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1134-L1134'>
       <span>src/infotable.ts</span>
       </a>
     
@@ -6431,12 +7597,65 @@ the color of even and odd rows. Default for odd is nothing, even is Cornsilk.</p
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='depthnounitformat'>
+      depthNoUnitFormat
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1135-L1135'>
+      <span>src/infotable.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>depthNoUnitFormat</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='depthmeterformat'>
       depthMeterFormat
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/009827e6005f49f14d1dcd29f8d800b6fd3ad4d8/src/infotable.ts#L996-L996'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/39abd699efb4941c9ada7d7eaec8c2651914ca78/src/infotable.ts#L1136-L1136'>
       <span>src/infotable.ts</span>
       </a>
     
