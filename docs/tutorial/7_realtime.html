@@ -116,7 +116,7 @@
        to rapidly request the same seismogram over and over from the FDSN
               dataselect web service, and so we will use a web socket to the
        <a href="https://github.com/EarthScope/ringserver">
-        IRIS ringserver
+        EarthScope ringserver
        </a>
        using the
        <a href="https://earthscope.github.io/libdali/datalink-protocol.html">
@@ -136,8 +136,8 @@
         Seedlink version 4
        </a>
        . Datalink is better if a simple regular expression can match your
-       channels, Seedlink is better if you need to match different channels
-       at different stations.
+       channels, Seedlink is better if you need to match channels
+       from a list of stations.
       </p>
       <p>
        First we need to set up a bunch of variables we will use to keep
@@ -227,9 +227,9 @@ function errorFn(error) {
        Now we create function to toggle on and off the the actual
               Datalink connection to the
        <a href="https://github.com/EarthScope/ringserver">
-        IRIS ringserver
+        EarthScope ringserver
        </a>
-       , also updating the text for the two buttons.  
+       , also updating the text for the two buttons.
        This creates the Datalink connection the first time it is
               toggled on. We are using a secure web socket, via
        <code class="language-html">
@@ -240,7 +240,6 @@ function errorFn(error) {
       <pre><code class="language-javascript" snippet="datalink">
 let datalink = null;
 const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
-const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/testringserver/datalink";
 const DATALINK_URL = IRIS_DATALINK;
 
 let toggleConnect = function () {
