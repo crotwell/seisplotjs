@@ -304,7 +304,7 @@ export class StationQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): StationQuery {
+  startTime(value?: DateTime | string): StationQuery {
     doMomentGetterSetter(this, "startTime", value);
     return this;
   }
@@ -319,7 +319,7 @@ export class StationQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): StationQuery {
+  endTime(value?: DateTime | string): StationQuery {
     doMomentGetterSetter(this, "endTime", value);
     return this;
   }
@@ -346,7 +346,7 @@ export class StationQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: DateTime): StationQuery {
+  startBefore(value?: DateTime | string): StationQuery {
     doMomentGetterSetter(this, "startBefore", value);
     return this;
   }
@@ -361,7 +361,7 @@ export class StationQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: DateTime): StationQuery {
+  endBefore(value?: DateTime | string): StationQuery {
     doMomentGetterSetter(this, "endBefore", value);
     return this;
   }
@@ -376,7 +376,7 @@ export class StationQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: DateTime): StationQuery {
+  startAfter(value?: DateTime | string): StationQuery {
     doMomentGetterSetter(this, "startAfter", value);
     return this;
   }
@@ -391,7 +391,7 @@ export class StationQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: DateTime): StationQuery {
+  endAfter(value?: DateTime | string): StationQuery {
     doMomentGetterSetter(this, "endAfter", value);
     return this;
   }

@@ -1,6 +1,6 @@
 
 import {EventQuery} from '../src/fdsnevent';
-import { SeismogramDisplayData} from '../src/seismogram';
+import {Quake} from '../src/quakeml';
 import {setDefaultFetch, isoToDateTime} from '../src/util';
 
 import { Interval} from 'luxon';

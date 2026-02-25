@@ -1,6 +1,6 @@
 
 import {DataSelectQuery} from '../src/fdsndataselect';
-import { SeismogramDisplayData} from '../src/seismogram';
+import {Seismogram} from '../src/seismogram';
 import {setDefaultFetch} from '../src/util';
 
 import fetch from 'cross-fetch';

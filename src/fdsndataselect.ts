@@ -266,7 +266,7 @@ export class DataSelectQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): DataSelectQuery {
+  startTime(value?: DateTime | string): DataSelectQuery {
     doMomentGetterSetter(this, "startTime", value);
     return this;
   }
@@ -281,7 +281,7 @@ export class DataSelectQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): DataSelectQuery {
+  endTime(value?: DateTime | string): DataSelectQuery {
     doMomentGetterSetter(this, "endTime", value);
     return this;
   }

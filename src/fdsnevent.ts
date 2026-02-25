@@ -273,7 +273,7 @@ export class EventQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): EventQuery {
+  startTime(value?: DateTime | string): EventQuery {
     doMomentGetterSetter(this, "startTime", value);
     return this;
   }
@@ -288,7 +288,7 @@ export class EventQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): EventQuery {
+  endTime(value?: DateTime | string): EventQuery {
     doMomentGetterSetter(this, "endTime", value);
     return this;
   }
