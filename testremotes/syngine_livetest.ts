@@ -6,6 +6,13 @@ setDefaultFetch(fetch);
 
 import * as syngine from '../src/syngine';
 
+test("version", () => {
+  const query = new syngine.SyngineQuery();
+  return query.queryVersion().then( res => {
+    expect(res.length).toBeGreaterThan(1);
+  });
+});
+
 test("formURL", () => {
   const query = new syngine.SyngineQuery();
   expect(query.host(IRIS_HOST)).toBe(query);

@@ -6,6 +6,20 @@ setDefaultFetch(fetch);
 
 import * as traveltime from '../src/traveltime';
 
+test("version", () => {
+  const ttQuery = new traveltime.TraveltimeQuery();
+  return ttQuery.queryVersion().then( res => {
+    expect(res.length).toBeGreaterThan(1);
+  });
+});
+
+test("taupversion", () => {
+  const ttQuery = new traveltime.TraveltimeQuery();
+  return ttQuery.queryTauPVersion().then( res => {
+    expect(res.length).toBeGreaterThan(1);
+  });
+});
+
 test("formURL", () => {
   const query = new traveltime.TraveltimeQuery();
   query.format(traveltime.JSON_FORMAT);

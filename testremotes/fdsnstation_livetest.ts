@@ -5,6 +5,13 @@ import {setDefaultFetch} from '../src/util';
 import fetch from 'cross-fetch';
 setDefaultFetch(fetch);
 
+test("version", () => {
+  const avail = new fdsnstation.StationQuery();
+  return avail.queryVersion().then( res => {
+    expect(res.length).toBeGreaterThan(1);
+  });
+});
+
 
 test("do post test", () => {
   const postLines = `CO HAW * * 2010-03-11T00:00:00 2599-12-31T23:59:59

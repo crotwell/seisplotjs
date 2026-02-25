@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath } from "./fdsncommon";
 import { NslcId } from "./fdsnsourceid";
 import * as util from "./util"; // for util.log
 import { DateTime, Interval } from "luxon";
@@ -604,7 +604,7 @@ export class DataSelectQuery extends FDSNCommon {
   }
 
   formVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
   /**
@@ -627,11 +627,11 @@ export class DataSelectQuery extends FDSNCommon {
   }
 
   formPostURL(): string {
-    return this.formBaseURL() + "/query";
+    return appendToPath(this.formBaseURL(), "query");
   }
 
   formURL(): string {
-    let url = this.formBaseURL() + "/query?";
+    let url = appendToPath(this.formBaseURL(), "query?");
 
     if (
       isStringArg(this._networkCode) &&

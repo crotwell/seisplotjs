@@ -3,7 +3,7 @@
  * University of South Carolina, 2020
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE, appendToPath } from "./fdsncommon";
 import { DateTime, Interval } from "luxon";
 import { Network } from "./stationxml";
 import {
@@ -1240,7 +1240,7 @@ export class FedCatalogQuery extends FDSNCommon {
    * @returns the url
    */
   formVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
   /**
@@ -1274,8 +1274,8 @@ export class FedCatalogQuery extends FDSNCommon {
       colon = "";
     }
     const port = this.defaultPortStringForProtocol(this._protocol);
-    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
-    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
+    const path = appendToPath(appendToPath(this._path_base, this._service), this._specVersion);
+    return appendToPath(`${this._protocol}${colon}//${this._host}${port}`, path);
   }
 
   /**
@@ -1285,7 +1285,7 @@ export class FedCatalogQuery extends FDSNCommon {
    * @returns the URL for posting
    */
   formPostURL(): string {
-    return this.formBaseURL() + "/query";
+    return appendToPath(this.formBaseURL(), "query");
   }
 
   /**
@@ -1294,7 +1294,7 @@ export class FedCatalogQuery extends FDSNCommon {
    * @returns url
    */
   formURL(): string {
-    let url = this.formBaseURL() + "/query?";
+    let url = appendToPath(this.formBaseURL(), "query?");
 
     if (isStringArg(this._level)) {
       url = url + makeParam("level", this._level);

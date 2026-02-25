@@ -4,7 +4,7 @@
  * https://www.seis.sc.edu
  */
 
-import { FDSNCommon } from "./fdsncommon";
+import { FDSNCommon, appendToPath } from "./fdsncommon";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -448,7 +448,7 @@ export class DataCentersQuery extends FDSNCommon {
    * @returns         version
    */
   formVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
   /**
@@ -477,7 +477,7 @@ export class DataCentersQuery extends FDSNCommon {
    */
   formURL(): string {
     const method = "query";
-    let url = this.formBaseURL() + `/${method}?`;
+    let url = appendToPath(this.formBaseURL(), `${method}?`);
 
     if (this._name) {
       url = url + makeParam("name", this._name);

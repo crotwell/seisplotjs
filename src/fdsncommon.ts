@@ -59,12 +59,28 @@ export class FDSNCommon {
 
 
 export function defaultPortStringForProtocol(protocol: string, port: number) {
-    return (( protocol === "http" || protocol === "http:" ||
-                protocol === "https" || protocol === "https:")
-              && (port === 80 || port === 443)
-          ) ? "" : ":" + String(port);
+  return (( protocol === "http" || protocol === "http:" ||
+              protocol === "https" || protocol === "https:")
+            && (port === 80 || port === 443)
+        ) ? "" : ":" + String(port);
+}
 
+/**
+ * Appends a path segment to a base URL, checking that there is one,
+ * and only one, slash between the two.
+ * @param  baseUrl   base url, possibly ending in a slash
+ * @param  addPath   path to add, possibly starting with a slash
+ * @return  merged path, with exactly one slash between
+ */
+export function appendToPath(baseUrl: string, addPath: string): string {
+  let out = baseUrl + (baseUrl.endsWith("/")?"":"/");
+  if (addPath.startsWith("/")) {
+    out += addPath.substring(1);
+  } else {
+    out += addPath;
   }
+  return out;
+}
 
 export class LatLonRegion {}
 export class LatLonBox extends LatLonRegion {

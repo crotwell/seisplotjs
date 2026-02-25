@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, LOCALWS_PATH_BASE } from "./fdsncommon";
+import { FDSNCommon, LOCALWS_PATH_BASE, appendToPath } from "./fdsncommon";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -535,22 +535,6 @@ export class TauPQuery extends FDSNCommon {
       });
   }
 
-  queryWadl(): Promise<Document> {
-    return fetch(this.formWadlURL()).then((response) => {
-      if (response.ok) {
-        return response
-          .text()
-          .then((textResponse) =>
-            new window.DOMParser().parseFromString(textResponse, "text/xml"),
-          );
-      } else {
-        throw new Error(
-          `Fetching over network was not ok: ${response.status} ${response.statusText}`,
-        );
-      }
-    });
-  }
-
   query(): Promise<TauP3TimeJsonType | Element | string> {
     if (this._format === JSON_FORMAT) {
       return this.queryJson();
@@ -582,7 +566,7 @@ export class TauPQuery extends FDSNCommon {
 
   formURL(toolname?: string): string {
     if (toolname == null) {toolname = TAUP_TIME_TOOL;}
-    let url = `${this.formBaseURL()}/${toolname}?`;
+    let url = appendToPath(this.formBaseURL(), `${toolname}?`);
 
     if (isDef(this._noheader) && this._noheader) {
       url = url + "noheader=true&";
@@ -657,12 +641,9 @@ export class TauPQuery extends FDSNCommon {
   }
 
   formTauPVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
-  formWadlURL(): string {
-    return this.formBaseURL() + "/application.wadl";
-  }
 }
 export const FAKE_EMPTY_TEXT_MODEL = `Model: `;
 export const FAKE_EMPTY_TEXT_HEADERS = `

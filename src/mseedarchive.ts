@@ -4,6 +4,7 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval } from "luxon";
+import { appendToPath} from "./fdsncommon";
 import * as util from "./util";
 import * as miniseed from "./miniseed";
 import { SeismogramDisplayData } from "./seismogram";
@@ -210,13 +211,13 @@ export class MSeedArchive {
     const urlList = [];
 
     while (t < endTime) {
-      const url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
+      const url = appendToPath(this.rootUrl, this.fillTimePattern(basePattern, t));
       t = t.plus(Duration.fromObject({ hour: 1 }));
       urlList.push(url);
     }
 
     if (t.plus(recordTime) > endTime) {
-      const url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
+      const url = appendToPath(this.rootUrl, this.fillTimePattern(basePattern, t));
       urlList.push(url);
     }
 

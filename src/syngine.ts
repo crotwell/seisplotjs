@@ -3,7 +3,7 @@
  * University of South Carolina, 2025
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE, appendToPath } from "./fdsncommon";
 import { FORMAT_MINISEED } from "./fdsndataselect";
 import { TESTING_NETWORK } from "./fdsnsourceid";
 import { Quake } from "./quakeml";
@@ -784,11 +784,11 @@ export class SyngineQuery extends FDSNCommon {
     }
     const port = this.defaultPortStringForProtocol(this._protocol);
     const path = `${this._path_base}/${this._service}/${this._specVersion}`;
-    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
+    return appendToPath(`${this._protocol}${colon}//${this._host}${port}`, path);
   }
 
   formVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
   /**
@@ -812,7 +812,7 @@ export class SyngineQuery extends FDSNCommon {
 
 
   formURL(): string {
-    let url = this.formBaseURL() + "/query?";
+    let url = appendToPath(this.formBaseURL(), "query?");
 
     if (isStringArg(this._model) && this._model.length > 0 ) {
       url = url + makeParam("model", this._model);

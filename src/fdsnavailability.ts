@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath } from "./fdsncommon";
 import { DateTime, Interval } from "luxon";
 import { SeismogramDisplayData } from "./seismogram";
 import {
@@ -647,7 +647,7 @@ export class AvailabilityQuery extends FDSNCommon {
       const fetchInit = defaultFetchInitObj(JSON_MIME);
       fetchInit.method = "POST";
       fetchInit.body = this.createPostBody(channelTimeList);
-      return fetch(this.formBaseURL() + `/${method}?`, fetchInit).then(
+      return fetch(appendToPath(this.formBaseURL(), `${method}?`), fetchInit).then(
         function (response) {
           if (response.ok) {
             return response;
@@ -807,7 +807,7 @@ export class AvailabilityQuery extends FDSNCommon {
   }
 
   formVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
   /**
@@ -838,7 +838,7 @@ export class AvailabilityQuery extends FDSNCommon {
       method = "query";
     }
 
-    let url = this.formBaseURL() + `/${method}?`;
+    let url = appendToPath(this.formBaseURL(), `/${method}?`);
 
     if (this._networkCode) {
       url = url + makeParam("net", this._networkCode);

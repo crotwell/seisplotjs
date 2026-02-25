@@ -5,7 +5,7 @@
  */
 import { DateTime, Duration } from "luxon";
 import {extractDLProto} from "./datalink";
-import {defaultPortStringForProtocol} from "./fdsncommon";
+import {defaultPortStringForProtocol, appendToPath} from "./fdsncommon";
 import {
   FDSN_PREFIX,
   StationSourceId,
@@ -338,7 +338,7 @@ export class RingserverConnection {
    * @returns the id url
    */
   formIdURL(): string {
-    return this.formBaseURL() + "id";
+    return appendToPath(this.formBaseURL(), "id");
   }
 
   /**
@@ -349,8 +349,7 @@ export class RingserverConnection {
    */
   formStreamsURL(queryParams?: string): string {
     return (
-      this.formBaseURL() +
-      "streams" +
+      appendToPath(this.formBaseURL(), "streams") +
       (isNonEmptyStringArg(queryParams) && queryParams.length > 0
         ? "?" + queryParams
         : "")
@@ -365,8 +364,7 @@ export class RingserverConnection {
    */
   formStreamIdsURL(queryParams: string): string {
     return (
-      this.formBaseURL() +
-      "streamids" +
+      appendToPath(this.formBaseURL(), "streamids") +
       (queryParams && queryParams.length > 0 ? "?" + queryParams : "")
     );
   }

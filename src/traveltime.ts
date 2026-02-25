@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE, appendToPath } from "./fdsncommon";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -424,6 +424,29 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._timeoutSec;
   }
 
+
+  queryVersion(): Promise<string> {
+    const url = this.formVersionURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
+    .then((response) => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw new Error(
+          "Fetching over network was not ok: " +
+            response.status +
+            " " +
+            response.statusText,
+        );
+      }
+    });
+  }
+
+  formVersionURL(): string {
+    return appendToPath(this.formBaseURL(), "version");
+  }
+
   queryText(): Promise<string> {
     this.format(TEXT_FORMAT);
     const url = this.formURL();
@@ -550,7 +573,7 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   formURL(): string {
-    let url = this.formBaseURL() + "/query?";
+    let url = appendToPath(this.formBaseURL(), "query?");
 
     if (isDef(this._noheader) && this._noheader) {
       url = url + "noheader=true&";
@@ -610,7 +633,10 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   queryTauPVersion(): Promise<string> {
-    return fetch(this.formTauPVersionURL()).then((response) => {
+    const url = this.formTauPVersionURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
+    .then((response) => {
       if (response.ok) {
         return response.text();
       } else {
@@ -625,11 +651,11 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   formTauPVersionURL(): string {
-    return this.formBaseURL() + "/taupversion";
+    return appendToPath(this.formBaseURL(), "taupversion");
   }
 
   formWadlURL(): string {
-    return this.formBaseURL() + "/application.wadl";
+    return appendToPath(this.formBaseURL(), "application.wadl");
   }
 }
 export const FAKE_EMPTY_TEXT_MODEL = `Model: `;

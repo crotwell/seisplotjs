@@ -8,6 +8,7 @@ import {
   LatLonRegion,
   LatLonBox,
   LatLonRadius,
+  appendToPath
 } from "./fdsncommon";
 import { DateTime, Interval } from "luxon";
 import {
@@ -803,7 +804,7 @@ export class EventQuery extends FDSNCommon {
    * @returns the url
    */
   formCatalogsURL(): string {
-    return this.formBaseURL() + "/catalogs";
+    return appendToPath(this.formBaseURL(), "catalogs");
   }
 
   /**
@@ -859,7 +860,7 @@ export class EventQuery extends FDSNCommon {
    * @returns the url
    */
   formContributorsURL(): string {
-    return this.formBaseURL() + "/contributors";
+    return appendToPath(this.formBaseURL(), "contributors");
   }
 
   /**
@@ -911,7 +912,7 @@ export class EventQuery extends FDSNCommon {
    * @returns the url
    */
   formVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
   /**
@@ -945,7 +946,7 @@ export class EventQuery extends FDSNCommon {
       colon = "";
     }
 
-    let url = this.formBaseURL() + "/query?";
+    let url = appendToPath(this.formBaseURL(), "query?");
 
     if (this._eventId) {
       url = url + makeParam("eventid", this._eventId);

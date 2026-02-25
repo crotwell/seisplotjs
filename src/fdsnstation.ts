@@ -10,6 +10,7 @@ import {
   LatLonRegion,
   LatLonBox,
   LatLonRadius,
+  appendToPath,
 } from "./fdsncommon";
 import { NslcId } from "./fdsnsourceid";
 import { DateTime, Interval } from "luxon";
@@ -1051,7 +1052,7 @@ export class StationQuery extends FDSNCommon {
    * @returns the url
    */
   formVersionURL(): string {
-    return this.formBaseURL() + "/version";
+    return appendToPath(this.formBaseURL(), "version");
   }
 
   /**
@@ -1090,7 +1091,7 @@ export class StationQuery extends FDSNCommon {
   }
 
   formPostURL(): string {
-    return this.formBaseURL() + "/query";
+    return appendToPath(this.formBaseURL(), "query");
   }
 
   /**
@@ -1100,7 +1101,7 @@ export class StationQuery extends FDSNCommon {
    * @returns url
    */
   formURL(level: string): string {
-    let url = this.formBaseURL() + "/query?";
+    let url = appendToPath(this.formBaseURL(), "query?");
 
     if (!isStringArg(level)) {
       throw new Error(

@@ -10,6 +10,12 @@ import {setDefaultFetch} from '../src/util';
 import fetch from 'cross-fetch';
 setDefaultFetch(fetch);
 
+test("version", () => {
+  const fcQuery = new FedCatalogQuery();
+  return fcQuery.queryVersion().then( res => {
+    expect(res.length).toBeGreaterThan(1);
+  });
+});
 
 test("station queries test", () => {
 
@@ -36,7 +42,7 @@ test("live parse result", () => {
   });
 });
 
-jest.setTimeout(10*1000);
+jest.setTimeout(20*1000); // berkeley server takes a long time
 test("run BK networks", () => {
     const fedCatQuery = new FedCatalogQuery();
     const NET = 'BK';

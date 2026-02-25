@@ -5,7 +5,7 @@
  */
 import { DateTime } from "luxon";
 import { z } from "zod/v4";
-import {defaultPortStringForProtocol} from "./fdsncommon";
+import {defaultPortStringForProtocol, appendToPath} from "./fdsncommon";
 import {
   FDSN_PREFIX,
   FDSNSourceId,
@@ -218,7 +218,7 @@ export class RingserverConnection {
   pullId(): Promise<RingserverIdType> {
     return pullJson(this.formIdURL(), this._timeoutSec).catch((_err) => {
       // failed to get /id/json, try just /id text like ringserver3
-      return pullText(this.formBaseURL()+"id", this._timeoutSec).then( rawlines => {
+      return pullText(appendToPath(this.formBaseURL(), "id"), this._timeoutSec).then( rawlines => {
         const lines = rawlines.split("\n");
         let dlinfo = [`DLPROTO:1.0`];
         let slinfo = ["SLPROTO:3.1" ];
@@ -366,7 +366,7 @@ export class RingserverConnection {
    * @returns the id url
    */
   formIdURL(): string {
-    return this.formBaseURL() + "id/json";
+    return appendToPath(this.formBaseURL(), "id/json");
   }
 
   /**
@@ -376,7 +376,7 @@ export class RingserverConnection {
    * @returns the streams url
    */
   formStreamsURL(queryParams?: string): string {
-    return this.formBaseURL() +"streams/json" +
+    return appendToPath(this.formBaseURL(), "streams/json") +
       (isNonEmptyStringArg(queryParams) && queryParams.length > 0
         ? "?" + queryParams   : "");
   }
@@ -388,7 +388,7 @@ export class RingserverConnection {
    * @returns the stream ids url
    */
   formStreamIdsURL(queryParams: string): string {
-    return this.formBaseURL() +"streamids" +
+    return appendToPath(this.formBaseURL(), "streamids") +
       (queryParams && queryParams.length > 0 ? "?" + queryParams : "");
   }
 }
