@@ -58,6 +58,7 @@ const StreamsResult=  z.object({
 export type StreamsResultType = z.infer<typeof StreamsResult>;
 
 export const IRIS_HOST = "rtserve.iris.washington.edu";
+export const EARTHSCOPE_HOST = "rtserve.earthscope.org";
 
 /**
  * Web connection to a Ringserver.
@@ -105,6 +106,11 @@ export class RingserverConnection {
       this._host = hostStr;
       this._port = 80;
       this._prefix = "/";
+    }
+
+    if (this._host === EARTHSCOPE_HOST) {
+      this._protocol = "https:";
+      this._port = 443;
     }
 
     // override port in URL if given
