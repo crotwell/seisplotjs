@@ -17,7 +17,9 @@ import * as fdsnavailability from "./fdsnavailability";
 import * as fdsncommon from "./fdsncommon";
 import * as fdsndatacenters from "./fdsndatacenters";
 import * as fdsnevent from "./fdsnevent";
+//import * as fdsneventcomponent from "./fdsneventcomponent";
 import * as fdsnstation from "./fdsnstation";
+//import * as fdsnstationcomponent from "./fdsnstationcomponent";
 import * as fdsndataselect from "./fdsndataselect";
 import * as fdsnsourceid from "./fdsnsourceid";
 import * as filter from "./filter";
@@ -28,12 +30,15 @@ import * as fft from "./fft";
 //import * as leafletutil from "./leafletutil";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
+import * as mseed3eh from "./mseed3eh";
 import * as mseedarchive from "./mseedarchive";
+import * as nws from "./nws";
 import * as oregondsputil from "./oregondsputil";
 //import * as organizeddisplay from "./organizeddisplay";
 //import * as particlemotion from "./particlemotion";
 import * as quakeml from "./quakeml";
 import * as ringserverweb from "./ringserverweb";
+import * as ringserverweb4 from "./ringserverweb4";
 import * as sacPoleZero from "./sacpolezero";
 import * as scale from "./scale";
 import * as seedcodec from "./seedcodec";
@@ -46,11 +51,15 @@ import * as seismogramsegment from "./seismogramsegment";
 //import * as seismographutil from "./seismographutil";
 //import * as seismographconfig from "./seismographconfig";
 //import * as seismographconfigeditor from "./seismographconfigeditor";
+//import * as seismographmarker from "./seismographmarker";
 import * as sorting from "./sorting";
-//import * as spectraplot from "./spectraplot";
+//import * as spelement from "./spelement";
 import * as stationxml from "./stationxml";
+import * as syngine from "./syngine";
 import * as taper from "./taper";
+import * as taup3 from "./taup3";
 import * as transfer from "./transfer";
+//import * as transition from "./transition";
 import * as traveltime from "./traveltime";
 import * as usgsgeojson from "./usgsgeojson";
 import * as util from "./util";
@@ -76,9 +85,12 @@ const organizeddisplay = null;
 const particlemotion = null;
 const seismograph = null;
 const seismographconfig = null;
+const seismographmarker = null;
 const seismographutil = null;
 const seismographconfigeditor = null;
 const spectraplot = null;
+const spelement = null;
+const transition = null;
 // leaflet cannot run in node as needs window
 const leaflet = null;
 const leafletutil = null;
@@ -110,12 +122,15 @@ export {
   leafletutil,
   miniseed,
   mseed3,
+  mseed3eh,
   mseedarchive,
+  nws,
   oregondsputil,
   organizeddisplay,
   particlemotion,
   quakeml,
   ringserverweb,
+  ringserverweb4,
   sacPoleZero,
   scale,
   seedcodec,
@@ -125,14 +140,19 @@ export {
   seismogramloader,
   seismogramsegment,
   seismograph,
+  seismographmarker,
   seismographutil,
   seismographconfig,
   seismographconfigeditor,
   sorting,
+  spelement,
   spectraplot,
   stationxml,
+  syngine,
   taper,
+  taup3,
   transfer,
+  transition,
   traveltime,
   usgsgeojson,
   util,
