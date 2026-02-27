@@ -945,7 +945,7 @@ export function mightBeXml(buf: ArrayBufferLike): boolean {
   return true;
 }
 
-export function updateVersionText(selector = "#sp-version") {
+export function updateVersionText(selector = ".sp_version") {
   document.querySelectorAll(selector).forEach((el) => {
     el.textContent = version;
   });
