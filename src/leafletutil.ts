@@ -1,7 +1,7 @@
 import { kmPerDeg } from "./distaz";
 import { Quake, createQuakeClickEvent } from "./quakeml";
 import * as import_leaflet_css from "./leaflet_css";
-import { Station, createStationClickEvent } from "./stationxml";
+import { Network, Station, createStationClickEvent } from "./stationxml";
 import { SeisPlotElement } from "./spelement";
 import {
   SeismogramDisplayData,
@@ -72,17 +72,21 @@ div.wrapper {
 export function cssClassForStationCodes(station: Station): string {
   return `sta_${station.codes(STATION_CODE_SEP)}`;
 }
+export function cssClassForNetworkCode(network: Network): string {
+  return `net_${network.networkCode}`;
+}
 export function createStationMarker(
   station: Station,
   classList?: Array<string>,
   isactive = true,
   centerLon = 0,
 ) {
-  const allClassList = classList ? classList.slice() : [];
+  const allClassList = (classList!=null) ? classList.slice() : [];
   allClassList.push(
     isactive ? StationMarkerClassName : InactiveStationMarkerClassName,
   );
   allClassList.push(cssClassForStationCodes(station));
+  allClassList.push(cssClassForNetworkCode(station.network));
   const icon = L.divIcon({
     className: allClassList.join(" "),
   });
