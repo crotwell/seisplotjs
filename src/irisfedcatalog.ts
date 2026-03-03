@@ -95,7 +95,7 @@ export class FedCatalogDataCenter {
     if (this.stationQuery) {
       return this.stationQuery.postQuery(this.level, this.postLines);
     } else {
-      return Promise.all([] as Network[]);
+      return Promise.resolve([] as Network[]);
     }
   }
   queryStationRawXml(): Promise<Document> {
@@ -124,7 +124,7 @@ export class FedCatalogDataCenter {
       return this.dataSelectQuery.postQuerySeismograms(sddList);
     } else {
       // dataSelectQuery missing
-      return Promise.all([] as SeismogramDisplayData[]);
+      return Promise.resolve([] as SeismogramDisplayData[]);
     }
   }
 }

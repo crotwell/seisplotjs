@@ -42,7 +42,7 @@ import {
   drawXScaleGridLines,
   drawYScaleGridLines,
 } from "./seismographutil";
-import { XHTML_NS } from "./util";
+import { XHTML_NS, warn } from "./util";
 import type { MarkerType } from "./seismographmarker";
 import type { HandlebarsInput } from "./axisutil";
 import type { Axis } from "d3-axis";
@@ -430,7 +430,7 @@ export class Seismograph extends SeisPlotElement {
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.beforeFirstDraw = false;
-      this.seismographConfig.linkedAmplitudeScale.recalculate();
+      this.seismographConfig.linkedAmplitudeScale.recalculate().catch((e) => warn(e));
     } else {
       this.redraw();
     }
@@ -1568,7 +1568,7 @@ export class Seismograph extends SeisPlotElement {
       // otherwise, just append the data and wait for outside to call first draw()
       //this.drawSeismograms();
       if (this.seismographConfig.linkedAmplitudeScale) {
-        this.seismographConfig.linkedAmplitudeScale.recalculate();
+        this.seismographConfig.linkedAmplitudeScale.recalculate().catch((e) => warn(e));
       } else {
         this.redraw();
       }

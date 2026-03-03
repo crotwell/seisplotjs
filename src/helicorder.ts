@@ -17,7 +17,8 @@ import { SeismographConfig } from "./seismographconfig";
 import { SeisPlotElement } from "./spelement";
 import {
   isDef, validStartTime, validEndTime, startDuration, nameForTimeZone,
-  anplusb
+  anplusb,
+  warn
 } from "./util";
 
 export const HELI_CLICK_EVENT = "heliclick";
@@ -390,7 +391,7 @@ export class Helicorder extends SeisPlotElement {
         seismographWrapper.insertBefore(utcDiv, seismographWrapper.firstChild);
       }
       if (this.heliConfig.lineSeisConfig.linkedAmplitudeScale) {
-        this.heliConfig.lineSeisConfig.linkedAmplitudeScale.recalculate();
+        this.heliConfig.lineSeisConfig.linkedAmplitudeScale.recalculate().catch((e) => warn(e));
       } else {
         seismograph.redraw();
       }
