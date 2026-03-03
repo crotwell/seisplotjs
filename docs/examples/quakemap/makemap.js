@@ -14,8 +14,11 @@ Leaflet needs its own CSS and station marker uses a textual triangle
 created via CSS. Seisplotjs provides a helper to insert this css
 into the <head> element, but you can add it manually instead.
  */
-sp.cssutil.insertCSS(sp.leafletutil.leaflet_css);
-sp.cssutil.insertCSS(sp.leafletutil.stationMarker_css);
+sp.cssutil.insertCSS(sp.leafletutil.leaflet_css, "spjs_leaflet");
+sp.cssutil.insertCSS(sp.leafletutil.stationMarker_css, "spjs_station");
+
+sp.util.updateVersionText('.sp_version');
+
 
 /*
 Basic leaflet map creation.
