@@ -276,9 +276,13 @@ export class Quake extends BaseElement {
    * @param   host optional source of the xml to help determine the event id style
    * @returns     Extracted Id, or "unknownEventId" if we can't figure it out
    */
-  static extractEventId(qml: Element, host?: string): string {
+  static extractEventId(qml: Element, _host?: string): string {
+    const dataId = _grabAttributeNS(qml, ANSS_CATALOG_NS, "dataid");
+    if (isNonEmptyStringArg(dataId)) {
+      // usgs sets ns0:dataid to be event id, so if that exists, use it
+      return dataId;
+    }
     const eventId = _grabAttributeNS(qml, ANSS_CATALOG_NS, "eventid");
-
     const catalogEventSource = _grabAttributeNS(
       qml,
       ANSS_CATALOG_NS,
@@ -286,7 +290,7 @@ export class Quake extends BaseElement {
     );
 
     if (isNonEmptyStringArg(eventId)) {
-      if (host === USGS_HOST && isNonEmptyStringArg(catalogEventSource)) {
+      if (isNonEmptyStringArg(catalogEventSource)) {
         // USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventid, sigh...
         return catalogEventSource + eventId;
       } else {
@@ -310,6 +314,13 @@ export class Quake extends BaseElement {
       if (parsed) {
         return parsed[1];
       }
+
+      re = /quakeml:se.anss.org\/Event\/([\w\d]+)\/([\w\d]+)/;
+      parsed = re.exec(publicid);
+      if (parsed) {
+        return parsed[1]+parsed[2];
+      }
+      return publicid;
     }
 
     return UNKNOWN_PUBLIC_ID;
