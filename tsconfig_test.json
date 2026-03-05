@@ -10,18 +10,18 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "noEmit": false,
+    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "skipLibCheck": false,
     "declaration": true,
-    "declarationDir": "dist/dts",
-    "outDir": "dist/dts"
+    "declarationDir": "dist/dts_test",
+    "outDir": "dist/dts_test"
   },
   "files": ["global.d.ts",
-    "node_modules/jest-expect-message/types/index.d.ts"
+    "node_modules/jest-expect-message/types/index.d.ts",
   ],
-  "include": ["src"],
+  "include": ["test", "testremotes"],
   "sourceMap": true
 }
