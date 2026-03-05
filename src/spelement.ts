@@ -220,6 +220,10 @@ export function addStyleToElement(
   if (!shadowRoot) {
     shadowRoot = element.attachShadow({ mode: "open" });
   }
+  if (id != null) {
+    const oldStyle = shadowRoot.querySelector(`#${id}`);
+    if (oldStyle!=null) {shadowRoot.removeChild(oldStyle);}
+  }
   const styleEl = document.createElement("style");
   styleEl.textContent = css;
   if (id) {

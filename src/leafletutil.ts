@@ -16,19 +16,25 @@ import * as L from "leaflet";
 import { LatLngTuple } from "leaflet";
 
 export const MAP_ELEMENT = "sp-station-quake-map";
-export const triangle = "\u25B2";
+export const TRIANGLE = "triangle";
+export const DOWNTRIANGLE = "downtriangle";
+export const SQUARE = "square";
+export const CROSS = "cross";
 export const StationMarkerClassName = "stationMapMarker";
 export const InactiveStationMarkerClassName = "inactiveStationMapMarker";
 export const QuakeMarkerClassName = "quakeMapMarker";
+export const STATION_ICON_SIZE = 18;
 export const stationIcon = L.divIcon({
   className: StationMarkerClassName,
+  iconSize: [STATION_ICON_SIZE,STATION_ICON_SIZE],
 });
 export const inactiveStationIcon = L.divIcon({
   className: InactiveStationMarkerClassName,
+  iconSize: [STATION_ICON_SIZE,STATION_ICON_SIZE],
 });
-// note currentcolor is svg var that lets us use css, otherwise leaflet will
-// put its default color, blue, which can't be overridden
-export const stationMarker_css = `
+
+
+export const defaultMapElement_css = `
 
 :host {
   display: block
@@ -43,43 +49,98 @@ div.wrapper {
   height: 100%;
   width: 100%;
 }
+`;
 
+export const defaultMarker_css = `
 .${StationMarkerClassName}.${InactiveStationMarkerClassName} {
-  color: darkgrey;
-  font-size: large;
+  fill: darkgrey;
+  stroke: darkgrey;
   z-index: 1;
-  text-shadow: 1px 1px 0 dimgrey, -1px 1px 0 dimgrey, -2px 1px 0 dimgrey, -1px -1px 0 dimgrey, 0 -3px 0 dimgrey, 1px -1px 0 dimgrey, 2px 1px 0 dimgrey;
-}
-.${InactiveStationMarkerClassName}:after{
-  content: "${triangle}";
 }
 .${StationMarkerClassName} {
-  color: blue;
-  font-size: large;
   z-index: 10;
-  text-shadow: 1px 1px 0 dimgrey, -1px 1px 0 dimgrey, -2px 1px 0 dimgrey, -1px -1px 0 dimgrey, 0 -3px 0 dimgrey, 1px -1px 0 dimgrey, 2px 1px 0 dimgrey;
+  fill: royalblue;
+  stroke: royalblue;
+}
+.${StationMarkerClassName} svg  {
+  background: none;
 }
 
-.${StationMarkerClassName}:after{
-  content: "${triangle}";
-}
 .${QuakeMarkerClassName} {
   stroke: red;
   fill: #f03;
   fill-opacity: 0.15;
 }
 `;
+/**
+ * Default marker css
+ * @deprecated
+ */
+export const stationMarker_css = defaultMarker_css;
+
+/**
+ * Create CSS class based on station codes.
+ * @param  station  the station
+ * @return         selector string like sta_CO_JSC
+ */
 export function cssClassForStationCodes(station: Station): string {
   return `sta_${station.codes(STATION_CODE_SEP)}`;
 }
+/**
+ * Create CSS class based on network codes.
+ * @param  network  the network
+ * @return         selector string like net_CO
+ */
 export function cssClassForNetworkCode(network: Network): string {
   return `net_${network.networkCode}`;
 }
+
+export function createStationSVG(iconSize=STATION_ICON_SIZE, symbol: string=TRIANGLE): string {
+  const strokeWidth=2;
+  const xCent = iconSize/2;
+  const yCent = iconSize/2;
+  const shift = (iconSize-strokeWidth)/2;
+  let out = `<svg version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" width="${iconSize}" height="${iconSize}">`;
+  // debug crosshairs
+  //out += `<line x1="0" y1="${yCent}" x2="${iconSize}" y2="${yCent}" stroke="grey" />
+  //        <line x1="${xCent}" y1="0" x2="${xCent}" y2="${iconSize}" stroke="grey" />`;
+  if (symbol === DOWNTRIANGLE) {
+    out+= `<polygon points="${xCent},${yCent+shift} ${xCent+shift},${yCent-shift} ${xCent-shift},${yCent-shift}" stroke-width="${strokeWidth}""/>
+      `;
+  } else if (symbol === SQUARE) {
+    out+= `<polygon points="${xCent-shift},${yCent-shift} ${xCent+shift},${yCent-shift} ${xCent+shift},${yCent+shift} ${xCent-shift},${yCent+shift}" stroke-width="${strokeWidth}""/>
+      `;
+  } else if (symbol === CROSS) {
+    out += `<line x1="${xCent-shift}" y1="${yCent}" x2="${xCent+shift}" y2="${yCent}" stroke-width="${strokeWidth}"/>
+    <line x1="${xCent}" y1="${yCent-shift}" x2="${xCent}" y2="${yCent+shift}"  stroke-width="${strokeWidth}"/>`;
+  } else {
+    //if (symbol === TRIANGLE) {
+    out += `
+    <polygon points="${xCent},${yCent-shift} ${xCent+shift},${yCent+shift} ${xCent-shift},${yCent+shift}" stroke-width="${strokeWidth}""/>
+      `;
+  }
+  out += "</svg>";
+  return out;
+}
+
+/**
+ * Create a station marker as a leaflet divIcon. Also binds the station codes
+ * as a tooltip.
+ * @param  station  the station, with lat, lon
+ * @param  classList additional css class names to add
+ * @param  isactive=true adds inactiveStationMapMarker to class list if not active
+ * @param  centerLon=0   center map longitude, station lon are adjusted by +-360 to be closest to this
+ * @param  iconSize=STATION_ICON_SIZE  optional icon size
+ * @param  iconSymbol=TRIANGLE  optional icon symbol, one of triangle, downtriangle, square or cross
+ * @return  leaflet marker for the station
+ */
 export function createStationMarker(
   station: Station,
   classList?: Array<string>,
   isactive = true,
   centerLon = 0,
+  iconSize = STATION_ICON_SIZE,
+  iconSymbol = TRIANGLE,
 ) {
   const allClassList = (classList!=null) ? classList.slice() : [];
   allClassList.push(
@@ -87,8 +148,12 @@ export function createStationMarker(
   );
   allClassList.push(cssClassForStationCodes(station));
   allClassList.push(cssClassForNetworkCode(station.network));
+
   const icon = L.divIcon({
+    html: createStationSVG(iconSize, iconSymbol),
     className: allClassList.join(" "),
+    iconSize: [iconSize,iconSize],
+    iconAnchor: [iconSize/2,iconSize/2]
   });
   const sLon =
     station.longitude - centerLon <= 180
@@ -168,6 +233,9 @@ export const FIT_BOUNDS = "fitBounds";
 export const QUAKE_MARKER_STYLE_EL = "quakeMarkerStyle";
 export const STATION_MARKER_STYLE_EL = "staMarkerStyle";
 export const STATION_CODE_SEP = "_";
+export const LEAFLET_CSS_ID = "leafletcss";
+export const MAP_CSS_ID = "stationquakemapcss";
+export const MARKER_CSS_ID = "defaultmarkercss";
 
 export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
@@ -185,6 +253,8 @@ export class QuakeStationMap extends SeisPlotElement {
   quakeLayerName = "Quakes";
   stationLayer = L.layerGroup();
   stationLayerName = "Stations";
+  stationIconSize=STATION_ICON_SIZE;
+  stationIconSymbol=TRIANGLE;
   constructor(
     seisData?: Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
@@ -195,8 +265,9 @@ export class QuakeStationMap extends SeisPlotElement {
     this.stationClassMap = new Map<string, Array<string>>();
     this.quakeClassMap = new Map<string, Array<string>>();
 
-    this.addStyle(leaflet_css);
-    this.addStyle(stationMarker_css);
+    this.addStyle(leaflet_css, LEAFLET_CSS_ID);
+    this.addStyle(defaultMapElement_css, MAP_CSS_ID);
+    this.addStyle(stationMarker_css, MARKER_CSS_ID);
 
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
@@ -288,6 +359,11 @@ export class QuakeStationMap extends SeisPlotElement {
       this.stationList.push(station);
       classList.forEach((cn) => this.stationAddClass(station, cn));
     }
+  }
+  stationIcon(iconSize: number=STATION_ICON_SIZE, iconSymbol: string=TRIANGLE) {
+    this.stationIconSize = iconSize;
+    this.stationIconSymbol = iconSymbol;
+    if (iconSize < 0) {throw new Error(`icon size must be postive number: ${iconSize}`);}
   }
   /**
    * Adds a css class for the station icon for additional styling,
@@ -516,9 +592,13 @@ export class QuakeStationMap extends SeisPlotElement {
         this.stationClassMap.get(s.codes(STATION_CODE_SEP)),
         true,
         this.centerLon,
+        this.stationIconSize,
+        this.stationIconSymbol
       );
-      //m.addTo(mymap);
       m.addTo(this.stationLayer);
+      //   for debug, marker at right place on map
+      // const mm = L.marker([s.latitude, s.longitude]);
+      // mm.addTo(this.stationLayer);
       this.mapItems.push([s.latitude, s.longitude]);
       m.addEventListener("click", (evt) => {
         const ce = createStationClickEvent(s, evt.originalEvent);
@@ -597,8 +677,9 @@ export class QuakeStationMap extends SeisPlotElement {
     let style = "";
     this.classToColor.forEach((color, classname) => {
       style = `${style}
-div.leaflet-marker-icon.${classname} {
-  color: ${color};
+div.leaflet-marker-icon.${StationMarkerClassName}.${classname}  {
+  fill: ${color};
+  stroke: ${color};
 }
 `;
     });

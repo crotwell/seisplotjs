@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.2.0_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.1-SNAPSHOT_standalone.mjs";
 
 const WORLD_OCEAN =
   "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}";
@@ -10,12 +10,18 @@ const quakeExtraCssClass = [];
 const stationExtraCssClass = [];
 
 /*
-Leaflet needs its own CSS and station marker uses a textual triangle
-created via CSS. Seisplotjs provides a helper to insert this css
+Leaflet needs its own CSS and station, quake markers need CSS as well.
+Seisplotjs provides a helper to insert this css
 into the <head> element, but you can add it manually instead.
  */
+const iconSize=18; // size of the station marker icon
+const iconSymbol=sp.leafletutil.DOWNTRIANGLE; // also TRIANGLE, SQUARE and CROSS
 sp.cssutil.insertCSS(sp.leafletutil.leaflet_css, "spjs_leaflet");
-sp.cssutil.insertCSS(sp.leafletutil.stationMarker_css, "spjs_station");
+/*
+Can add the default spjs styling for markers on the maps:
+  sp.cssutil.insertCSS(sp.leafletutil.defaultMarker_css, "spjs_station");
+*/
+// or can define our own style, for example in style.css
 
 sp.util.updateVersionText('.sp_version');
 
@@ -33,19 +39,19 @@ const map = L.map(mapDiv, {
   zoom: zoom,
   layers: [backgroundLayer]
 });
-mapDiv.addEventListener("quakeclick", evt => {
-  const infoDiv = document.querySelector("#quakeinfo");
-  const quake = evt.detail.quake;
-  infoDiv.innerHTML = `
-  <h3>Quake: ${quake.description}</h3>
-  <ul>
-    <li>Time: ${quake.time}</li>
-    <li>Mag: ${quake.magnitude}</li>
-    <li>Location: ${quake.latitude}/${quake.longitude}</li>
-    <li>Depth: ${quake.depthKm} km</li>
-    <li>EventId: ${quake.eventId}</li>
-  </ul>
-  `;
+mapDiv.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, evt => {
+    const infoDiv = document.querySelector("#quakeinfo");
+    const quake = evt.detail.quake;
+    infoDiv.innerHTML = `
+    <h3>Quake: ${quake.description}</h3>
+    <ul>
+      <li>Time: ${quake.time}</li>
+      <li>Mag: ${quake.magnitude}</li>
+      <li>Location: ${quake.latitude}/${quake.longitude}</li>
+      <li>Depth: ${quake.depthKm} km</li>
+      <li>EventId: ${quake.eventId}</li>
+    </ul>
+    `;
 });
 
 mapDiv.addEventListener("stationclick", evt => {
@@ -145,7 +151,7 @@ let stationQuery = new sp.fdsnstation.StationQuery()
 stationQuery.queryStations().then(netList => {
   const stationMarkers = [];
   for( const sta of sp.stationxml.allStations(netList)) {
-    const marker = sp.leafletutil.createStationMarker(sta, [], true, center[1]);
+    const marker = sp.leafletutil.createStationMarker(sta, [], true, center[1], iconSize, iconSymbol);
     stationMarkers.push(marker);
     marker.addEventListener("click", (evt) => {
       const ce = sp.stationxml.createStationClickEvent(sta, evt.originalEvent);

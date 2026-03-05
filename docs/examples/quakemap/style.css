@@ -1,0 +1,19 @@
+.stationMapMarker.inactiveStationMapMarker {
+  fill: darkgrey;
+  stroke: darkgrey;
+  z-index: 1;
+}
+.stationMapMarker {
+  z-index: 10;
+  fill: royalblue;
+  stroke: blue;
+}
+.stationMapMarker svg  {
+  background: none;
+}
+
+.quakeMapMarker {
+  stroke: red;
+  fill: #f03;
+  fill-opacity: 0.15;
+}

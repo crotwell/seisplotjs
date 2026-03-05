@@ -25,14 +25,9 @@ export function insertCSS(cssText: string, id: string): HTMLElement {
 
   if (id) {
     for (const c of Array.from(head.children)) {
-      // only remove if a <style> element, classed with autoseisplotjs and same id within head
+      // only remove if a <style> element and same id within head
       if (isIdStyleElement(c, id)) {
-        // null check for flow
-        if (typeof c.parentNode !== "undefined" && c.parentNode !== null) {
-          c.parentNode.removeChild(c);
-        }
-
-        break;
+        document.head.removeChild(c);
       }
     }
   }
@@ -44,7 +39,6 @@ export function insertCSS(cssText: string, id: string): HTMLElement {
   }
 
   styleElement.type = "text/css";
-  styleElement.classList.add(AUTO_CLASSED);
   styleElement.appendChild(document.createTextNode(cssText));
   head.insertBefore(styleElement, head.firstChild);
   return styleElement;
@@ -66,6 +60,6 @@ export function isCSSInserted(id: string): boolean {
 }
 export function isIdStyleElement(c: Element, id: string): boolean {
   return (
-    c.localName === "style" && c.id === id && c.classList.contains(AUTO_CLASSED)
+    c.localName === "style" && c.id === id
   );
 }
