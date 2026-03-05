@@ -36,6 +36,23 @@ export const FAKE_EMPTY_XML =
 
 export const QUAKE_CLICK_EVENT = "quakeclick";
 
+export interface QuakeEventDetail {
+  mouseevent: Event,
+  quake: Quake
+}
+
+/**
+ * Typescript guard for quakeclick CustomEvents.
+ * @param  event  generic event to ensure is a CustomEvent<QuakeEventDetail>
+ * @return  true if is correct type
+ */
+export function isQuakeClickCustomEvent(event: Event): event is CustomEvent<QuakeEventDetail> {
+  if ('detail' in event) {
+    const customEvent = event as CustomEvent;
+    return "quake" in customEvent.detail;
+  }
+  return false;
+}
 /**
  * Utility function to create CustomEvent for clicking on a Quake, for example
  * in a map or table.
@@ -47,8 +64,8 @@ export const QUAKE_CLICK_EVENT = "quakeclick";
 export function createQuakeClickEvent(
   q: Quake,
   mouseclick: Event,
-): CustomEvent {
-  const detail = {
+): CustomEvent<QuakeEventDetail> {
+  const detail: QuakeEventDetail = {
     mouseevent: mouseclick,
     quake: q,
   };

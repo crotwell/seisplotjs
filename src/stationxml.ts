@@ -42,6 +42,43 @@ export const FAKE_EMPTY_XML =
 export const CHANNEL_CLICK_EVENT = "channelclick";
 export const STATION_CLICK_EVENT = "stationclick";
 
+
+export interface ChannelEventDetail {
+  mouseevent: Event,
+  channel: Channel
+}
+
+export interface StationEventDetail {
+  mouseevent: Event,
+  station: Station
+}
+
+/**
+ * Typescript guard for channelclick CustomEvents.
+ * @param  event  generic event to ensure is a CustomEvent<ChannelEventDetail>
+ * @return  true if is correct type
+ */
+export function isChannelClickCustomEvent(event: Event): event is CustomEvent<ChannelEventDetail> {
+  if ('detail' in event) {
+    const customEvent = event as CustomEvent;
+    return "channel" in customEvent.detail;
+  }
+  return false;
+}
+
+/**
+ * Typescript guard for stationclick CustomEvents.
+ * @param  event  generic event to ensure is a CustomEvent<StationEventDetail>
+ * @return  true if is correct type
+ */
+export function isStationClickCustomEvent(event: Event): event is CustomEvent<StationEventDetail> {
+  if ('detail' in event) {
+    const customEvent = event as CustomEvent;
+    return "station" in customEvent.detail;
+  }
+  return false;
+}
+
 /**
  * Utility function to create CustomEvent for clicking on a Channel, for example
  * in a map or table.
@@ -53,8 +90,8 @@ export const STATION_CLICK_EVENT = "stationclick";
 export function createChannelClickEvent(
   sta: Channel,
   mouseclick: Event,
-): CustomEvent {
-  const detail = {
+): CustomEvent<ChannelEventDetail> {
+  const detail: ChannelEventDetail = {
     mouseevent: mouseclick,
     channel: sta,
   };
@@ -78,8 +115,8 @@ export function createChannelClickEvent(
 export function createStationClickEvent(
   sta: Station,
   mouseclick: Event,
-): CustomEvent {
-  const detail = {
+): CustomEvent<StationEventDetail> {
+  const detail: StationEventDetail = {
     mouseevent: mouseclick,
     station: sta,
   };
