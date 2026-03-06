@@ -242,7 +242,7 @@ export class QuakeTable extends HTMLElement {
   _timeFormat?: any;
   lastSortAsc = true;
   lastSortCol: string | undefined;
-  _columnValues: Map<string, (q: Quake) => string>;
+  _columnValues: Map<string, (q: Quake) => string|HTMLElement>;
 
   constructor(
     quakeList?: Array<Quake>,
@@ -301,10 +301,10 @@ export class QuakeTable extends HTMLElement {
     this._columnLabels = cols;
     this.draw();
   }
-  get columnValues(): Map<string, (q: Quake) => string> {
+  get columnValues(): Map<string, (q: Quake) => string|HTMLElement> {
     return this._columnValues;
   }
-  set columnValues(cols: Map<string, (q: Quake) => string>) {
+  set columnValues(cols: Map<string, (q: Quake) => string|HTMLElement>) {
     this._columnValues = cols;
     this.draw();
   }
@@ -314,6 +314,11 @@ export class QuakeTable extends HTMLElement {
   set timeZone(timezone: Zone|undefined) {
     this._timezone = timezone;
     this.draw();
+  }
+
+  addColumn(key: string, label: string, valueFn: (q: Quake) => string|HTMLElement) {
+    this.columnLabels.set(key, label);
+    this.columnValues.set(key, valueFn);
   }
 
   /**
@@ -424,7 +429,12 @@ export class QuakeTable extends HTMLElement {
           cell.textContent = localQuakeTime.toISO();
         }
       } else {
-        cell.textContent = this.getQuakeValue(q, h);
+        const cellValue = this.getQuakeValue(q, h);
+        if (cellValue instanceof HTMLElement) {
+          cell.appendChild(cellValue);
+        } else  {
+          cell.textContent = cellValue;
+        }
       }
       if (index !== -1) {
         index++;
@@ -432,7 +442,7 @@ export class QuakeTable extends HTMLElement {
     });
   }
 
-  getQuakeValue(q: Quake, h: string): string {
+  getQuakeValue(q: Quake, h: string): string|HTMLElement {
     const fn = this._columnValues.has(h) ? this._columnValues.get(h) : null;
 
     if (fn != null) {
@@ -500,14 +510,16 @@ export class QuakeTable extends HTMLElement {
 customElements.define(QUAKE_INFO_ELEMENT, QuakeTable);
 
 export class ChannelTable extends HTMLElement {
-  _columnLabels: Map<CHANNEL_COLUMN, string>;
+  _columnLabels: Map<string, string>;
+  _columnValues: Map<string, (c: Channel) => string|HTMLElement>;
   _channelList: Array<Channel>;
   _rowToChannel: Map<HTMLTableRowElement, Channel>;
   lastSortAsc = true;
-  lastSortCol: CHANNEL_COLUMN | undefined;
+  lastSortCol: string | undefined;
   constructor(
     channelList?: Array<Channel>,
-    columnLabels?: Map<CHANNEL_COLUMN, string>,
+    columnLabels?: Map<string, string>,
+    columnValues?: Map<string, (sta: Channel) => string|HTMLElement>
   ) {
     super();
     if (!channelList) {
@@ -530,6 +542,25 @@ export class ChannelTable extends HTMLElement {
     this._columnLabels = columnLabels;
     this._rowToChannel = new Map();
 
+
+    if (!columnValues) {
+      columnValues = new Map<string, (sta: Channel) => string|HTMLElement>();
+      const defColumnValues = ChannelTable.createDefaultColumnValues();
+      for (const key of columnLabels.keys()) {
+        if (defColumnValues.has(key)) {
+          const fn = defColumnValues.get(key);
+          if (fn != null) {
+            columnValues.set(key, fn);
+          } else {
+            throw new Error(`ChannelTable function for key is missing: ${key}`);
+          }
+        } else {
+          throw new Error(`Unknown ChannelTable key: ${key}`);
+        }
+      }
+    }
+    this._columnValues = columnValues;
+
     const shadow = this.attachShadow({ mode: "open" });
     const table = document.createElement("table");
     table.setAttribute("class", "wrapper");
@@ -544,12 +575,23 @@ export class ChannelTable extends HTMLElement {
     this._channelList = ql;
     this.draw();
   }
-  get columnLabels(): Map<CHANNEL_COLUMN, string> {
+  get columnLabels(): Map<string, string> {
     return this._columnLabels;
   }
-  set columnLabels(cols: Map<CHANNEL_COLUMN, string>) {
+  set columnLabels(cols: Map<string, string>) {
     this._columnLabels = cols;
     this.draw();
+  }
+  get columnValues(): Map<string, (c: Channel) => string|HTMLElement> {
+    return this._columnValues;
+  }
+  set columnValues(cols: Map<string, (c: Channel) => string|HTMLElement>) {
+    this._columnValues = cols;
+    this.draw();
+  }
+  addColumn(key: string, label: string, valueFn: (c: Channel) => string|HTMLElement) {
+    this.columnLabels.set(key, label);
+    this.columnValues.set(key, valueFn);
   }
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
@@ -580,18 +622,55 @@ export class ChannelTable extends HTMLElement {
       });
     });
   }
-  headers(): Array<CHANNEL_COLUMN> {
+  headers(): Array<string> {
     return Array.from(this._columnLabels.keys());
   }
+
   populateRow(q: Channel, row: HTMLTableRowElement, index: number) {
     this._rowToChannel.set(row, q);
     this.headers().forEach((h) => {
       const cell = row.insertCell(index);
-      cell.textContent = ChannelTable.getChannelValue(q, h);
+
+      const cellValue = this.getChannelValue(q, h);
+      if (cellValue instanceof HTMLElement) {
+        cell.appendChild(cellValue);
+      } else  {
+        cell.textContent = cellValue;
+      }
+
       if (index !== -1) {
         index++;
       }
     });
+  }
+
+  getChannelValue(c: Channel, h: string): string|HTMLElement {
+    const fn = this._columnValues.has(h) ? this._columnValues.get(h) : null;
+
+    if (fn != null) {
+      return fn(c);
+    } else {
+      return `unknown: ${String(h)}`;
+    }
+  }
+  static createDefaultColumnValues() {
+    const columnValues = new Map<string, (c: Channel) => string|HTMLElement>();
+    columnValues.set(CHANNEL_COLUMN.START, (c: Channel) => stringify(c.startDate.toISO()));
+    columnValues.set(CHANNEL_COLUMN.END, (c: Channel) => c.endDate ? stringify(c.endDate.toISO()) : "");
+    columnValues.set(CHANNEL_COLUMN.LAT, (c: Channel) => latlonFormat.format(c.latitude));
+    columnValues.set(CHANNEL_COLUMN.LON, (c: Channel) => latlonFormat.format(c.longitude));
+    columnValues.set(CHANNEL_COLUMN.ELEVATION, (c: Channel) => depthMeterFormat.format(c.elevation));
+    columnValues.set(CHANNEL_COLUMN.DEPTH, (c: Channel) => depthFormat.format(c.depth));
+    columnValues.set(CHANNEL_COLUMN.AZIMUTH, (c: Channel) => latlonFormat.format(c.azimuth));
+    columnValues.set(CHANNEL_COLUMN.DIP, (c: Channel) => latlonFormat.format(c.dip));
+    columnValues.set(CHANNEL_COLUMN.SOURCEID, (c: Channel) => stringify(c.sourceId.toString()));
+    columnValues.set(CHANNEL_COLUMN.CODE, (c: Channel) => stringify(c.codes()));
+    columnValues.set(CHANNEL_COLUMN.NETWORK_CODE, (c: Channel) => c.networkCode);
+    columnValues.set(CHANNEL_COLUMN.STATION_CODE, (c: Channel) => c.stationCode);
+    columnValues.set(CHANNEL_COLUMN.LOCATION_CODE, (c: Channel) => c.locationCode);
+    columnValues.set(CHANNEL_COLUMN.CHANNEL_CODE, (c: Channel) => c.channelCode);
+    columnValues.set(CHANNEL_COLUMN.CODE, (c: Channel) => stringify(c.codes()));
+    return columnValues;
   }
   static getChannelValue(q: Channel, h: CHANNEL_COLUMN): string {
     if (h === CHANNEL_COLUMN.START) {
@@ -626,7 +705,7 @@ export class ChannelTable extends HTMLElement {
       return `unknown: ${String(h)}`;
     }
   }
-  sort(h: CHANNEL_COLUMN, _headerCell: HTMLTableCellElement) {
+  sort(h: string, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {
@@ -660,8 +739,8 @@ export class ChannelTable extends HTMLElement {
             out = qa.elevation - qb.elevation;
           } else {
             // just use string
-            const ta = ChannelTable.getChannelValue(qa, h);
-            const tb = ChannelTable.getChannelValue(qb, h);
+            const ta = this.getChannelValue(qa, h);
+            const tb = this.getChannelValue(qb, h);
             if (ta < tb) {
               out = -1;
             } else if (ta > tb) {
@@ -703,11 +782,11 @@ export class StationTable extends HTMLElement {
   _rowToStation: Map<HTMLTableRowElement, Station>;
   lastSortAsc = true;
   lastSortCol: string | undefined;
-  _columnValues: Map<string, (sta: Station) => string>;
+  _columnValues: Map<string, (sta: Station) => string|HTMLElement>;
   constructor(
     stationList?: Array<Station>,
     columnLabels?: Map<string, string>,
-    columnValues?: Map<string, (sta: Station) => string>
+    columnValues?: Map<string, (sta: Station) => string|HTMLElement>
   ) {
     super();
     if (!stationList) {
@@ -720,7 +799,7 @@ export class StationTable extends HTMLElement {
     this._columnLabels = columnLabels;
 
     if (!columnValues) {
-      columnValues = new Map<string, (sta: Station) => string>();
+      columnValues = new Map<string, (sta: Station) => string|HTMLElement>();
       const defColumnValues = StationTable.createDefaultColumnValues();
       for (const key of columnLabels.keys()) {
         if (defColumnValues.has(key)) {
@@ -762,14 +841,18 @@ export class StationTable extends HTMLElement {
     this._columnLabels = cols;
     this.draw();
   }
-  get columnValues(): Map<string, (sta: Station) => string> {
+  get columnValues(): Map<string, (sta: Station) => string|HTMLElement> {
     return this._columnValues;
   }
-  set columnValues(cols: Map<string, (sta: Station) => string>) {
+  set columnValues(cols: Map<string, (sta: Station) => string|HTMLElement>) {
     this._columnValues = cols;
     this.draw();
   }
 
+  addColumn(key: string, label: string, valueFn: (q: Station) => string|HTMLElement) {
+    this.columnLabels.set(key, label);
+    this.columnValues.set(key, valueFn);
+  }
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -802,11 +885,20 @@ export class StationTable extends HTMLElement {
   headers(): Array<string> {
     return Array.from(this._columnValues.keys());
   }
+
+
   populateRow(q: Station, row: HTMLTableRowElement, index: number) {
     this._rowToStation.set(row, q);
     this.headers().forEach((h) => {
       const cell = row.insertCell(index);
-      cell.textContent = this.getStationValue(q, h);
+
+      const cellValue = this.getStationValue(q, h);
+      if (cellValue instanceof HTMLElement) {
+        cell.appendChild(cellValue);
+      } else  {
+        cell.textContent = cellValue;
+      }
+
       if (index !== -1) {
         index++;
       }
@@ -838,7 +930,7 @@ export class StationTable extends HTMLElement {
     columnValues.set(STATION_COLUMN.DESCRIPTION, (sta: Station) => `${sta.description}`);
     return columnValues;
   }
-  getStationValue(q: Station, h: string): string {
+  getStationValue(q: Station, h: string): string|HTMLElement {
     if (this._columnValues.has(h)) {
       const fn = this._columnValues.get(h);
       if (fn != null) {
@@ -935,14 +1027,16 @@ export const STATION_INFO_ELEMENT = "sp-station-table";
 customElements.define(STATION_INFO_ELEMENT, StationTable);
 
 export class SeismogramTable extends HTMLElement {
-  _columnLabels: Map<SEISMOGRAM_COLUMN, string>;
+  _columnLabels: Map<string, string>;
+  _columnValues: Map<string, (s: SeismogramDisplayData)=>string|HTMLElement>;
   _sddList: Array<SeismogramDisplayData>;
   _rowToSDD: Map<HTMLTableRowElement, SeismogramDisplayData>;
   lastSortAsc = true;
   lastSortCol: string | undefined;
   constructor(
     sddList?: Array<SeismogramDisplayData>,
-    columnLabels?: Map<SEISMOGRAM_COLUMN, string>,
+    columnLabels?: Map<string, string>,
+    columnValues?: Map<string, (s: SeismogramDisplayData)=>string|HTMLElement>
   ) {
     super();
     if (!sddList) {
@@ -964,6 +1058,27 @@ export class SeismogramTable extends HTMLElement {
     this._columnLabels = columnLabels;
     this._rowToSDD = new Map();
 
+    // Column Values are optional at the individual key level.
+    // For the columns that the user does not provide a function,
+    // use the default display style in getSeismogramValue
+    if (!columnValues) {
+      columnValues = new Map<string, (q: SeismogramDisplayData) => string>();
+      const defColumnValues = SeismogramTable.createDefaultColumnValues();
+      for (const key of columnLabels.keys()) {
+        if (defColumnValues.has(key)) {
+          const fn = defColumnValues.get(key);
+          if (fn != null) {
+            columnValues.set(key, fn);
+          } else {
+            throw new Error(`SeismogramTable function for key is missing: ${key}`);
+          }
+        } else {
+          throw new Error(`Unknown SeismogramTable key: ${key}`);
+        }
+      }
+    }
+    this._columnValues = columnValues;
+
     const shadow = this.attachShadow({ mode: "open" });
     const table = document.createElement("table");
     table.setAttribute("class", "wrapper");
@@ -978,12 +1093,24 @@ export class SeismogramTable extends HTMLElement {
     this._sddList = ql;
     this.draw();
   }
-  get columnLabels(): Map<SEISMOGRAM_COLUMN, string> {
+  get columnLabels(): Map<string, string> {
     return this._columnLabels;
   }
-  set columnLabels(cols: Map<SEISMOGRAM_COLUMN, string>) {
+  set columnLabels(cols: Map<string, string>) {
     this._columnLabels = cols;
     this.draw();
+  }
+
+  get columnValues(): Map<string, (q: SeismogramDisplayData) => string|HTMLElement> {
+    return this._columnValues;
+  }
+  set columnValues(cols: Map<string, (q: SeismogramDisplayData) => string|HTMLElement>) {
+    this._columnValues = cols;
+    this.draw();
+  }
+  addColumn(key: string, label: string, valueFn: (q: SeismogramDisplayData) => string|HTMLElement) {
+    this.columnLabels.set(key, label);
+    this.columnValues.set(key, valueFn);
   }
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
@@ -1011,26 +1138,56 @@ export class SeismogramTable extends HTMLElement {
       this.populateRow(q, row, -1);
     });
   }
-  headers(): Array<SEISMOGRAM_COLUMN> {
+  headers(): Array<string> {
     return Array.from(this._columnLabels.keys());
   }
-  populateRow(
-    q: SeismogramDisplayData,
-    row: HTMLTableRowElement,
-    index: number,
-  ) {
+
+  populateRow(q: SeismogramDisplayData, row: HTMLTableRowElement, index: number) {
     this._rowToSDD.set(row, q);
     this.headers().forEach((h) => {
       const cell = row.insertCell(index);
-      cell.textContent = SeismogramTable.getSeismogramValue(q, h);
+
+      const cellValue = this.getSeismogramValue(q, h);
+      if (cellValue instanceof HTMLElement) {
+        cell.appendChild(cellValue);
+      } else  {
+        cell.textContent = cellValue;
+      }
+
       if (index !== -1) {
         index++;
       }
     });
   }
+
+  getSeismogramValue(q: SeismogramDisplayData, h: string): string|HTMLElement {
+    const fn = this._columnValues.has(h) ? this._columnValues.get(h) : null;
+
+    if (fn != null) {
+      return fn(q);
+    } else {
+      return `unknown: ${String(h)}`;
+    }
+  }
+
+  static createDefaultColumnValues() {
+    const columnValues = new Map<string, (q: SeismogramDisplayData) => string>();
+    columnValues.set(SEISMOGRAM_COLUMN.START, (q: SeismogramDisplayData) => stringify(q.start.toISO()));
+    columnValues.set(SEISMOGRAM_COLUMN.END, (q: SeismogramDisplayData) => stringify(q.start.toISO()));
+    columnValues.set(SEISMOGRAM_COLUMN.DURATION, (q: SeismogramDisplayData) => stringify(q.timeRange.toDuration().toISO()));
+    columnValues.set(SEISMOGRAM_COLUMN.NUM_POINTS, (q: SeismogramDisplayData) => `${q.numPoints}`);
+    columnValues.set(SEISMOGRAM_COLUMN.SAMPLE_RATE, (q: SeismogramDisplayData) => `${q._seismogram?.sampleRate}`);
+    columnValues.set(SEISMOGRAM_COLUMN.SAMPLE_PERIOD, (q: SeismogramDisplayData) => `${q._seismogram?.samplePeriod}`);
+    columnValues.set(SEISMOGRAM_COLUMN.SEGMENTS, (q: SeismogramDisplayData) => `${q._seismogram?.segments.length}`);
+    columnValues.set(SEISMOGRAM_COLUMN.SOURCEID, (q: SeismogramDisplayData) => `${q.sourceId.toString()}`);
+    columnValues.set(SEISMOGRAM_COLUMN.CODE, (q: SeismogramDisplayData) => `${q.codes()}`);
+    columnValues.set(SEISMOGRAM_COLUMN.NETWORK_CODE, (q: SeismogramDisplayData) => `${q.networkCode}`);
+    columnValues.set(SEISMOGRAM_COLUMN.STATION_CODE, (q: SeismogramDisplayData) => `${q.stationCode}`);
+    return columnValues;
+  }
   static getSeismogramValue(
     q: SeismogramDisplayData,
-    h: SEISMOGRAM_COLUMN,
+    h: string,
   ): string {
     if (h === SEISMOGRAM_COLUMN.START) {
       return stringify(q.start.toISO());
@@ -1058,7 +1215,7 @@ export class SeismogramTable extends HTMLElement {
       return `unknown: ${String(h)}`;
     }
   }
-  sort(h: SEISMOGRAM_COLUMN, _headerCell: HTMLTableCellElement) {
+  sort(h: string, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {
