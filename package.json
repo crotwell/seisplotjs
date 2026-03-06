@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "3.2.1-SNAPSHOT",
+  "version": "3.2.1-SNAPSHOT2",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "sideEffects": [
     "animatedseismograph",
