@@ -12,6 +12,7 @@ import { stringify, nameForTimeZone } from "./util";
 import * as textformat from "./textformat";
 import { Handlebars } from "./handlebarshelpers";
 import {DateTime, Zone} from "luxon";
+import {csvFormatRows} from "d3-dsv";
 
 export const INFO_ELEMENT = "sp-station-quake-table";
 export const QUAKE_INFO_ELEMENT = "sp-quake-table";
@@ -175,6 +176,9 @@ table {
     overflow-x: auto;
     white-space: nowrap;
 }
+caption {
+    caption-side: bottom;
+}
 `;
 
 /**
@@ -243,6 +247,7 @@ export class QuakeTable extends HTMLElement {
   lastSortAsc = true;
   lastSortCol: string | undefined;
   _columnValues: Map<string, (q: Quake) => string|HTMLElement>;
+  _caption?: string|HTMLElement;
 
   constructor(
     quakeList?: Array<Quake>,
@@ -315,6 +320,24 @@ export class QuakeTable extends HTMLElement {
     this._timezone = timezone;
     this.draw();
   }
+  get caption(): string|HTMLElement|undefined {
+    return this._caption;
+  }
+  set caption(cap: string|HTMLElement|undefined) {
+    this._caption = cap;
+    const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (table && this._caption) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
+  }
 
   addColumn(key: string, label: string, valueFn: (q: Quake) => string|HTMLElement) {
     this.columnLabels.set(key, label);
@@ -383,6 +406,17 @@ export class QuakeTable extends HTMLElement {
       return;
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (this._caption ) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach((h) => {
@@ -440,6 +474,29 @@ export class QuakeTable extends HTMLElement {
         index++;
       }
     });
+  }
+  tableToCSV() {
+    const out: Array<Array<string>> = [];
+    const headRow:Array<string> = [];
+    out.push(headRow);
+    this.headers().forEach((h) => {
+      let label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      label = label ? label : "";
+      headRow.push(label);
+    });
+    this._quakeList.forEach((q) => {
+      const row: Array<string> = [];
+      out.push(row);
+      this.headers().forEach((h) => {
+        const cellValue = this.getQuakeValue(q, h);
+        if (cellValue instanceof HTMLElement) {
+          row.push(cellValue.textContent);
+        } else  {
+          row.push(cellValue);
+        }
+      });
+    });
+    return csvFormatRows(out);
   }
 
   getQuakeValue(q: Quake, h: string): string|HTMLElement {
@@ -516,6 +573,7 @@ export class ChannelTable extends HTMLElement {
   _rowToChannel: Map<HTMLTableRowElement, Channel>;
   lastSortAsc = true;
   lastSortCol: string | undefined;
+  _caption?: string|HTMLElement;
   constructor(
     channelList?: Array<Channel>,
     columnLabels?: Map<string, string>,
@@ -593,6 +651,25 @@ export class ChannelTable extends HTMLElement {
     this.columnLabels.set(key, label);
     this.columnValues.set(key, valueFn);
   }
+
+  get caption(): string|HTMLElement|undefined {
+    return this._caption;
+  }
+  set caption(cap: string|HTMLElement|undefined) {
+    this._caption = cap;
+    const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (table && this._caption ) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
+  }
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -601,11 +678,23 @@ export class ChannelTable extends HTMLElement {
       return;
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (this._caption ) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach((h) => {
       const cell = theader.appendChild(document.createElement("th"));
-      cell.textContent = h;
+      const label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      cell.textContent = `${label}`;
       cell.addEventListener("click", () => {
         this.sort(h, cell);
       });
@@ -642,6 +731,29 @@ export class ChannelTable extends HTMLElement {
         index++;
       }
     });
+  }
+  tableToCSV() {
+    const out: Array<Array<string>> = [];
+    const headRow:Array<string> = [];
+    out.push(headRow);
+    this.headers().forEach((h) => {
+      let label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      label = label ? label : "";
+      headRow.push(label);
+    });
+    this._channelList.forEach((q) => {
+      const row: Array<string> = [];
+      out.push(row);
+      this.headers().forEach((h) => {
+        const cellValue = this.getChannelValue(q, h);
+        if (cellValue instanceof HTMLElement) {
+          row.push(cellValue.textContent);
+        } else  {
+          row.push(cellValue);
+        }
+      });
+    });
+    return csvFormatRows(out);
   }
 
   getChannelValue(c: Channel, h: string): string|HTMLElement {
@@ -783,6 +895,7 @@ export class StationTable extends HTMLElement {
   lastSortAsc = true;
   lastSortCol: string | undefined;
   _columnValues: Map<string, (sta: Station) => string|HTMLElement>;
+  _caption?: string|HTMLElement;
   constructor(
     stationList?: Array<Station>,
     columnLabels?: Map<string, string>,
@@ -853,6 +966,25 @@ export class StationTable extends HTMLElement {
     this.columnLabels.set(key, label);
     this.columnValues.set(key, valueFn);
   }
+
+  get caption(): string|HTMLElement|undefined {
+    return this._caption;
+  }
+  set caption(cap: string|HTMLElement|undefined) {
+    this._caption = cap;
+    const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (table && this._caption) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
+  }
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -861,11 +993,23 @@ export class StationTable extends HTMLElement {
       return;
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (this._caption) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach((h) => {
       const cell = theader.appendChild(document.createElement("th"));
-      cell.textContent = h;
+      const label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      cell.textContent = `${label}`;
       cell.addEventListener("click", () => {
         this.sort(h, cell);
       });
@@ -903,6 +1047,29 @@ export class StationTable extends HTMLElement {
         index++;
       }
     });
+  }
+  tableToCSV() {
+    const out: Array<Array<string>> = [];
+    const headRow:Array<string> = [];
+    out.push(headRow);
+    this.headers().forEach((h) => {
+      let label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      label = label ? label : "";
+      headRow.push(label);
+    });
+    this._stationList.forEach((q) => {
+      const row: Array<string> = [];
+      out.push(row);
+      this.headers().forEach((h) => {
+        const cellValue = this.getStationValue(q, h);
+        if (cellValue instanceof HTMLElement) {
+          row.push(cellValue.textContent);
+        } else  {
+          row.push(cellValue);
+        }
+      });
+    });
+    return csvFormatRows(out);
   }
 
   static createDefaultColumnLabels() {
@@ -1033,6 +1200,7 @@ export class SeismogramTable extends HTMLElement {
   _rowToSDD: Map<HTMLTableRowElement, SeismogramDisplayData>;
   lastSortAsc = true;
   lastSortCol: string | undefined;
+  _caption?: string|HTMLElement;
   constructor(
     sddList?: Array<SeismogramDisplayData>,
     columnLabels?: Map<string, string>,
@@ -1112,6 +1280,24 @@ export class SeismogramTable extends HTMLElement {
     this.columnLabels.set(key, label);
     this.columnValues.set(key, valueFn);
   }
+  get caption(): string|HTMLElement|undefined {
+    return this._caption;
+  }
+  set caption(cap: string|HTMLElement|undefined) {
+    this._caption = cap;
+    const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (table && this._caption) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
+  }
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -1120,11 +1306,23 @@ export class SeismogramTable extends HTMLElement {
       return;
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
+    if (this._caption) {
+      let captionEl = table.createCaption();
+      if (this._caption instanceof HTMLElement) {
+        captionEl.innerHTML="";
+        captionEl.appendChild(this._caption);
+      } else {
+        captionEl.textContent = this._caption;
+      }
+    } else {
+      table.deleteCaption();
+    }
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach((h) => {
       const cell = theader.appendChild(document.createElement("th"));
-      cell.textContent = h;
+      const label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      cell.textContent = `${label}`;
       cell.addEventListener("click", () => {
         this.sort(h, cell);
       });
@@ -1158,6 +1356,29 @@ export class SeismogramTable extends HTMLElement {
         index++;
       }
     });
+  }
+  tableToCSV() {
+    const out: Array<Array<string>> = [];
+    const headRow:Array<string> = [];
+    out.push(headRow);
+    this.headers().forEach((h) => {
+      let label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      label = label ? label : "";
+      headRow.push(label);
+    });
+    this._sddList.forEach((q) => {
+      const row: Array<string> = [];
+      out.push(row);
+      this.headers().forEach((h) => {
+        const cellValue = this.getSeismogramValue(q, h);
+        if (cellValue instanceof HTMLElement) {
+          row.push(cellValue.textContent);
+        } else  {
+          row.push(cellValue);
+        }
+      });
+    });
+    return csvFormatRows(out);
   }
 
   getSeismogramValue(q: SeismogramDisplayData, h: string): string|HTMLElement {
