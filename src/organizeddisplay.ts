@@ -5,7 +5,7 @@ import * as leafletutil from "./leafletutil";
 import {
   MAP_ELEMENT,
   QuakeStationMap,
-  HIGHLIGHT } from "./leafletutil";
+} from "./leafletutil";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
 import { SeisPlotElement } from "./spelement";
 import { SeismogramDisplayData, uniqueStations, uniqueQuakes } from "./seismogram";
