@@ -15,6 +15,7 @@ import { fixProtocolInUrl } from "./util";
 import * as L from "leaflet";
 import { LatLngTuple } from "leaflet";
 
+export const HIGHLIGHT = "highlight";
 export const MAP_ELEMENT = "sp-station-quake-map";
 export const TRIANGLE = "triangle";
 export const DOWNTRIANGLE = "downtriangle";
@@ -70,6 +71,12 @@ export const defaultMarker_css = `
   stroke: red;
   fill: #f03;
   fill-opacity: 0.15;
+}
+.${StationMarkerClassName}.${HIGHLIGHT} {
+  stroke: white;
+}
+.${QuakeMarkerClassName}.${HIGHLIGHT} {
+  stroke: white;
 }
 `;
 /**
@@ -292,6 +299,10 @@ export class QuakeStationMap extends SeisPlotElement {
       });
     }
   }
+  allQuakes(): Array<Quake> {
+    const quakes = this.quakeList.concat(uniqueQuakes(this.seisData));
+    return quakes;
+  }
   /**
    * Adds a css class for the quake icon for additional styling,
    * either via addStyle() for general or via colorClass() for just
@@ -341,7 +352,21 @@ export class QuakeStationMap extends SeisPlotElement {
    * @param  classname   class to remove
    */
   quakeRemoveAllClass(classname: string) {
-    this.quakeList.forEach((q) => this.quakeRemoveClass(q, classname));
+    this.allQuakes().forEach((q) => this.quakeRemoveClass(q, classname));
+  }
+  quakeUnhighlight() {
+    this.allQuakes().forEach((q:Quake) => {
+      this.quakeRemoveClass(q, HIGHLIGHT);
+    });
+  }
+  quakeHighlight(quakeList: Array<Quake>|Quake) {
+    if (! Array.isArray(quakeList)) {
+      quakeList = [ quakeList ];
+    }
+    this.quakeUnhighlight();
+    quakeList.forEach((q:Quake) => {
+      this.quakeAddClass(q, HIGHLIGHT);
+    });
   }
 
   addStation(station: Station | Array<Station>, classname?: string) {
@@ -359,6 +384,15 @@ export class QuakeStationMap extends SeisPlotElement {
       this.stationList.push(station);
       classList.forEach((cn) => this.stationAddClass(station, cn));
     }
+  }
+  /**
+   * Get all stations on the map. Some from seisData and some added directly
+   * to stationList.
+   * @return list of Stations
+   */
+  allStations(): Array<Station> {
+    const stations = this.stationList.concat(uniqueStations(this.seisData));
+    return stations;
   }
   stationIcon(iconSize: number=STATION_ICON_SIZE, iconSymbol: string=TRIANGLE) {
     this.stationIconSize = iconSize;
@@ -400,10 +434,24 @@ export class QuakeStationMap extends SeisPlotElement {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), classList);
     }
     const markerList = this.getShadowRoot().querySelectorAll(
-      `div.${station.codes(STATION_CODE_SEP)}`,
+      `div.${cssClassForStationCodes(station)}`,
     );
     markerList.forEach((c) => {
       c.classList.remove(classname);
+    });
+  }
+  stationUnhighlight() {
+    this.allStations().forEach((sta:Station) => {
+      this.stationRemoveClass(sta, HIGHLIGHT);
+    });
+  }
+  stationHighlight(stationList: Array<Station>|Station) {
+    if (!Array.isArray(stationList)) {
+      stationList = [ stationList ];
+    }
+    this.stationUnhighlight();
+    stationList.forEach((sta:Station) => {
+      this.stationAddClass(sta, HIGHLIGHT);
     });
   }
   /**
@@ -561,7 +609,7 @@ export class QuakeStationMap extends SeisPlotElement {
 
   drawQuakeLayer(){
     this.quakeLayer.clearLayers();
-    const quakes = this.quakeList.concat(uniqueQuakes(this.seisData));
+    const quakes = this.allQuakes();
 
     quakes.forEach((q) => {
       const circle = createQuakeMarker(
@@ -584,7 +632,7 @@ export class QuakeStationMap extends SeisPlotElement {
   }
   drawStationLayer(){
     this.stationLayer.clearLayers();
-    const stations = this.stationList.concat(uniqueStations(this.seisData));
+    const stations = this.allStations();
 
     stations.forEach((s) => {
       const m = createStationMarker(

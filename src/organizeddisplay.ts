@@ -2,10 +2,13 @@ import { fftForward } from "./fft";
 import * as spectraplot from "./spectraplot";
 import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
 import * as leafletutil from "./leafletutil";
-import { MAP_ELEMENT, QuakeStationMap } from "./leafletutil";
+import {
+  MAP_ELEMENT,
+  QuakeStationMap,
+  HIGHLIGHT } from "./leafletutil";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
 import { SeisPlotElement } from "./spelement";
-import { SeismogramDisplayData } from "./seismogram";
+import { SeismogramDisplayData, uniqueStations, uniqueQuakes } from "./seismogram";
 import { Seismograph } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
 import { isDef, isStringArg, stringify } from "./util";
@@ -411,6 +414,8 @@ export class OrganizedDisplayTools extends SeisPlotElement {
 export const ORG_DISP_TOOLS_ELEMENT = "sp-orgdisp-tools";
 customElements.define(ORG_DISP_TOOLS_ELEMENT, OrganizedDisplayTools);
 
+
+
 export class OrganizedDisplay extends SeisPlotElement {
   bottomSeismographConfig: SeismographConfig|null;
   topSeismographConfig: SeismographConfig|null;
@@ -594,6 +599,26 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.bottomSeismographConfig != null && seisDispItems.length > 1) {
       seisDispItems[seisDispItems.length-1].seismographConfig = this.bottomSeismographConfig;
     }
+
+    // mouse hover over seismogram highlights station if map show
+    seisDispItems.forEach((odi: OrganizedDisplayItem) => {
+      if (odi.plottype === SEISMOGRAPH) {
+        odi.addEventListener("mouseenter", (evt) => {
+          const mapElement = wrapper.querySelector(MAP_ELEMENT) as QuakeStationMap;
+          if (mapElement ) {
+            mapElement.stationHighlight(uniqueStations(odi.seisData));
+            mapElement.quakeHighlight(uniqueQuakes(odi.seisData));
+          }
+        });
+        odi.addEventListener("mouseleave", (evt) => {
+          const mapElement = wrapper.querySelector(MAP_ELEMENT) as QuakeStationMap;
+          if (mapElement ) {
+            mapElement.stationUnhighlight();
+            mapElement.quakeUnhighlight();
+          }
+        });
+      }
+    });
 
     let allOrgDispItems = new Array<OrganizedDisplayItem>();
     allOrgDispItems = allOrgDispItems.concat(seisDispItems);
