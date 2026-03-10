@@ -16,6 +16,7 @@ import {
   mightBeXml,
   dataViewToString,
   XML_MIME,
+  warn,
 } from "./util";
 import { latlonFormat, depthFormat, magFormat } from "./textformat";
 
@@ -90,9 +91,10 @@ class BaseElement {
   creationInfo?: CreationInfo;
 
   protected populate(qml: Element): void {
-    const pid = _grabAttribute(qml, "publicID");
+    let pid = _grabAttribute(qml, "publicID");
     if (!isNonEmptyStringArg(pid)) {
-      throw new Error("missing publicID");
+      warn(`missing publicID on ${qml.localName}`);
+      pid = `${UNKNOWN_PUBLIC_ID}_${qml.localName}`;
     }
 
     this.publicId = pid;
@@ -1814,11 +1816,24 @@ export class MomentTensor extends BaseElement {
       throw new Error("No magnitude with ID " + momentMagnitudeID);
     }
 
-    out.scalarMoment = _grabFirstElRealQuantity(
-      momentTensorQML,
-      "scalarMoment",
-    );
-
+    // usgs has bug in quakeml from fdsnws, scalarMoment doesn't have <value>,
+    // is just a number
+    try {
+      out.scalarMoment = _grabFirstElRealQuantity(
+        momentTensorQML,
+        "scalarMoment",
+      );
+    } catch (err) {
+      // try as just a number
+      const scalMom = _grabFirstElFloat(momentTensorQML, "scalarMoment");
+      if (scalMom != null ) {
+        out.scalarMoment = new Quantity<number>(scalMom);
+      } else {
+        // neither Quantity or number, warn
+        warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl(momentTensorQML, "scalarMoment")}`)
+      }
+      warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl(momentTensorQML, "scalarMoment")}`)
+    }
     out.tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(
       momentTensorQML,
       "tensor",

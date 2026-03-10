@@ -251,6 +251,15 @@ export function toError(maybeError: unknown): Error {
   }
 }
 
+export const DEBUG_ELEMENT = "sp-debug";
+export class SeisPlotDebugElement extends HTMLDivElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+}
+customElements.define(DEBUG_ELEMENT, SeisPlotDebugElement);
+
 /**
  * Log a warning message to the console. Put here to limit lint console errors
  * for the times we really do want to use console.log. Will also append a
@@ -265,9 +274,11 @@ export function warn(msg: string): void {
   }
 
   if (typeof document !== "undefined" && document !== null) {
-    const p = document.createElement("p");
-    p.textContent = `${stringify(msg)}`;
-    (document.querySelector("div#debug") as HTMLInputElement).appendChild(p);
+    document.querySelectorAll(DEBUG_ELEMENT).forEach(spDebug=> {
+      const pre = spDebug.appendChild(document.createElement("pre"));
+      const code = pre.appendChild(document.createElement("code"));
+      code.textContent = `${stringify(msg)}`;
+    })
   }
 }
 
