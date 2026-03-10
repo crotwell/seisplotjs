@@ -25,6 +25,7 @@ import {
 export const HELI_CLICK_EVENT = "heliclick";
 export const HELI_MOUSE_MOVE_EVENT = "helimousemove";
 
+
 export const HELICORDER_ELEMENT = "sp-helicorder";
 
 /**
@@ -45,7 +46,14 @@ export function createNowHelicorderInterval(hours?: number, hoursPerLine?: numbe
     Duration.fromObject({ hours: hours }),
   );
 }
-
+export interface HeliEventMap extends HTMLElementEventMap {
+  "heliclick": CustomEvent<HeliMouseEventType>,
+  "helimousemove": CustomEvent<HeliMouseEventType>,
+}
+export interface Helicorder extends SeisPlotElement {
+  // overload for custom events
+  addEventListener<E extends keyof HeliEventMap>(type: E, listener: (ev: HeliEventMap[E]) => any): void;
+}
 /**
  * A helicorder-like multi-line seismogram display usually covering 24 hours
  *
@@ -79,9 +87,9 @@ export class Helicorder extends SeisPlotElement {
     this.addStyle(helicorder_css);
     this.getShadowRoot().appendChild(wrapper);
     // event listener to transform mouse click into time
-    this.addEventListener("click", (evt) => {
+    this.addEventListener("click", (evt: Event) => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent(HELI_CLICK_EVENT,
+      const event = new CustomEvent<HeliMouseEventType>(HELI_CLICK_EVENT,
         { detail: detail,
           bubbles: true,
           cancelable: false,
@@ -90,9 +98,9 @@ export class Helicorder extends SeisPlotElement {
       );
       this.dispatchEvent(event);
     });
-    this.addEventListener("mousemove", (evt) => {
+    this.addEventListener("mousemove", (evt: Event) => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent(HELI_MOUSE_MOVE_EVENT,
+      const event = new CustomEvent<HeliMouseEventType>(HELI_MOUSE_MOVE_EVENT,
         { detail: detail,
           bubbles: true,
           cancelable: false,
@@ -488,7 +496,10 @@ export class Helicorder extends SeisPlotElement {
 
     return out;
   }
-  calcDetailForEvent(evt: MouseEvent): HeliMouseEventType {
+  calcDetailForEvent(evt: Event): HeliMouseEventType {
+    if (! (evt instanceof MouseEvent)) {
+      throw new Error("expect mouse event but not instanceof");
+    }
     const heliMargin = this.heliConfig.margin;
     const margin = this.heliConfig.lineSeisConfig.margin;
     const nl = this.heliConfig.numLines;

@@ -78,6 +78,10 @@ export function createQuakeClickEvent(
   );
 }
 
+export interface QuakeClickEventMap extends HTMLElementEventMap {
+  "quakeclick": CustomEvent<QuakeEventDetail>,
+}
+
 // QuakeML classes
 
 class BaseElement {

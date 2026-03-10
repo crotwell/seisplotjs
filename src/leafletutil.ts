@@ -1,7 +1,7 @@
 import { kmPerDeg } from "./distaz";
-import { Quake, createQuakeClickEvent } from "./quakeml";
+import { Quake, createQuakeClickEvent, QuakeClickEventMap } from "./quakeml";
 import * as import_leaflet_css from "./leaflet_css";
-import { Network, Station, createStationClickEvent } from "./stationxml";
+import { Network, Station, createStationClickEvent, StationClickEventMap } from "./stationxml";
 import { SeisPlotElement } from "./spelement";
 import {
   SeismogramDisplayData,
@@ -243,6 +243,16 @@ export const STATION_CODE_SEP = "_";
 export const LEAFLET_CSS_ID = "leafletcss";
 export const MAP_CSS_ID = "stationquakemapcss";
 export const MARKER_CSS_ID = "defaultmarkercss";
+
+
+export interface QuakeStationMapEventMap extends StationClickEventMap, QuakeClickEventMap {
+
+}
+export interface QuakeStationMap extends SeisPlotElement {
+  // overload for custom events
+  addEventListener<E extends keyof QuakeStationMapEventMap>(type: E, listener: (ev: QuakeStationMapEventMap[E]) => any): void;
+}
+
 
 export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];

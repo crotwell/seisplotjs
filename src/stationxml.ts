@@ -129,6 +129,15 @@ export function createStationClickEvent(
   );
 }
 
+
+export interface StationClickEventMap extends HTMLElementEventMap {
+  "stationclick": CustomEvent<StationEventDetail>,
+}
+export interface ChannelClickEventMap extends HTMLElementEventMap {
+  "channelclick": CustomEvent<ChannelEventDetail>,
+}
+
+
 // StationXML classes
 
 export class Network {
