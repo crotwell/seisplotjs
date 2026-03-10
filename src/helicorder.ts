@@ -15,6 +15,7 @@ import { SeismogramSegment } from "./seismogramsegment";
 import { Seismograph } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
 import { SeisPlotElement } from "./spelement";
+import {Channel} from "./stationxml";
 import {
   isDef, validStartTime, validEndTime, startDuration, nameForTimeZone,
   anplusb,
@@ -520,10 +521,13 @@ export class Helicorder extends SeisPlotElement {
           (clickLine + timeLineFraction) * secondsPerLine * 1000,
         ),
       );
+      let channel = null;
+      if (this.seisData.length > 0) {channel = this.seisData[0].channel;}
       return {
         mouseevent: evt,
         time: clickTime,
         lineNum: clickLine,
+        channel: channel
       };
     } else {
       throw new Error("Helicorder must be fixedTimeScale");
@@ -642,5 +646,6 @@ export type HeliMouseEventType = {
   mouseevent: MouseEvent;
   time: DateTime;
   lineNum: number;
+  channel?: Channel|null;
 };
 customElements.define(HELICORDER_ELEMENT, Helicorder);
