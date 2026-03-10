@@ -81,4 +81,16 @@ test("findChannels", () => {
     expect(c.stationCode).toEqual('JSC');
     expect(c.networkCode).toEqual('CO');
   }
+  const chanListHorizontal = stationxml.findChannels(
+    networks,
+    'C.',
+    'J..',
+    undefined,
+    'HH[NE]');
+  for (const c of chanList) {
+    expect(c.channelCode).toStartWith('HH');
+    expect(c.locationCode).toEqual('00');
+    expect(c.stationCode).toEqual('JSC');
+    expect(c.networkCode).toEqual('CO');
+  }
 });

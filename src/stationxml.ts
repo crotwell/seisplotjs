@@ -1601,25 +1601,29 @@ export function* activeChannels(
 
 /**
  * Extract all channels from all stations from all networks in the input array.
- * Regular expressions may be used instaed of exact code matchs.
+ * Regular expressions may be used instead of exact code matchs.
  *
  * @param   networks Array of networks.
- * @param   netCode network code to match
- * @param   staCode station code to match
- * @param   locCode location code to match
- * @param   chanCode channel code to match
+ * @param   netCode network code to match, defaults to .*
+ * @param   staCode station code to match, defaults to .*
+ * @param   locCode location code to match, defaults to .*
+ * @param   chanCode channel code to match, defaults to .*
  * @yields           Array of channels.
  */
 export function* findChannels(
   networks: Array<Network>,
-  netCode: string,
-  staCode: string,
-  locCode: string,
-  chanCode: string,
+  netCode: string = ".*",
+  staCode: string = ".*",
+  locCode: string = ".*",
+  chanCode: string = ".*"
 ): Generator<Channel, void, unknown> {
+  if (netCode.length == 0) {netCode = ".*";}
   const netRE = new RegExp(`^${netCode}$`);
+  if (staCode.length == 0) {staCode = ".*";}
   const staRE = new RegExp(`^${staCode}$`);
+  if (locCode.length == 0) {locCode = ".*";}
   const locRE = new RegExp(`^${locCode}$`);
+  if (chanCode.length == 0) {chanCode = ".*";}
   const chanRE = new RegExp(`^${chanCode}$`);
 
   for (const n of networks.filter((n) => netRE.test(n.networkCode))) {
