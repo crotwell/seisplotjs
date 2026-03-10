@@ -395,6 +395,32 @@ export function durationEnd(
 }
 
 /**
+ * Create a luxon Interval from a duration and a center time. The final duration
+ * will be twice the input.
+ *
+ * @param  duration      half duration of the interval as iso string, number of seconds, or Duration
+ * @param  end         center of the interval as string or DateTime
+ * @returns          the interval
+ */
+export function centerTimeDuration(
+  center: string | DateTime,
+  duration: string | Duration | number,
+): Interval {
+  if (isStringArg(center)) {
+    center = isoToDateTime(center);
+  }
+  if (isStringArg(duration)) {
+    duration = Duration.fromISO(duration);
+  } else if (isNumArg(duration)) {
+    duration = Duration.fromMillis(1000 * duration);
+  }
+  if (duration.valueOf() < 0) {
+    duration = duration.negate();
+  }
+  return Interval.fromDateTimes(center.minus(duration), center.plus(duration));
+}
+
+/**
  * Calculates offset of remote server versus local time. It is assumed that the
  * argument was acquired as close in time to calling this as possible.
  *
