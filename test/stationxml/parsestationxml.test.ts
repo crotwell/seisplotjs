@@ -87,7 +87,7 @@ test("findChannels", () => {
     'J..',
     undefined,
     'HH[NE]');
-  for (const c of chanList) {
+  for (const c of chanListHorizontal) {
     expect(c.channelCode).toStartWith('HH');
     expect(c.locationCode).toEqual('00');
     expect(c.stationCode).toEqual('JSC');
