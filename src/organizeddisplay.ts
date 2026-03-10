@@ -1,7 +1,6 @@
 import { fftForward } from "./fft";
 import * as spectraplot from "./spectraplot";
 import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
-import * as leafletutil from "./leafletutil";
 import {
   MAP_ELEMENT,
   QuakeStationMap,
@@ -193,28 +192,11 @@ export class OrganizedDisplayItem extends SeisPlotElement {
 
       const seismap = new QuakeStationMap(this.seisData);
       seismap.setAttribute("id", mapid);
-      const centerLat = parseFloat(
-        getFromQueryParams(queryParams, "centerLat", "35"),
-      );
-      seismap.setAttribute(leafletutil.CENTER_LAT, `${centerLat}`);
-      const centerLon = parseFloat(
-        getFromQueryParams(queryParams, "centerLon", "-100"),
-      );
-      seismap.setAttribute(leafletutil.CENTER_LON, `${centerLon}`);
-      const mapZoomLevel = parseInt(
-        getFromQueryParams(queryParams, "zoom", "1"),
-      );
-      seismap.setAttribute(leafletutil.ZOOM_LEVEL, `${mapZoomLevel}`);
-      const tileUrl =
-        getFromQueryParams(queryParams, leafletutil.TILE_TEMPLATE, leafletutil.DEFAULT_TILE_TEMPLATE);
-      seismap.setAttribute(leafletutil.TILE_TEMPLATE, `${tileUrl}`);
-      const tileAttr =
-        getFromQueryParams(queryParams, leafletutil.TILE_ATTRIBUTION, "");
-      seismap.setAttribute(leafletutil.TILE_ATTRIBUTION, `${tileAttr}`);
-      const magScale = parseFloat(
-        getFromQueryParams(queryParams, "magScale", "5.0"),
-      );
-      seismap.setAttribute(leafletutil.MAG_SCALE, `${magScale}`);
+      for (const mapAttr of QuakeStationMap.observedAttributes) {
+        if (queryParams[mapAttr]) {
+          seismap.setAttribute(mapAttr, getFromQueryParams(queryParams, mapAttr));
+        }
+      }
       wrapper.appendChild(seismap);
     } else if (this.plottype.startsWith(INFO)) {
       const infotable = new QuakeStationTable(

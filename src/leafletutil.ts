@@ -748,7 +748,7 @@ path.${classname} {
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.redraw();
   }
-  static get observedAttributes() {
+  static get observedAttributes(): Array<string> {
     return [
       TILE_TEMPLATE,
       TILE_ATTRIBUTION,
