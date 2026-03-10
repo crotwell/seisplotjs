@@ -94,7 +94,7 @@
       <h1>
        Seisplotjs Tutorial
        <span class="sp_version">
-        3.2.0
+        3.2.1
        </span>
       </h1>
       <h3>
@@ -206,7 +206,8 @@ function updateNumPackets() {
   document.querySelector("#numPackets").textContent = numPackets;
 }
 function addToDebug(message) {
-  const debugDiv = document.querySelector("div#debug");
+  // add message to &lt;sp-debug&gt; element if it exists
+  const debugDiv = document.querySelector(sp.util.DEBUG_ELEMENT);
   if (!debugDiv) {
     return;
   }
@@ -365,7 +366,7 @@ toggleConnect();
    </div>
   </div>
   <script type="module">
-   import * as sp from "./seisplotjs_3.2.0_standalone.mjs";
+   import * as sp from "./seisplotjs_3.2.1_standalone.mjs";
       sp.util.updateVersionText(".sp_version");
   </script>
   <script src="../prism.js">

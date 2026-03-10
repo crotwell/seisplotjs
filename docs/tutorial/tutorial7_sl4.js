@@ -1,4 +1,4 @@
-import * as sp from "../seisplotjs_3.2.0_standalone.mjs";
+import * as sp from "../seisplotjs_3.2.1_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
@@ -31,7 +31,8 @@ function updateNumPackets() {
   document.querySelector("#numPackets").textContent = numPackets;
 }
 function addToDebug(message) {
-  const debugDiv = document.querySelector("div#debug");
+  // add message to <sp-debug> element if it exists
+  const debugDiv = document.querySelector(sp.util.DEBUG_ELEMENT);
   if (!debugDiv) {
     return;
   }
