@@ -493,7 +493,7 @@ export class QuakeStationMap extends SeisPlotElement {
     }
     return fb;
   }
-  set fitBounds(val: number) {
+  set fitBounds(val: boolean) {
     this.setAttribute(FIT_BOUNDS, `${val}`);
   }
   get centerLat(): number {
