@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18763878.svg)](https://doi.org/10.5281/zenodo.18763878)
+
 # seisplotjs
 Javascript modules for parsing, manipulating and plotting seismic data.
 
@@ -96,4 +98,4 @@ Documentation for previous versions is archived at
 
 The current release is on the main branch and new development is done on the
 dev branch. If you would like to submit a pull request, please
-base it off of the dev branch. 
+base it off of the dev branch.
