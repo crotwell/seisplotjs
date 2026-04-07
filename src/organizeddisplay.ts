@@ -585,14 +585,14 @@ export class OrganizedDisplay extends SeisPlotElement {
     // mouse hover over seismogram highlights station if map show
     seisDispItems.forEach((odi: OrganizedDisplayItem) => {
       if (odi.plottype === SEISMOGRAPH) {
-        odi.addEventListener("mouseenter", (evt) => {
+        odi.addEventListener("mouseenter", (_evt) => {
           const mapElement = wrapper.querySelector(MAP_ELEMENT) as QuakeStationMap;
           if (mapElement ) {
             mapElement.stationHighlight(uniqueStations(odi.seisData));
             mapElement.quakeHighlight(uniqueQuakes(odi.seisData));
           }
         });
-        odi.addEventListener("mouseleave", (evt) => {
+        odi.addEventListener("mouseleave", (_evt) => {
           const mapElement = wrapper.querySelector(MAP_ELEMENT) as QuakeStationMap;
           if (mapElement ) {
             mapElement.stationUnhighlight();

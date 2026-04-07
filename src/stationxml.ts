@@ -1626,13 +1626,13 @@ export function* findChannels(
   locCode: string = ".*",
   chanCode: string = ".*"
 ): Generator<Channel, void, unknown> {
-  if (netCode.length == 0) {netCode = ".*";}
+  if (netCode.length === 0) {netCode = ".*";}
   const netRE = new RegExp(`^${netCode}$`);
-  if (staCode.length == 0) {staCode = ".*";}
+  if (staCode.length === 0) {staCode = ".*";}
   const staRE = new RegExp(`^${staCode}$`);
-  if (locCode.length == 0) {locCode = ".*";}
+  if (locCode.length === 0) {locCode = ".*";}
   const locRE = new RegExp(`^${locCode}$`);
-  if (chanCode.length == 0) {chanCode = ".*";}
+  if (chanCode.length === 0) {chanCode = ".*";}
   const chanRE = new RegExp(`^${chanCode}$`);
 
   for (const n of networks.filter((n) => netRE.test(n.networkCode))) {

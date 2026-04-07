@@ -1823,16 +1823,16 @@ export class MomentTensor extends BaseElement {
         momentTensorQML,
         "scalarMoment",
       );
-    } catch (err) {
+    } catch (_err) {
       // try as just a number
       const scalMom = _grabFirstElFloat(momentTensorQML, "scalarMoment");
       if (scalMom != null ) {
         out.scalarMoment = new Quantity<number>(scalMom);
       } else {
         // neither Quantity or number, warn
-        warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl(momentTensorQML, "scalarMoment")}`)
+        warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl(momentTensorQML, "scalarMoment")}`);
       }
-      warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl(momentTensorQML, "scalarMoment")}`)
+      warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl(momentTensorQML, "scalarMoment")}`);
     }
     out.tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(
       momentTensorQML,

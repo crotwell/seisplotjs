@@ -278,7 +278,7 @@ export function warn(msg: string): void {
       const pre = spDebug.appendChild(document.createElement("pre"));
       const code = pre.appendChild(document.createElement("code"));
       code.textContent = `${stringify(msg)}`;
-    })
+    });
   }
 }
 

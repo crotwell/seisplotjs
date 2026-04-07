@@ -333,7 +333,7 @@ export class QuakeTable extends HTMLElement {
     this._caption = cap;
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (table && this._caption) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
@@ -413,7 +413,7 @@ export class QuakeTable extends HTMLElement {
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (this._caption ) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
@@ -669,7 +669,7 @@ export class ChannelTable extends HTMLElement {
     this._caption = cap;
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (table && this._caption ) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
@@ -689,7 +689,7 @@ export class ChannelTable extends HTMLElement {
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (this._caption ) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
@@ -988,7 +988,7 @@ export class StationTable extends HTMLElement {
     this._caption = cap;
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (table && this._caption) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
@@ -1008,7 +1008,7 @@ export class StationTable extends HTMLElement {
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (this._caption) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
@@ -1301,7 +1301,7 @@ export class SeismogramTable extends HTMLElement {
     this._caption = cap;
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (table && this._caption) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
@@ -1321,7 +1321,7 @@ export class SeismogramTable extends HTMLElement {
     }
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     if (this._caption) {
-      let captionEl = table.createCaption();
+      const captionEl = table.createCaption();
       if (this._caption instanceof HTMLElement) {
         captionEl.innerHTML="";
         captionEl.appendChild(this._caption);
