@@ -299,7 +299,7 @@ export class DataLinkConnection {
    * @param data optional data portion
    * @returns datalink packet as an ArrayBufferLike
    */
-  encodeDL(header: string, data?: Uint8Array): ArrayBufferLike {
+  encodeDL(header: string, data?: Uint8Array): ArrayBuffer {
     let cmdLen = header.length;
     let len = 3 + header.length;
     let lenStr = "";
