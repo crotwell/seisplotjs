@@ -940,11 +940,6 @@ export class EventQuery extends FDSNCommon {
    * @returns url
    */
   formURL(): string {
-    let colon = ":";
-
-    if (this._protocol.endsWith(colon)) {
-      colon = "";
-    }
 
     let url = appendToPath(this.formBaseURL(), "query?");
 

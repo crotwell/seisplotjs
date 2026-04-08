@@ -449,13 +449,8 @@ export class ParticleMotion extends SeisPlotElement {
   }
 
   calcScaleDomain() {
-    let halfDomainDelta = 1;
 
     if (this.seismographConfig.fixedAmplitudeScale) {
-      halfDomainDelta =
-        (this.seismographConfig.fixedAmplitudeScale[1] -
-          this.seismographConfig.fixedAmplitudeScale[0]) /
-        2;
       this.xScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
       this.yScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
     } else {
@@ -467,7 +462,7 @@ export class ParticleMotion extends SeisPlotElement {
       if (this.ySeisData) {
         yMinMax = findMinMaxOfSDD(this.ySeisData);
       }
-      halfDomainDelta = xMinMax.halfWidth;
+      let halfDomainDelta = xMinMax.halfWidth;
 
       if (yMinMax.halfWidth > halfDomainDelta) {
         halfDomainDelta = yMinMax.halfWidth;

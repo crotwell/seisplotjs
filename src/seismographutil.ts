@@ -256,7 +256,7 @@ export function seismogramSegmentAsLine(
     // this tends to be better even with as few as 3 point per pixel,
     // especially in near horizontal line
     let prevLastYPixel = Math.round(yScale(segment.y[leftVisibleSample])); // init to first sample
-    let lastYPixel = prevLastYPixel;
+    let lastYPixel;
     // push left sample in case jump in amp just off edge of screen
     pushPoint(out, leftVisiblePixel, prevLastYPixel);
 

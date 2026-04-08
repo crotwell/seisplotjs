@@ -57,7 +57,7 @@ export function toMSeed3(
   for (const seg of seis.segments) {
     const header = new MSeed3Header();
     let rawData;
-    let encoding = 0;
+    let encoding;
     if (seg.isEncoded()) {
       const encoded = seg.getEncoded();
       if (encoded.length === 1) {
@@ -678,7 +678,7 @@ export class MSeed3Header {
     const d = this.startAsDateTime()
       .set({ millisecond: 0 })
       .toISO({ includeOffset: false, suppressMilliseconds: true });
-    let fracSec = "";
+    let fracSec;
     if (trimMicroNano && this.nanosecond % 1000 === 0) {
       // nanos end in 000 so just use micros
       fracSec = padZeros(this.nanosecond / 1000, 6);
@@ -982,7 +982,6 @@ export function mergeSegments(
   if (contig.length > 0) {
     // last segment
     out.push(createSeismogramSegment(contig));
-    contig = [];
   }
   return out;
 }
@@ -1281,14 +1280,7 @@ export function calculateCRC32C(
 
   for (let i = 0; i < ubuf.length; i++) {
     crc = kCRCTable[(crc ^ ubuf[i]) & 0xff] ^ (crc >>> 8);
-    let tmp = crc;
-    tmp = (tmp ^ -1) >>> 0;
-
-    if (tmp < 0) {
-      tmp = 0xffffffff + tmp + 1;
-    }
   }
-
   return (crc ^ -1) >>> 0;
 }
 

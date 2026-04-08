@@ -1319,7 +1319,7 @@ export function findMinMaxOverTimeRange(
         return p ? (v ? p.union(v) : p) : v;
       } else {
         // non-Raw mode assumes only halfwidth matters, middle will be zeroed
-        let hw = 0;
+        let hw;
         if (p && v) {
           hw = Math.max(p.halfWidth, v.halfWidth);
         } else if (p) {
@@ -1363,7 +1363,7 @@ export function findMinMaxOverRelativeTimeRange(
         return p ? (v ? p.union(v) : p) : v;
       } else {
         // non-Raw mode assumes only halfwidth matters, middle will be zeroed
-        let hw = 0;
+        let hw;
         if (p && v) {
           hw = Math.max(p.halfWidth, v.halfWidth);
         } else if (p) {
@@ -1401,8 +1401,8 @@ export function calcMinMax(
       if (doGain && sdd.sensitivity) {
         sens = sdd.sensitivity.sensitivity;
       }
-      let middle = 0;
-      let halfWidth = 0;
+      let middle;
+      let halfWidth;
       if (
         amplitudeMode === AMPLITUDE_MODE.MinMax ||
         amplitudeMode === AMPLITUDE_MODE.Raw
@@ -1454,7 +1454,7 @@ export function findStartEndOfSeismograms(
   }
 
   if (Array.isArray(data)) {
-    return data.reduce(
+    out = data.reduce(
       (acc, cur) => acc.union(cur.timeRange),
       data[0].timeRange,
     );

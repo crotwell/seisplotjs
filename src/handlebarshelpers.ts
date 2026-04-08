@@ -17,7 +17,7 @@ export function registerHelpers() {
       sddDataList: Array<SeismogramDisplayData>,
       index: number,
     ): string {
-      let out = "";
+      let out;
       const curr = sddDataList[index];
 
       if (typeof curr === "undefined" || curr === null) {

@@ -104,7 +104,7 @@ export class MSeedArchive {
   ): Promise<Array<SeismogramDisplayData>> {
     const promiseArray = channelTimeList.map((ct) => {
       if (isDef(ct.channel)) {
-        const request = ct;
+        const request = Promise.resolve(ct);
         const dataRecords = this.loadDataForChannel(
           ct.channel,
           ct.startTime,
@@ -118,7 +118,7 @@ export class MSeedArchive {
           };
         });
       } else if (isDef(ct.sourceId)) {
-        const request = ct;
+        const request = Promise.resolve(ct);
         const dataRecords = this.loadData(
           ct.sourceId.networkCode,
           ct.sourceId.stationCode,

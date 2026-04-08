@@ -320,8 +320,7 @@ export class Seismograph extends SeisPlotElement {
     this.svg.attr("plotId", this.plotId);
 
     const alignmentTimeOffset = Duration.fromMillis(0);
-    let maxDuration = Duration.fromMillis(0);
-    maxDuration = findMaxDuration(this.seisData);
+    const maxDuration = findMaxDuration(this.seisData);
 
     this.time_scalable = new SeismographTimeScalable(
       this,
@@ -820,7 +819,7 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.fixedAmplitudeScale) {
       ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
     } else if (this.seismographConfig.linkedAmplitudeScale) {
-      let middle = this.amp_scalable.drawMiddle;
+      let middle;
       if (this.seismographConfig.isCenteredAmp()) {
         middle = 0;
       } else {
@@ -1234,7 +1233,7 @@ export class Seismograph extends SeisPlotElement {
         });
         // let style be in css?
         //              .style("fill", "rgba(220,220,220,.4)");
-        let markerPoleY = 0;
+        let markerPoleY;
         if (mythis.seismographConfig.markerFlagpoleBase === "none") {
           // no flagpole
           markerPoleY = 0;
@@ -1523,7 +1522,6 @@ export class Seismograph extends SeisPlotElement {
       }
     } else {
       if (this.seismographConfig.ySublabelIsUnits) {
-        ySublabel = "";
         const allUnits = [];
 
         for (const t of this._seisDataList) {

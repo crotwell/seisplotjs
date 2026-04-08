@@ -179,8 +179,8 @@ export class SacPoleZero {
       constant: 1,
     };
     const lines = data.split("\n");
-    let numZeros = 0;
-    let numPoles = 0;
+    let numZeros;
+    let numPoles;
     let i = 0;
 
     while (i < lines.length) {

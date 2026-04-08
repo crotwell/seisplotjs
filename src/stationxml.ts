@@ -1430,7 +1430,7 @@ export function convertToStage(stageXml: Element): Stage {
 
   const gainXml = _grabFirstEl(stageXml, "StageGain");
 
-  let gain = null;
+  let gain;
 
   if (gainXml) {
     gain = convertToGain(gainXml);

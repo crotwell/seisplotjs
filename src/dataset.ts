@@ -220,7 +220,7 @@ export async function loadFromZip(zip: JSZip): Promise<Dataset> {
           return parseQuakeML(rawXml).eventList;
         }
       })
-    : [];
+    : Promise.resolve([]);
   const inventoryFile = datasetDir.file(INVENTORY_FILE);
   const staml = inventoryFile
     ? inventoryFile.async("string").then(function (rawXmlText_1) {
@@ -237,8 +237,8 @@ export async function loadFromZip(zip: JSZip): Promise<Dataset> {
           return parseStationXml(rawXml_2);
         }
       })
-    : [];
-  const promises = await Promise.all([sddList_1, qml, staml]);
+    : Promise.resolve([]);
+  const promises = await Promise.all([Promise.resolve(sddList_1), qml, staml]);
   const dataset = new Dataset();
   dataset.waveforms = promises[0];
   dataset.catalog = promises[1];
@@ -301,10 +301,8 @@ export function insertExtraHeaders(
       }
     }
     // non-bag extra headers
-    // default TauP full json
-    if ("taup" in eh) {
-
-    }
+    // default TauP full json?
+    //if ("taup" in eh) {    }
     if ("traveltimes" in myEH && Array.isArray(myEH["traveltimes"])) {
       for (const tt of myEH["traveltimes"]) {
         if (isValidTraveltimeArrivalType(tt)) {

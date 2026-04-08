@@ -606,8 +606,6 @@ export class PanZoomer {
     transition((step) => {
       const transK = start_k+(end_k-start_k)*step;
       this.doZoom(transK, offsetX, width);
-      if (step === 1.0) {
-      }
     }, duration);
   }
   doZoom(k: number, x: number, width: number) {
@@ -623,7 +621,7 @@ export class PanZoomer {
 
     let zoomDuration = currDuration;
     const zoomDurationMillis = linkedTS.origDuration.toMillis() / k ;
-    let timeShift = 0;
+    let timeShift;
 
     if (k !== this.linkedTimeScale._prev_zoom_k) {
       // zoom in, keep click time at same pixel

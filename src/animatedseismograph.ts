@@ -229,7 +229,7 @@ export function internalCreateRealtimeDisplay(
       // SequencedDataRecord, seedlink v3
       msr = packet.miniseed;
     }
-    let seisSegment = null;
+    let seisSegment;
     if (msr) {
       seisSegment = miniseed.createSeismogramSegment(msr);
     } else if (ms3) {

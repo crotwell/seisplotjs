@@ -634,7 +634,6 @@ export function mergeSegments(
   if (contig.length > 0) {
     // last segment
     out.push(createSeismogramSegment(contig));
-    contig = [];
   }
 
   return out;

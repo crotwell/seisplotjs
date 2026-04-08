@@ -284,7 +284,7 @@ export class Helicorder extends SeisPlotElement {
     for (const lineTime of lineTimes) {
       const lineNumber = lineTime.lineNumber;
       const lineInterval = lineTime.interval;
-      let startTime = lineTime.interval.start;
+      const startTime = lineTime.interval.start;
       const endTime = lineTime.interval.end;
       let height = baseHeight;
       const marginTop =
@@ -404,7 +404,6 @@ export class Helicorder extends SeisPlotElement {
       } else {
         seismograph.redraw();
       }
-      startTime = endTime;
     }
   }
 
@@ -455,7 +454,7 @@ export class Helicorder extends SeisPlotElement {
     singleSeisData: SeismogramDisplayData,
     lineInterval: Interval,
   ): SeismogramDisplayData {
-    let lineCutSeis = null;
+    let lineCutSeis;
     let lineSeisData;
 
     if (singleSeisData.seismogram) {
@@ -511,7 +510,7 @@ export class Helicorder extends SeisPlotElement {
       (maxHeight - (heliMargin.top + heliMargin.bottom)) /
       (nl - (nl - 1) * this.heliConfig.overlap);
 
-    let clickLine = 0;
+    let clickLine;
     if (evt.offsetY < heliMargin.top + baseHeight * 0.5) {
       clickLine = 0;
     } else {

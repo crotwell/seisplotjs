@@ -118,7 +118,7 @@ export function calcResponse(
   const sacPoleZero = convertToSacPoleZero(response);
   const siUnit = unit.replaceAll("**", "");
   const unitQty = convert(1).getUnit(siUnit as AllMeasuresUnits);
-  let gamma = 0;
+  let gamma;
 
   if (unitQty === null) {
     throw new Error("unknown response unit: " + unit);
@@ -473,7 +473,6 @@ export function convertPoleZeroToSacStyle(
     );
   }
 
-  let constant = polesZeros.normalizationFactor;
   let sd = sensitivity;
   const fs = sensitivity_freq;
   sd *= Math.pow(2 * Math.PI * fs, gamma);
@@ -488,6 +487,7 @@ export function convertPoleZeroToSacStyle(
     );
   }
 
+  let constant;
   if (poles.length === 0 && zeros.length === 0) {
     constant = sd * A0;
   } else {

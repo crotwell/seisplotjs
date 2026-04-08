@@ -485,7 +485,7 @@ export class QuakeStationMap extends SeisPlotElement {
     const fbAttr = this.hasAttribute(FIT_BOUNDS)
       ? this.getAttribute(FIT_BOUNDS)
       : "true";
-    let fb = true;
+    let fb;
     if (!fbAttr) {
       fb = true;
     } else {

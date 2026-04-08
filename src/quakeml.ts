@@ -1823,7 +1823,7 @@ export class MomentTensor extends BaseElement {
         momentTensorQML,
         "scalarMoment",
       );
-    } catch (_err) {
+    } catch {
       // try as just a number
       const scalMom = _grabFirstElFloat(momentTensorQML, "scalarMoment");
       if (scalMom != null ) {
