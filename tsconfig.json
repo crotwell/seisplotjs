@@ -17,11 +17,9 @@
     "skipLibCheck": false,
     "declaration": true,
     "declarationDir": "dist/dts",
-    "outDir": "dist/dts"
+    "outDir": "dist/dts",
+    "rootDir": "."
   },
-  "files": ["global.d.ts",
-    "node_modules/jest-expect-message/types/index.d.ts"
-  ],
   "include": ["src"],
   "sourceMap": true
 }

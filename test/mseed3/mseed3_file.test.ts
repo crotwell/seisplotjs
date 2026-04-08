@@ -44,12 +44,12 @@ fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',15
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',1595);
 fileSizeMap.set('test/mseed3/reference-data/reference-text.mseed3',294);
 
-//  fileList = fileList.slice(2,3);
-
 for (const filename of fileList) {
   test("ref mseed3 file vs json"+filename, () => {
-
-    expect(fs.existsSync(filename), MISSING_REF_DATA_MSG).toEqual(true);
+    if (!fs.existsSync(filename)) {
+      console.log(MISSING_REF_DATA_MSG);
+    }
+    expect(fs.existsSync(filename)).toEqual(true);
     const xData = fs.readFileSync(filename);
     expect(xData.length).toEqual(fileSizeMap.get(filename));
     let hexStr = "";
@@ -166,7 +166,10 @@ test("text output vs mseed2text", function() {
 "       payload encoding: STEIM-2 integer compression (val: 11)",
   ];
   const filename = 'test/mseed3/reference-data/reference-sinusoid-steim2.mseed3';
-  expect(fs.existsSync(filename), MISSING_REF_DATA_MSG).toEqual(true);
+    if (!fs.existsSync(filename)) {
+      console.log(MISSING_REF_DATA_MSG);
+    }
+  expect(fs.existsSync(filename)).toEqual(true);
   const xData = fs.readFileSync(filename);
 
   const ab = xData.buffer.slice(xData.byteOffset, xData.byteOffset + xData.byteLength);

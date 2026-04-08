@@ -17,10 +17,11 @@
     "skipLibCheck": false,
     "declaration": true,
     "declarationDir": "dist/dts_test",
-    "outDir": "dist/dts_test"
+    "outDir": "dist/dts_test",
+    "rootDir": ".",
+    "types": ["jest"]
   },
-  "files": ["global.d.ts",
-    "node_modules/jest-expect-message/types/index.d.ts",
+  "files": ["global.d.ts"
   ],
   "include": ["test", "testremotes"],
   "sourceMap": true
