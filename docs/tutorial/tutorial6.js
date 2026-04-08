@@ -32,7 +32,12 @@ new sp.fdsndatacenters.DataCentersQuery()
   .then((seisArray) => {
     document.querySelector("span#channel").textContent = seisArray[0].codes();
     let heliConfig = new sp.helicorder.HelicorderConfig(timeWindow);
-
+    const ianaTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    heliConfig.yLabelTimeZone = ianaTZ;
+    heliConfig.xAxisTimeZone = ianaTZ;
+    heliConfig.yLabelRightTimeZone = ianaTZ;
+    heliConfig.xLabel = "Local Time";
+    heliConfig.xSublabel = ianaTZ;
     heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
     let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(
       seisArray[0],

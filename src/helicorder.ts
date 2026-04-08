@@ -393,9 +393,7 @@ export class Helicorder extends SeisPlotElement {
         const textEl = innerDiv.appendChild(document.createElement("text"));
         textEl.textContent = nameForTimeZone(this.heliConfig.yLabelTimeZone, startTime);
         // and to top right
-        const rightTextEl = innerDiv.appendChild(
-          document.createElement("text"),
-        );
+        const rightTextEl = innerDiv.appendChild(document.createElement("text"));
         rightTextEl.textContent = nameForTimeZone(this.heliConfig.yLabelRightTimeZone, startTime);
         seismographWrapper.insertBefore(utcDiv, seismographWrapper.firstChild);
       }

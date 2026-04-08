@@ -190,7 +190,8 @@ new sp.fdsndatacenters.DataCentersQuery()
         then
        </code>
        method, we populate out text spans and then configure our
-              helicorder. One extra bit we add is a marker for the current time.
+              helicorder. The time zone is UTC by default, but can be changed
+              to local time. One extra bit we add is a marker for the current time.
               Since each line is 2 hours, without this marker it is hard to know
               if the station is way behind or if we are just in the middle of a
               two hour section, so adding a marker helps. Lastly, we draw the
@@ -205,8 +206,14 @@ new sp.fdsndatacenters.DataCentersQuery()
   .then((seisArray) =&gt; {
     document.querySelector("span#channel").textContent = seisArray[0].codes();
     let heliConfig = new sp.helicorder.HelicorderConfig(timeWindow);
-
+    const ianaTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    heliConfig.yLabelTimeZone = ianaTZ;
+    heliConfig.xAxisTimeZone = ianaTZ;
+    heliConfig.yLabelRightTimeZone = ianaTZ;
+    heliConfig.xLabel = "Local Time";
+    heliConfig.xSublabel = ianaTZ;
     heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
+    heliConfig.maxHeight = 900;
     let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(
       seisArray[0],
     );
