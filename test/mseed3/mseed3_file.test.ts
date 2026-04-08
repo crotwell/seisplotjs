@@ -19,6 +19,7 @@ and copy the reference-data directory into test/mseed3
 
 const fileList = [
   'test/mseed3/reference-data/reference-detectiononly.mseed3',
+    'test/mseed3/reference-data/reference-headeronly.mseed3',
   'test/mseed3/reference-data/reference-sinusoid-FDSN-All.mseed3',
   'test/mseed3/reference-data/reference-sinusoid-FDSN-Other.mseed3',
   'test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.mseed3',
@@ -27,12 +28,14 @@ const fileList = [
   'test/mseed3/reference-data/reference-sinusoid-int16.mseed3',
   'test/mseed3/reference-data/reference-sinusoid-int32.mseed3',
   'test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-steim1-large-source-id.mseed3',
   'test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',
   'test/mseed3/reference-data/reference-text.mseed3',
 ];
 
 const fileSizeMap = new Map();
 fileSizeMap.set('test/mseed3/reference-data/reference-detectiononly.mseed3',328);
+fileSizeMap.set('test/mseed3/reference-data/reference-headeronly.mseed3',789);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-All.mseed3',4432);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-Other.mseed3',1788);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.mseed3',1957);
@@ -41,6 +44,7 @@ fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float64.mseed3',4
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int16.mseed3',499);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int32.mseed3',2059);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',1595);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1-large-source-id.mseed3',1612);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',1595);
 fileSizeMap.set('test/mseed3/reference-data/reference-text.mseed3',294);
 
