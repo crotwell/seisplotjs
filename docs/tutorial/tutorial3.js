@@ -1,5 +1,5 @@
 // snip start map
-import * as sp from "../seisplotjs_3.2.2_standalone.mjs";
+import * as sp from "../seisplotjs_3.2.3-snapshot_standalone.mjs";
 sp.util.updateVersionText(".sp_version");
 
 // snip start mapcss
