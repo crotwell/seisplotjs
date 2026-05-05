@@ -81,6 +81,7 @@ let toggleConnect = function () {
         },
         errorFn,
       );
+      datalink.logCommandFn = addToDebug;
     }
     if (datalink) {
       datalink
@@ -99,7 +100,6 @@ let toggleConnect = function () {
           }
         })
         .then((response) => {
-          addToDebug(`match response: ${response}`);
           if (response.isError()) {
             addToDebug(`response is not OK, ignore... ${response}`);
           }
