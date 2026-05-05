@@ -61,6 +61,10 @@ export class SeisPlotElement extends HTMLElement {
     this._seisDataList = [];
     this.appendSeisData(seisData);
   }
+  removeAllSeisData() {
+    this._seisDataList = [];
+    this.seisDataUpdated();
+  }
 
 
   /**
