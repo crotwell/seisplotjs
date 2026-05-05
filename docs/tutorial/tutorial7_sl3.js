@@ -108,9 +108,10 @@ function errorFn(error) {
 // snip start seedlink
 let seedlink = null;
 const IRIS_SEEDLINK = "wss://rtserve.iris.washington.edu/seedlink";
+const EARTHSCOPE_SEEDLINK = "wss://rtserve.earthscope.org/seedlink";
 const SCSN_SEEDLINK = "wss://eeyore.seis.sc.edu/ringserver/seedlink";
 
-const SEEDLINK = IRIS_SEEDLINK;
+const SEEDLINK = EARTHSCOPE_SEEDLINK;
 
 let toggleConnect = function () {
   stopped = !stopped;

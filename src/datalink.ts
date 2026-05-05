@@ -61,6 +61,7 @@ export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
 export const JSON_TYPE = "/JSON";
 export const IRIS_RINGSERVER_URL = "wss://rtserve.iris.washington.edu/datalink";
+export const EARTHSCOPE_RINGSERVER_URL = "wss://rtserve.earthscope.org/datalink";
 
 export function extractDLProto(lines: Array<string>): string {
   for (let line of lines) {
@@ -126,7 +127,7 @@ export class DataLinkConnection {
     this.dlproto = "1.0";
     this.webSocket = null;
     this.subprotocol = WS_DATALINK_SUBPROTOCOL;
-    this.url = url ? url : IRIS_RINGSERVER_URL;
+    this.url = url ? url : EARTHSCOPE_RINGSERVER_URL;
     this._mode = MODE.Query;
     this.packetHandler = packetHandler;
     this.errorHandler = errorHandler;

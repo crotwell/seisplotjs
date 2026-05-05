@@ -2,7 +2,6 @@ import * as sp from "../seisplotjs_3.2.2_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
-const duration = sp.luxon.Duration.fromISO("PT5M");
 
 let numPackets = 0;
 let paused = false;
@@ -61,6 +60,8 @@ let dataCmd = sp.seedlink4.createDataTimeCommand(start);
 let requestConfigWithData = requestConfig.concat([ dataCmd ])
 let endCommand = sp.seedlink4.END_COMMAND;
 const LOCAL_SEEDLINK_V4 = "wss://eeyore.seis.sc.edu/testringserver/seedlink";
+const EARTHSCOPE_SEEDLINK = "wss://rtserve.earthscope.org/seedlink";
+const SEEDLINK = EARTHSCOPE_SEEDLINK;
 
 document.querySelector("span#channel").textContent = requestConfig.join(" ");
 
@@ -78,7 +79,7 @@ let toggleConnect = function () {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!seedlink) {
       seedlink = new sp.seedlink4.SeedlinkConnection(
-        LOCAL_SEEDLINK_V4,
+        SEEDLINK,
         requestConfigWithData,
         (packet) => {
           rtDisp.packetHandler(packet);
