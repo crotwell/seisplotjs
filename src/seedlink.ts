@@ -44,6 +44,7 @@ export class SeedlinkConnection {
   requestConfig: Array<string>;
   receiveMiniseedFn: (packet: SequencedDataRecord) => void;
   errorHandler: (error: Error) => void;
+  logCommandFn: (cmd: string) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
   subprotocol: string | Array<string>;
@@ -60,6 +61,7 @@ export class SeedlinkConnection {
     this.requestConfig = requestConfig;
     this.receiveMiniseedFn = receiveMiniseedFn;
     this.errorHandler = errorHandler;
+    this.logCommandFn = (msg: string) => {};
     this.closeFn = null;
     this.command = "DATA";
     this.webSocket = null;
@@ -98,8 +100,9 @@ export class SeedlinkConnection {
         this.webSocket.onmessage = (event) => {
           this.handle(event);
         };
-
-        this.webSocket.send("END\r");
+        const cmd = "END\r";
+        this.logCommandFn(cmd);
+        this.webSocket.send(cmd);
         return val;
       })
       .catch((err) => {
@@ -241,6 +244,7 @@ export class SeedlinkConnection {
    * @returns            Promise that resolves to the response from the server.
    */
   sendHello(): Promise<[string, string]> {
+    const mythis = this;
     const webSocket = this.webSocket;
     const promise: Promise<[string, string]> = new Promise(function (
       resolve,
@@ -252,6 +256,7 @@ export class SeedlinkConnection {
             || event.data instanceof SharedArrayBuffer) {
             const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data));
+            mythis.logCommandFn(replyMsg);
             const lines = replyMsg.trim().split("\r");
 
             if (lines.length === 2) {
@@ -264,7 +269,9 @@ export class SeedlinkConnection {
           }
         };
 
-        webSocket.send("HELLO\r");
+        const cmd = "HELLO\r";
+        mythis.logCommandFn(cmd);
+        webSocket.send(cmd);
       } else {
         reject(new Error("webSocket has been closed"));
       }
@@ -295,6 +302,7 @@ export class SeedlinkConnection {
    * @returns        Promise that resolves to the reply from the server.
    */
   createCmdPromise(mycmd: string): Promise<string> {
+    const mythis = this;
     const webSocket = this.webSocket;
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
@@ -303,6 +311,7 @@ export class SeedlinkConnection {
               || event.data instanceof SharedArrayBuffer) {
             const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
+            mythis.logCommandFn(replyMsg);
 
             if (replyMsg === "OK") {
               resolve(replyMsg);
@@ -314,6 +323,7 @@ export class SeedlinkConnection {
           }
         };
 
+        mythis.logCommandFn(mycmd);
         webSocket.send(mycmd + "\r\n");
       } else {
         reject(new Error("webSocket has been closed"));

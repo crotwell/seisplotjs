@@ -9,8 +9,9 @@ let stopped = true;
 let realtimeDiv = document.querySelector("div#realtime");
 
 // snip start timer
+const duration = sp.luxon.Duration.fromISO("PT5M");
 const rtConfig = {
-  duration: sp.luxon.Duration.fromISO("PT5M"),
+  duration: duration,
 };
 const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
@@ -35,9 +36,7 @@ function addToDebug(message) {
   if (!debugDiv) {
     return;
   }
-  const pre = debugDiv.appendChild(document.createElement("pre"));
-  const code = pre.appendChild(document.createElement("code"));
-  code.textContent = message;
+  debugDiv.debug(message);
 }
 function errorFn(error) {
   console.assert(false, error);
@@ -46,6 +45,10 @@ function errorFn(error) {
   }
   addToDebug("Error: " + error);
 }
+function logCmd(msg) {
+  addToDebug(msg);
+}
+addToDebug("Init debug:");
 
 // snip start handle
 
@@ -78,6 +81,7 @@ let toggleConnect = function () {
   } else {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!seedlink) {
+      addToDebug("Seedlink URL: " + SEEDLINK);
       seedlink = new sp.seedlink4.SeedlinkConnection(
         SEEDLINK,
         requestConfigWithData,
@@ -87,6 +91,7 @@ let toggleConnect = function () {
         },
         errorFn,
       );
+      seedlink.logCommandFn = logCmd;
       seedlink.endCommand = endCommand;
     }
     if (seedlink) {

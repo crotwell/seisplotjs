@@ -93,9 +93,7 @@ function addToDebug(message) {
   if (!debugDiv) {
     return;
   }
-  const pre = debugDiv.appendChild(document.createElement("pre"));
-  const code = pre.appendChild(document.createElement("code"));
-  code.textContent = message;
+  debugDiv.debug(message);
 }
 function errorFn(error) {
   console.assert(false, error);
@@ -123,6 +121,7 @@ let toggleConnect = function () {
   } else {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!seedlink) {
+      addToDebug("Seedlink URL: " + SEEDLINK);
       seedlink = new sp.seedlink.SeedlinkConnection(
         SEEDLINK,
         requestConfig,
@@ -132,6 +131,7 @@ let toggleConnect = function () {
         },
         errorFn,
       );
+      seedlink.logCommandFn = addToDebug;
     }
     if (seedlink) {
       const start = sp.luxon.DateTime.utc().minus(duration);

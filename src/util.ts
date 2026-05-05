@@ -257,6 +257,23 @@ export class SeisPlotDebugElement extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
   }
+  debug(msg: string) {
+    let shadow = this.shadowRoot;
+    if (shadow === null) {
+      shadow = this.attachShadow({ mode: "open" });
+    }
+
+    const pre = shadow.appendChild(document.createElement("pre"));
+    const code = pre.appendChild(document.createElement("code"));
+    code.textContent = msg.trim();
+  }
+  clear() {
+    let shadow = this.shadowRoot;
+    if (shadow === null) {
+      shadow = this.attachShadow({ mode: "open" });
+    }
+    shadow.innerHTML = "";
+  }
 }
 customElements.define(DEBUG_ELEMENT, SeisPlotDebugElement);
 

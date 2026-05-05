@@ -105,6 +105,7 @@ export class DataLinkConnection {
   _mode: MODE;
   packetHandler: (packet: DataLinkPacket) => void;
   errorHandler: (error: Error) => void;
+  logCommandFn: (cmd: string) => void;
   closeHandler: null | ((close: CloseEvent) => void);
   serverId: string | null;
   clientIdNum: number;
@@ -131,6 +132,7 @@ export class DataLinkConnection {
     this._mode = MODE.Query;
     this.packetHandler = packetHandler;
     this.errorHandler = errorHandler;
+    this.logCommandFn = (msg: string) => {};
     this.closeHandler = null;
     this.serverId = null;
     // meant to be processId, so use 1 <= num <= 2^15 to be safe
@@ -227,8 +229,11 @@ export class DataLinkConnection {
   stream(): Promise<DataLinkResponse> {
     this._mode = MODE.Stream;
     return this.awaitDLCommand(STREAM, "").then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
-    );
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
+    ).then((dlResp: DataLinkResponse) => {
+      this.logCommandFn(dlResp.message);
+      return dlResp;
+    });
   }
 
   /**
@@ -277,9 +282,11 @@ export class DataLinkConnection {
       this.architecture,
     )
       .then((dlResponse) =>
-        DataLinkConnection.ensureDataLinkResponse(dlResponse),
-      )
-      .then((dlResponse) => {
+        DataLinkConnection.ensureDataLinkResponse(dlResponse)
+      ).then((dlResp: DataLinkResponse) => {
+        this.logCommandFn(dlResp.message);
+        return dlResp;
+      }).then((dlResponse) => {
         if (dlResponse.type === "ID") {
           this.serverId = "" + dlResponse.message;
           const lines = this.serverId.split(/\r?\n/g);
@@ -418,6 +425,7 @@ export class DataLinkConnection {
     command: string,
     dataString?: string,
   ): Promise<DataLinkResponse | DataLinkPacket> {
+    this.logCommandFn(command);
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
@@ -495,8 +503,11 @@ export class DataLinkConnection {
   ): Promise<DataLinkResponse> {
     const command = `ID ${programname}:${username}:${processid}:${architecture}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
-    );
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
+    ).then((dlResp: DataLinkResponse) => {
+      this.logCommandFn(dlResp.message);
+      return dlResp;
+    });
   }
 
   /**
@@ -508,8 +519,11 @@ export class DataLinkConnection {
   info(infoType: string): Promise<DataLinkResponse> {
     const command = `INFO ${infoType}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
-    );
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
+    ).then((dlResp: DataLinkResponse) => {
+      this.logCommandFn(dlResp.message);
+      return dlResp;
+    });
   }
 
   infoStatus(): Promise<StatusResponse> {
@@ -541,8 +555,11 @@ export class DataLinkConnection {
    */
   positionAfter(time: DateTime): Promise<DataLinkResponse> {
     return this.positionAfterHPTime(dateTimeToHPTime(time)).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
-    );
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
+    ).then((dlResp: DataLinkResponse) => {
+      this.logCommandFn(dlResp.message);
+      return dlResp;
+    });
   }
 
   /**
@@ -554,8 +571,11 @@ export class DataLinkConnection {
   positionAfterHPTime(hpTime: number): Promise<DataLinkResponse> {
     const command = `POSITION AFTER ${hpTime}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
-    );
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
+    ).then((dlResp: DataLinkResponse) => {
+      this.logCommandFn(dlResp.message);
+      return dlResp;
+    });
   }
 
   /**
@@ -567,8 +587,11 @@ export class DataLinkConnection {
   match(pattern: string): Promise<DataLinkResponse> {
     const command = `MATCH`;
     return this.awaitDLCommand(command, pattern).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
-    );
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
+    ).then((dlResp: DataLinkResponse) => {
+      this.logCommandFn(dlResp.message);
+      return dlResp;
+    });
   }
 
   /**
@@ -580,8 +603,11 @@ export class DataLinkConnection {
   reject(pattern: string): Promise<DataLinkResponse> {
     const command = `REJECT ${pattern}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
-    );
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
+    ).then((dlResp: DataLinkResponse) => {
+      this.logCommandFn(dlResp.message);
+      return dlResp;
+    });
   }
 
   /**

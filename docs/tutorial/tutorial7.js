@@ -45,9 +45,7 @@ function addToDebug(message) {
   if (!debugDiv) {
     return;
   }
-  const pre = debugDiv.appendChild(document.createElement("pre"));
-  const code = pre.appendChild(document.createElement("code"));
-  code.textContent = message;
+  debugDiv.debug(message);
 }
 function errorFn(error) {
   console.assert(false, error);
@@ -60,7 +58,8 @@ function errorFn(error) {
 // snip start datalink
 let datalink = null;
 const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
-const DATALINK_URL = IRIS_DATALINK;
+const EARTHSCOPE_DATALINK = "wss://rtserve.earthscope.org/datalink";
+const DATALINK_URL = EARTHSCOPE_DATALINK;
 
 let toggleConnect = function () {
   stopped = !stopped;
