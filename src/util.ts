@@ -252,7 +252,7 @@ export function toError(maybeError: unknown): Error {
 }
 
 export const DEBUG_ELEMENT = "sp-debug";
-export class SeisPlotDebugElement extends HTMLDivElement {
+export class SeisPlotDebugElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
