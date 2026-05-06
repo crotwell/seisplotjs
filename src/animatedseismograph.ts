@@ -120,6 +120,11 @@ export class RTDisplayContainer {
     });
     return p;
   }
+  removeAllSeisData() {
+    // don't want a new array as packetHandler hold reference
+    while (this.rawSeisData.length > 0) {this.rawSeisData.pop();}
+    this.organizedDisplay.removeAllSeisData();
+  }
 };
 
 export type RTConfig = {
@@ -263,10 +268,12 @@ export function internalCreateRealtimeDisplay(
           dispMatchSDD.seismogram = matchSDD.seismogram;
         }
       } else {
-        // never happens, but typescipt
-        // console.log("NEVER HAPPENS, but I guess it just did!!!")
-        // should never say never as this shows up in logs sometimes
-        // maybe related to window in background during update???
+        if (config.removeTrend && matchSDD.seismogram) {
+          const addDispSDD = matchSDD.cloneWithNewSeismogram(removeTrend(matchSDD.seismogram));
+          orgDisp.appendSeisData(addDispSDD);
+        } else {
+          orgDisp.appendSeisData(matchSDD);
+        }
       }
     } else {
       const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
@@ -278,9 +285,9 @@ export function internalCreateRealtimeDisplay(
 
       if (config.removeTrend && sdd.seismogram) {
         const dispSDD = sdd.cloneWithNewSeismogram(removeTrend(sdd.seismogram));
-        orgDisp.seisData.push(dispSDD);
+        orgDisp.appendSeisData(dispSDD);
       } else {
-        orgDisp.seisData.push(sdd);
+        orgDisp.appendSeisData(sdd);
       }
       // trigger redraw if new channel, but not for simple append.
       orgDisp.seisDataUpdated();
