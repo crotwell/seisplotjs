@@ -105,7 +105,7 @@ export class DataLinkConnection {
   _mode: MODE;
   packetHandler: (packet: DataLinkPacket) => void;
   errorHandler: (error: Error) => void;
-  logCommandFn: (cmd: string) => void;
+  logCommandFn: null | ((cmd: string) => void);
   closeHandler: null | ((close: CloseEvent) => void);
   serverId: string | null;
   clientIdNum: number;
@@ -231,7 +231,7 @@ export class DataLinkConnection {
     return this.awaitDLCommand(STREAM, "").then((dlResponse) =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse)
     ).then((dlResp: DataLinkResponse) => {
-      this.logCommandFn(dlResp.message);
+      if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
       return dlResp;
     });
   }
@@ -284,7 +284,7 @@ export class DataLinkConnection {
       .then((dlResponse) =>
         DataLinkConnection.ensureDataLinkResponse(dlResponse)
       ).then((dlResp: DataLinkResponse) => {
-        this.logCommandFn(dlResp.message);
+        if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
         return dlResp;
       }).then((dlResponse) => {
         if (dlResponse.type === "ID") {
@@ -425,7 +425,7 @@ export class DataLinkConnection {
     command: string,
     dataString?: string,
   ): Promise<DataLinkResponse | DataLinkPacket> {
-    this.logCommandFn(command);
+    if (this.logCommandFn) {this.logCommandFn(command);}
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
@@ -505,7 +505,7 @@ export class DataLinkConnection {
     return this.awaitDLCommand(command).then((dlResponse) =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse)
     ).then((dlResp: DataLinkResponse) => {
-      this.logCommandFn(dlResp.message);
+      if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
       return dlResp;
     });
   }
@@ -521,7 +521,7 @@ export class DataLinkConnection {
     return this.awaitDLCommand(command).then((dlResponse) =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse)
     ).then((dlResp: DataLinkResponse) => {
-      this.logCommandFn(dlResp.message);
+      if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
       return dlResp;
     });
   }
@@ -557,7 +557,7 @@ export class DataLinkConnection {
     return this.positionAfterHPTime(dateTimeToHPTime(time)).then((dlResponse) =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse)
     ).then((dlResp: DataLinkResponse) => {
-      this.logCommandFn(dlResp.message);
+      if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
       return dlResp;
     });
   }
@@ -573,7 +573,7 @@ export class DataLinkConnection {
     return this.awaitDLCommand(command).then((dlResponse) =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse)
     ).then((dlResp: DataLinkResponse) => {
-      this.logCommandFn(dlResp.message);
+      if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
       return dlResp;
     });
   }
@@ -589,7 +589,7 @@ export class DataLinkConnection {
     return this.awaitDLCommand(command, pattern).then((dlResponse) =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse)
     ).then((dlResp: DataLinkResponse) => {
-      this.logCommandFn(dlResp.message);
+      if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
       return dlResp;
     });
   }
@@ -605,7 +605,7 @@ export class DataLinkConnection {
     return this.awaitDLCommand(command).then((dlResponse) =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse)
     ).then((dlResp: DataLinkResponse) => {
-      this.logCommandFn(dlResp.message);
+      if (this.logCommandFn) {this.logCommandFn(dlResp.message);}
       return dlResp;
     });
   }

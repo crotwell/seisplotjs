@@ -256,23 +256,31 @@ export class SeisPlotDebugElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    let shadow = this.shadowRoot;
+    if (shadow != null) {
+      const pre = shadow.appendChild(document.createElement("pre"));
+      pre.appendChild(document.createElement("code"));
+    }
+  }
+  getCodeElement() {
+    let code = null;
+    let shadow = this.shadowRoot;
+    if (shadow != null) {
+      code = shadow.querySelector("code");
+    }
+    return code;
   }
   debug(msg: string) {
-    let shadow = this.shadowRoot;
-    if (shadow === null) {
-      shadow = this.attachShadow({ mode: "open" });
+    let code = this.getCodeElement();
+    if (code != null) {
+      code.textContent = code.textContent  + msg.trim()+ "\n";
     }
-
-    const pre = shadow.appendChild(document.createElement("pre"));
-    const code = pre.appendChild(document.createElement("code"));
-    code.textContent = msg.trim();
   }
   clear() {
-    let shadow = this.shadowRoot;
-    if (shadow === null) {
-      shadow = this.attachShadow({ mode: "open" });
+    let code = this.getCodeElement();
+    if (code != null) {
+      code.innerHTML = "";
     }
-    shadow.innerHTML = "";
   }
 }
 customElements.define(DEBUG_ELEMENT, SeisPlotDebugElement);

@@ -44,7 +44,7 @@ export class SeedlinkConnection {
   requestConfig: Array<string>;
   receiveMiniseedFn: (packet: SequencedDataRecord) => void;
   errorHandler: (error: Error) => void;
-  logCommandFn: (cmd: string) => void;
+  logCommandFn: null | ((cmd: string) => void);
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
   subprotocol: string | Array<string>;
@@ -101,7 +101,7 @@ export class SeedlinkConnection {
           this.handle(event);
         };
         const cmd = "END\r";
-        this.logCommandFn(cmd);
+        if (this.logCommandFn) {this.logCommandFn(cmd);}
         this.webSocket.send(cmd);
         return val;
       })
@@ -256,7 +256,7 @@ export class SeedlinkConnection {
             || event.data instanceof SharedArrayBuffer) {
             const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data));
-            mythis.logCommandFn(replyMsg);
+            if (mythis.logCommandFn) {mythis.logCommandFn(replyMsg);}
             const lines = replyMsg.trim().split("\r");
 
             if (lines.length === 2) {
@@ -270,7 +270,7 @@ export class SeedlinkConnection {
         };
 
         const cmd = "HELLO\r";
-        mythis.logCommandFn(cmd);
+        if (mythis.logCommandFn) {mythis.logCommandFn(cmd);}
         webSocket.send(cmd);
       } else {
         reject(new Error("webSocket has been closed"));
@@ -311,7 +311,7 @@ export class SeedlinkConnection {
               || event.data instanceof SharedArrayBuffer) {
             const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
-            mythis.logCommandFn(replyMsg);
+            if (mythis.logCommandFn) {mythis.logCommandFn(replyMsg);}
 
             if (replyMsg === "OK") {
               resolve(replyMsg);
@@ -323,7 +323,7 @@ export class SeedlinkConnection {
           }
         };
 
-        mythis.logCommandFn(mycmd);
+        if (mythis.logCommandFn) {mythis.logCommandFn(mycmd);}
         webSocket.send(mycmd + "\r\n");
       } else {
         reject(new Error("webSocket has been closed"));
