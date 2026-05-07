@@ -1,216 +1,24 @@
-import { fftForward } from "./fft";
-import * as spectraplot from "./spectraplot";
 import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
 import {
   MAP_ELEMENT,
   QuakeStationMap,
 } from "./leafletutil";
-import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
 import { SeisPlotElement } from "./spelement";
 import { SeismogramDisplayData, uniqueStations, uniqueQuakes } from "./seismogram";
-import { Seismograph } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
-import { isDef, isStringArg, stringify } from "./util";
-import * as querystringify from "querystringify";
+import { isDef } from "./util";
 
-export const ORG_DISP_ITEM = "sp-organized-display-item";
+import {OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT} from "./organizeddisplaytools";
+import {OrganizedDisplayItem, ORG_DISP_ITEM, SEISMOGRAPH, MAP} from "./organizeddisplayitem";
+
+export {
+  OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT,
+  OrganizedDisplayItem, ORG_DISP_ITEM, SEISMOGRAPH, MAP
+};
+
 export const ORG_DISPLAY = "sp-organized-display";
 
 export const ORG_TYPE = "orgtype";
-export const PLOT_TYPE = "plottype";
-export const SEISMOGRAPH = "seismograph";
-export const SPECTRA = "amp_spectra";
-export const PARTICLE_MOTION = "particlemotion";
-export const MAP = "map";
-export const INFO = "info";
-export const QUAKE_TABLE = "quake_table";
-export const STATION_TABLE = "station_table";
-
-export class OrganizedDisplayItem extends SeisPlotElement {
-  extras: Map<string, unknown>;
-
-  constructor(
-    seisData?: Array<SeismogramDisplayData>,
-    seisConfig?: SeismographConfig,
-  ) {
-    super(seisData, seisConfig);
-    if (this.plottype.startsWith(PARTICLE_MOTION)) {
-      this._seismographConfig = createParticleMotionConfig(null, seisConfig);
-    }
-
-    this.extras = new Map();
-
-    this.addStyle(`
-    :host {
-      display: block;
-      min-height: 50px;
-
-    }
-    sp-station-quake-map {
-      height: 400px;
-    }
-    sp-seismograph {
-      height: var(--sp-seismograph-height, 200px);
-    }
-    div.wrapper {
-      height: 100%;
-    }
-    `);
-    const wrapper = document.createElement("div");
-    wrapper.setAttribute("class", "wrapper");
-    this.getShadowRoot().appendChild(wrapper);
-  }
-  get plottype(): string {
-    let k = this.hasAttribute(PLOT_TYPE)
-      ? this.getAttribute(PLOT_TYPE)
-      : SEISMOGRAPH;
-    // typescript null
-    if (!k) {
-      k = SEISMOGRAPH;
-    }
-    return k;
-  }
-  set plottype(val: string) {
-    this.setAttribute(PLOT_TYPE, val);
-    this.redraw();
-  }
-
-
-  set seismographConfig(seismographConfig: SeismographConfig) {
-    super.seismographConfig = seismographConfig;
-    this.getContainedPlotElements().forEach( (spe: SeisPlotElement) => {
-      spe.seismographConfig = seismographConfig;
-    });
-    this.seisDataUpdated();
-
-  }
-
-  static get observedAttributes() {
-    return [PLOT_TYPE];
-  }
-  attributeChangedCallback(_name: string, _oldValue: unknown, _newValue: unknown) {
-    this.redraw();
-  }
-  setExtra(key: string, value: unknown) {
-    this.extras.set(key, value);
-  }
-
-  hasExtra(key: string): boolean {
-    return this.extras.has(key);
-  }
-
-  getExtra(key: string): unknown {
-    if (this.extras.has(key)) {
-      return this.extras.get(key);
-    }
-    return null;
-  }
-  getContainedPlotElements(): Array<SeisPlotElement> {
-    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
-    let dispItems = Array.from(wrapper.children);
-    dispItems = dispItems.filter((el) => el instanceof SeisPlotElement);
-    return dispItems as Array<SeisPlotElement>;
-  }
-
-  draw(): void {
-    if (!this.isConnected) {
-      return;
-    }
-    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
-
-    while (wrapper.firstChild) {
-      // @ts-expect-error if there is a firstChild, there is also lastChild
-      wrapper.removeChild(wrapper.lastChild);
-    }
-    const qIndex = this.plottype.indexOf("?");
-    let queryParams: Record<string, unknown>;
-
-    if (qIndex !== -1) {
-      queryParams = querystringify.parse(
-        this.plottype.substring(qIndex),
-      ) as Record<string, unknown>;
-    } else {
-      queryParams = {};
-    }
-
-    if (this.plottype.startsWith(SEISMOGRAPH)) {
-      const seismograph = new Seismograph(
-        this.seisData,
-        this._seismographConfig,
-      );
-      wrapper.appendChild(seismograph);
-
-    } else if (this.plottype.startsWith(SPECTRA)) {
-      const loglog = getFromQueryParams(queryParams, "loglog", "true");
-      const nonContigList = this.seisData.filter(
-        (sdd) => !(sdd.seismogram && sdd.seismogram.isContiguous()),
-      );
-
-      if (nonContigList.length > 0) {
-        const nonContigMsg =
-          "non-contiguous seismograms, skipping: " +
-          nonContigList
-            .map((sdd) =>
-              isDef(sdd.seismogram)
-                ? `${sdd.codes()} ${sdd.seismogram.segments.length}`
-                : "null",
-            )
-            .join(",");
-        const p = wrapper.appendChild(document.createElement("p"));
-        p.textContent = nonContigMsg;
-      }
-
-      const fftList = this.seisData.map((sdd) => {
-        return sdd.seismogram && sdd.seismogram.isContiguous()
-          ? fftForward(sdd)
-          : null;
-      });
-      const fftListNoNull = fftList.filter(isDef);
-      const spectraPlot = new spectraplot.SpectraPlot(
-        fftListNoNull,
-        this._seismographConfig,
-      );
-      spectraPlot.setAttribute(spectraplot.LOGFREQ, loglog);
-      wrapper.appendChild(spectraPlot);
-    } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
-      if (this.seisData.length !== 2) {
-        throw new Error(
-          `particle motion requies exactly 2 seisData in seisDataList, ${this.seisData.length}`,
-        );
-      }
-
-      const pmpSeisConfig = this._seismographConfig.clone();
-      const particleMotionPlot = new ParticleMotion(
-        [this.seisData[0]],
-        [this.seisData[1]],
-        pmpSeisConfig,
-      );
-      wrapper.appendChild(particleMotionPlot);
-    } else if (this.plottype.startsWith(MAP)) {
-      const mapid =
-        "map" + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-
-      const seismap = new QuakeStationMap(this.seisData);
-      seismap.setAttribute("id", mapid);
-      for (const mapAttr of QuakeStationMap.observedAttributes) {
-        if (queryParams[mapAttr]) {
-          seismap.setAttribute(mapAttr, getFromQueryParams(queryParams, mapAttr));
-        }
-      }
-      wrapper.appendChild(seismap);
-    } else if (this.plottype.startsWith(INFO)) {
-      const infotable = new QuakeStationTable(
-        this.seisData,
-        this._seismographConfig,
-      );
-      wrapper.appendChild(infotable);
-    } else {
-      throw new Error(`Unkown plottype "${this.plottype}"`);
-    }
-  }
-}
-
-customElements.define(ORG_DISP_ITEM, OrganizedDisplayItem);
 
 export const WITH_INFO = "info";
 export const DEFAULT_WITH_INFO = "false";
@@ -228,175 +36,6 @@ export const OVERLAY_STATION = "station";
 export const OVERLAY_STATION_COMPONENT = "stationcomponent";
 export const OVERLAY_ALL = "all";
 export const OVERLAY_FUNCTION = "function";
-
-export const TOOLS_HTML = `
-<details>
-  <summary>Tools</summary>
-  <form>
-    <fieldset class="plottype">
-      <legend>Plot</legend>
-      <span>
-        <input type="checkbox" name="with_map" id="with_map">
-        <label for="with_map">map</label>
-      </span>
-      <span>
-        <input type="checkbox" name="with_info" id="with_info">
-        <label for="with_info">info</label>
-      </span>
-    </fieldset>
-    <fieldset class="overlay">
-    <legend>Overlay Type</legend>
-    <span>
-      <input type="radio" name="overlay" id="overlay_individual" value="individual" checked>
-      <label for="overlay_individual">individual</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_vector" value="vector">
-      <label for="overlay_vector">vector</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_component" value="component">
-      <label for="overlay_component">component</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_station_component" value="stationcomponent">
-      <label for="overlay_station_component">station component</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_station" value="station">
-      <label for="overlay_station">station</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_all" value="all">
-      <label for="overlay_all">all</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_none" value="none">
-      <label for="overlay_none">none</label>
-    </span>
-  </fieldset>
-
-  </form>
-</details>
-`;
-
-export class OrganizedDisplayTools extends SeisPlotElement {
-  _organizedDisplay: OrganizedDisplay | null;
-  constructor(
-    seisData?: Array<SeismogramDisplayData>,
-    seisConfig?: SeismographConfig,
-  ) {
-    super(seisData, seisConfig);
-    const wrapper = document.createElement("div");
-    wrapper.setAttribute("class", "wrapper");
-    wrapper.innerHTML = TOOLS_HTML;
-    this.getShadowRoot().appendChild(wrapper);
-    this._organizedDisplay = null;
-  }
-  get organizedDisplay() {
-    return this._organizedDisplay;
-  }
-  set organizedDisplay(orgdisp: OrganizedDisplay | null) {
-    this._organizedDisplay = orgdisp;
-    this.initCheckboxes(orgdisp);
-  }
-  initCheckboxes(orgdisp: OrganizedDisplay | null) {
-    if (orgdisp) {
-      const shadow = this.shadowRoot;
-      const doMapCB = shadow?.querySelector(
-        "input#with_map",
-      ) as HTMLInputElement;
-      if (doMapCB) {
-        doMapCB.checked = orgdisp.map === "true";
-      }
-      const doInfoCB = shadow?.querySelector(
-        "input#with_info",
-      ) as HTMLInputElement;
-      if (doInfoCB) {
-        doInfoCB.checked = orgdisp.info === "true";
-      }
-      shadow?.querySelectorAll("fieldset.overlay input").forEach((i) => {
-        const inEl = i as HTMLInputElement;
-        inEl.checked = orgdisp.overlayby === inEl.value;
-      });
-      const details = shadow?.querySelector("div.wrapper details");
-      details?.querySelector("fieldset.sort")?.remove();
-      const sortFS = document.createElement("fieldset");
-      sortFS.classList.add("sort");
-      const legend = document.createElement("legend");
-      legend.textContent = "Sort Type";
-      sortFS.appendChild(legend);
-      const sortKeyList = Array.from(orgdisp._sorting.keys());
-      sortKeyList.push("none");
-      for (const sortKey of sortKeyList) {
-        const span = document.createElement("span");
-        const input = document.createElement("input");
-        input.setAttribute("type", "radio");
-        input.setAttribute("name", "sort");
-        input.setAttribute("id", `sort_${sortKey}`);
-        input.setAttribute("value", sortKey);
-        input.checked = orgdisp.sortby === input.value;
-        input.addEventListener("change", (_e) => {
-          if (this._organizedDisplay) {
-            this._organizedDisplay?.setAttribute("sort", input.value);
-          }
-        });
-        span.appendChild(input);
-        const label = document.createElement("label");
-        label.setAttribute("for", `sort_${sortKey}`);
-        label.textContent = sortKey;
-        span.appendChild(label);
-        sortFS.appendChild(span);
-      }
-      details?.appendChild(sortFS);
-    }
-  }
-  draw() {
-    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
-
-    wrapper.innerHTML = TOOLS_HTML;
-    this.wireComponents();
-  }
-  wireComponents() {
-    const shadow = this.shadowRoot;
-    const doMapCB = shadow?.querySelector("input#with_map") as HTMLInputElement;
-    doMapCB?.addEventListener("change", () => {
-      if (this._organizedDisplay) {
-        this._organizedDisplay.map = doMapCB.checked ? "true" : "false";
-      }
-    });
-    const doInfoCB = shadow?.querySelector(
-      "input#with_info",
-    ) as HTMLInputElement;
-    doInfoCB?.addEventListener("change", () => {
-      if (this._organizedDisplay) {
-        this._organizedDisplay.info = `${doInfoCB.checked}`;
-      }
-    });
-    shadow?.querySelectorAll("fieldset.overlay input").forEach((i) => {
-      const inEl = i as HTMLInputElement;
-      inEl.addEventListener("change", (_e) => {
-        if (this._organizedDisplay) {
-          this._organizedDisplay?.setAttribute("overlay", inEl.value);
-        }
-      });
-    });
-    shadow?.querySelectorAll("fieldset.sort input").forEach((i) => {
-      const inEl = i as HTMLInputElement;
-      inEl.addEventListener("change", (_e) => {
-        if (this._organizedDisplay) {
-          this._organizedDisplay?.setAttribute("sort", inEl.value);
-        }
-      });
-    });
-    // sort wired in initCheckboxes as is dynamic,so must be done later
-    this.initCheckboxes(this._organizedDisplay);
-  }
-}
-export const ORG_DISP_TOOLS_ELEMENT = "sp-orgdisp-tools";
-customElements.define(ORG_DISP_TOOLS_ELEMENT, OrganizedDisplayTools);
-
-
 
 export class OrganizedDisplay extends SeisPlotElement {
   bottomSeismographConfig: SeismographConfig|null;
@@ -618,15 +257,20 @@ export class OrganizedDisplay extends SeisPlotElement {
     const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);
     if (this.tools !== "true" && toolsElement) {
       wrapper.removeChild(toolsElement);
-    } else if (this.tools === "true" && !isDef(toolsElement)) {
-      if (sortedData == null)  {sortedData = this.sortedSeisData();}
-      const toolsdisp = new OrganizedDisplayTools(
-        sortedData,
-        this.seismographConfig,
-      );
-      toolsdisp.organizedDisplay = this;
-      // tools is first
-      wrapper.insertBefore(toolsdisp, wrapper.firstElementChild);
+    } else if (this.tools === "true" ) {
+      if (!isDef(toolsElement)) {
+        if (sortedData == null)  {sortedData = this.sortedSeisData();}
+        const toolsdisp = new OrganizedDisplayTools(
+          sortedData,
+          this.seismographConfig,
+        );
+        toolsdisp.organizedDisplay = this;
+        // tools is first
+        wrapper.insertBefore(toolsdisp, wrapper.firstElementChild);
+      } else {
+        const orgDispTools = toolsElement as OrganizedDisplayTools;
+        orgDispTools.updateStationCheckboxes(this);
+      }
     }
   }
   drawMap(sortedData: Array<SeismogramDisplayData>) {
@@ -721,24 +365,6 @@ export class OrganizedDisplay extends SeisPlotElement {
 }
 customElements.define(ORG_DISPLAY, OrganizedDisplay);
 
-export function getFromQueryParams(
-  qParams: Record<string, unknown>,
-  name: string,
-  defaultValue = "",
-): string {
-  if (name in qParams) {
-    const v = qParams[name];
-    if (isStringArg(v)) {
-      return v;
-    } else {
-      throw new Error(
-        `param ${name} exists but is not string: ${stringify(qParams[name])}`,
-      );
-    }
-  }
-
-  return defaultValue;
-}
 export function individualDisplay(
   sddList: Array<SeismogramDisplayData>,
   seisConfig?: SeismographConfig,
