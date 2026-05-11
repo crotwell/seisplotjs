@@ -20,7 +20,7 @@ import { parseUtil } from "./stationxml";
 import { DateTime } from "luxon";
 
 /** const for websocket subprotocol for datalink, DataLink1.0 */
-export const WS_DATALINK_SUBPROTOCOL = "DataLink1.0";
+export const WS_DATALINK_SUBPROTOCOL = "DataLink1.1";
 
 /** enum for modes, either QUERY or STREAM */
 export enum MODE {
@@ -425,7 +425,9 @@ export class DataLinkConnection {
     command: string,
     dataString?: string,
   ): Promise<DataLinkResponse | DataLinkPacket> {
-    if (this.logCommandFn) {this.logCommandFn(command);}
+    if (this.logCommandFn) {
+      this.logCommandFn(`${command} ${!!dataString?dataString:""}`);
+    }
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
