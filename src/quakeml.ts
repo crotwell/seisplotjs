@@ -94,7 +94,7 @@ class BaseElement {
     let pid = _grabAttribute(qml, "publicID");
     if (!isNonEmptyStringArg(pid)) {
       warn(`missing publicID on ${qml.localName}`);
-      pid = `${UNKNOWN_PUBLIC_ID}_${qml.localName}`;
+      pid = `${createUnknownId()}_${qml.localName}`;
     }
 
     this.publicId = pid;
@@ -346,7 +346,7 @@ export class Quake extends BaseElement {
       return publicid;
     }
 
-    return UNKNOWN_PUBLIC_ID;
+    return createUnknownId();
   }
 
   hasPreferredOrigin() {
@@ -2344,6 +2344,13 @@ export function mightBeQuakeML(buf: ArrayBufferLike) {
     return false;
   }
   return true;
+}
+
+export function createUnknownId() {
+  const max = 1000000;
+  let s = `${Math.floor(Math.random() * max)}`;
+  s = s.padStart(6, "0");
+  return `${UNKNOWN_PUBLIC_ID}_${s}`;
 }
 
 // these are similar methods as in seisplotjs.stationxml

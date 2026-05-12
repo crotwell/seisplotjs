@@ -10,6 +10,7 @@ import { isDef } from "./util";
 
 import {OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT} from "./organizeddisplaytools";
 import {OrganizedDisplayItem, ORG_DISP_ITEM, SEISMOGRAPH, MAP} from "./organizeddisplayitem";
+import {defaultPlotSelect} from "./organizeddisplayselect";
 
 export {
   OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT,
@@ -161,21 +162,29 @@ export class OrganizedDisplay extends SeisPlotElement {
   set overlayby(val: string) {
     this.setAttribute(OVERLAY_BY, val);
   }
+  selectedData(): Array<SeismogramDisplayData> {
+    const sortedData = this.sortedSeisData();
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT)?.shadowRoot?.querySelector("div");
+    const selectedData = sortedData.filter(sdd => defaultPlotSelect(sdd, toolsElement));
+    console.log(`selected ${selectedData.length} data`)
+    return selectedData;
+  }
 
   draw() {
     if (!this.isConnected) {
       return;
     }
-    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
-    wrapper
-      .querySelectorAll(ORG_DISP_ITEM)
-      .forEach((item) => wrapper.removeChild(item));
 
-    const sortedData = this.sortedSeisData();
+    const allData = this.sortedSeisData();
+    const selectedData = this.selectedData();
+    this.drawTools(allData);
+    this.drawMap(selectedData);
+    this.drawInfo(selectedData);
+    this.drawSeismograph(selectedData);
+  }
+  drawSeismograph(sortedData: Array<SeismogramDisplayData>): Array<OrganizedDisplayItem> {
     let seisDispItems = new Array<OrganizedDisplayItem>();
-    this.drawTools(sortedData);
-    this.drawMap(sortedData);
-    this.drawInfo(sortedData);
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach((sdd) => {
         const oi = new OrganizedDisplayItem([sdd], this.seismographConfig);
@@ -222,6 +231,11 @@ export class OrganizedDisplay extends SeisPlotElement {
     }
 
     // mouse hover over seismogram highlights station if map show
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    wrapper
+      .querySelectorAll(ORG_DISP_ITEM)
+      .forEach((item) => wrapper.removeChild(item));
+
     seisDispItems.forEach((odi: OrganizedDisplayItem) => {
       if (odi.plottype === SEISMOGRAPH) {
         odi.addEventListener("mouseenter", (_evt) => {
@@ -239,15 +253,10 @@ export class OrganizedDisplay extends SeisPlotElement {
           }
         });
       }
+      wrapper.appendChild(odi);
     });
 
-    let allOrgDispItems = new Array<OrganizedDisplayItem>();
-    allOrgDispItems = allOrgDispItems.concat(seisDispItems);
-    allOrgDispItems.forEach((oi) => {
-      wrapper.appendChild(oi);
-      oi.draw();
-    });
-    return;
+    return seisDispItems;
   }
   drawTools(sortedData: Array<SeismogramDisplayData>) {
     if (!this.isConnected) {
@@ -269,7 +278,7 @@ export class OrganizedDisplay extends SeisPlotElement {
         wrapper.insertBefore(toolsdisp, wrapper.firstElementChild);
       } else {
         const orgDispTools = toolsElement as OrganizedDisplayTools;
-        orgDispTools.updateStationCheckboxes(this);
+        orgDispTools.updateCheckboxes(this);
       }
     }
   }
@@ -316,7 +325,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.info !== "true" && infoElement) {
       wrapper.removeChild(infoElement);
     } else if (this.info === "true" && !isDef(infoElement)) {
-      const sortedData = this.sortedSeisData();
+      const sortedData = this.selectedData();
       const infoDisp = new QuakeStationTable(
         sortedData,
         this.seismographConfig,
@@ -345,10 +354,10 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === WITH_MAP) {
-      const sortedData = this.sortedSeisData();
+      const sortedData = this.selectedData();
       this.drawMap(sortedData);
     } else if (name === WITH_INFO) {
-      const sortedData = this.sortedSeisData();
+      const sortedData = this.selectedData();
       this.drawInfo(sortedData);
     } else if (QuakeStationMap.observedAttributes.includes(name)) {
       const wrapper = this.getShadowRoot().querySelector(

@@ -1,9 +1,11 @@
 import { SeisPlotElement } from "./spelement";
 
 import {OrganizedDisplay} from "./organizeddisplay";
-import { SeismogramDisplayData, uniqueStations } from "./seismogram";
-import {Station} from "./stationxml";
+import {createQuakeFilterId} from "./organizeddisplayselect";
+import { SeismogramDisplayData, uniqueStations, uniqueQuakes } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
+
+const UNDERSCORE = '_';
 
 export const TOOLS_HTML = `
 <details>
@@ -11,6 +13,10 @@ export const TOOLS_HTML = `
   <form>
     <fieldset class="plottype">
       <legend>Plot</legend>
+      <span>
+        <input type="checkbox" name="with_seis" id="with_seis">
+        <label for="with_seis">seismograph</label>
+      </span>
       <span>
         <input type="checkbox" name="with_map" id="with_map">
         <label for="with_map">map</label>
@@ -79,6 +85,12 @@ export class OrganizedDisplayTools extends SeisPlotElement {
   initCheckboxes(orgdisp: OrganizedDisplay | null) {
     if (orgdisp) {
       const shadow = this.shadowRoot;
+      const doSeisCB = shadow?.querySelector(
+        "input#with_seis",
+      ) as HTMLInputElement;
+      if (doSeisCB) {
+        doSeisCB.checked = orgdisp.map === "true";
+      }
       const doMapCB = shadow?.querySelector(
         "input#with_map",
       ) as HTMLInputElement;
@@ -142,11 +154,12 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     const staDivLabel = document.createElement("legend");
     staDivLabel.textContent = "Stations";
     staDiv.appendChild(staDivLabel);
-    const stations = uniqueStations(this.sortedSeisData());
-    stations.forEach(sta => {
-      this.createCheckboxForStation(staDiv, sta);
-    });
+    this.updateStationCheckboxes(orgdisp);
     return staDiv;
+  }
+  updateCheckboxes(orgdisp: OrganizedDisplay) {
+    this.updateStationCheckboxes(orgdisp);
+    this.updateQuakeCheckboxes(orgdisp);
   }
   updateStationCheckboxes(orgdisp: OrganizedDisplay) {
     const staDiv = this.shadowRoot?.querySelector("fieldset.stations") as HTMLElement;
@@ -157,36 +170,42 @@ export class OrganizedDisplayTools extends SeisPlotElement {
 
     const stations = uniqueStations(orgdisp.sortedSeisData());
     stations.forEach(sta => {
-      const codes = sta.codes();
+      const display = sta.codes(UNDERSCORE);
+      const key = `station_${display}`;
+      const name = "station";
       let foundSta = false;
       staDiv.querySelectorAll("input").forEach((cb: HTMLInputElement) => {
-        if (cb.value === codes) {foundSta = true;}
+        if (cb.value === key) {foundSta = true;}
       });
       if (!foundSta) {
-        this.createCheckboxForStation(staDiv, sta);
+        this.createCheckbox(staDiv, name, key, display);
       }
     });
   }
-  createCheckboxForStation(staDiv: HTMLElement, sta: Station) {
-      const span = document.createElement("span");
-      const input = document.createElement("input");
-      input.setAttribute("type", "checkbox");
-      input.setAttribute("name", "station");
-      input.setAttribute("id", `sta_${sta.codes()}`);
-      input.setAttribute("value", sta.codes());
-      input.checked = true;
-      input.addEventListener("change", (_e) => {
-        if (this._organizedDisplay) {
-          //this._organizedDisplay?.setAttribute("sort", input.value);
-          console.log(`should tell orgdisp to display ${sta.codes()}`)
-        }
-      });
-      span.appendChild(input);
-      const label = document.createElement("label");
-      label.setAttribute("for", `sta_${sta.codes()}`);
-      label.textContent = sta.codes();
-      span.appendChild(label);
-      staDiv.appendChild(span);
+
+  createCheckbox(staDiv: HTMLElement, name: string, key: string, display?: string|null) {
+    if (display == null) {display = key;}
+    const span = document.createElement("span");
+    const input = document.createElement("input");
+    input.setAttribute("type", "checkbox");
+    input.setAttribute("name", name);
+    input.setAttribute("id", key);
+    input.setAttribute("value", key);
+    input.checked = true;
+    input.addEventListener("change", (_e) => {
+      if (this._organizedDisplay) {
+        //this._organizedDisplay?.setAttribute("sort", input.value);
+        console.log(`should tell orgdisp to display ${name}=${key}`)
+        this._organizedDisplay.redraw();//(this._organizedDisplay.selectedData());
+      }
+    });
+    span.appendChild(input);
+    const label = document.createElement("label");
+    label.setAttribute("for", key);
+    label.textContent = display;
+    span.appendChild(label);
+    staDiv.appendChild(span);
+    return input;
   }
   createChannelCheckboxes(orgdisp: OrganizedDisplay) {
     const chanDiv = document.createElement("fieldset");
@@ -203,9 +222,32 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     const quakeDivLabel = document.createElement("legend");
     quakeDivLabel.textContent = "Earthquakes";
     quakeDiv.appendChild(quakeDivLabel);
+    this.updateQuakeCheckboxes(orgdisp);
 
     return quakeDiv;
   }
+  updateQuakeCheckboxes(orgdisp: OrganizedDisplay) {
+    const div = this.shadowRoot?.querySelector("fieldset.quakes") as HTMLElement;
+    if (div === null) {
+      // ???
+      return;
+    }
+
+    const quakes = uniqueQuakes(orgdisp.sortedSeisData());
+    quakes.forEach(quake => {
+      const key = createQuakeFilterId(quake);
+      const name = "quake";
+      let found = false;
+      div.querySelectorAll("input").forEach((cb: HTMLInputElement) => {
+        if (cb.value === key) {found = true;}
+      });
+      if (!found) {
+        this.createCheckbox(div, name, key,
+          `${quake.hasMagnitude()?quake.magnitude.mag:""} ${quake.time.toISO({ includeOffset: false })}`);
+      }
+    });
+  }
+
   draw() {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
 
