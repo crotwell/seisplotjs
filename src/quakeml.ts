@@ -1742,7 +1742,7 @@ export class Axis {
  */
 export class MomentTensor extends BaseElement {
   dataUsedList: DataUsed[] = [];
-  derivedOrigin: Origin;
+  derivedOrigin?: Origin;
   momentMagnitude?: Magnitude;
   scalarMoment?: RealQuantity;
   tensor?: Tensor;
@@ -1758,7 +1758,7 @@ export class MomentTensor extends BaseElement {
   category?: string;
   inversionType?: string;
 
-  constructor(derivedOrigin: Origin) {
+  constructor(derivedOrigin?: Origin) {
     super();
     this.derivedOrigin = derivedOrigin;
   }
@@ -1786,16 +1786,17 @@ export class MomentTensor extends BaseElement {
       momentTensorQML,
       "derivedOriginID",
     );
+    let derivedOrigin;
     if (!isNonEmptyStringArg(derivedOriginID)) {
-      throw new Error("momentTensor missing derivedOriginID");
+      console.log("momentTensor missing derivedOriginID");
+    } else {
+      derivedOrigin = allOrigins.find(
+        (o) => o.publicId === derivedOriginID,
+      );
+      if (!isDef(derivedOrigin)) {
+        throw new Error("No origin with ID " + derivedOriginID);
+      }
     }
-    const derivedOrigin = allOrigins.find(
-      (o) => o.publicId === derivedOriginID,
-    );
-    if (!isDef(derivedOrigin)) {
-      throw new Error("No origin with ID " + derivedOriginID);
-    }
-
     const out = new MomentTensor(derivedOrigin);
 
     out.populate(momentTensorQML);
