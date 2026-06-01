@@ -29,7 +29,7 @@ test("do datalink test", () => {
   const USC_PREFIX = "testringserver";
   ring.host(USC_HOST);
   ring.prefix(USC_PREFIX);
-  expect(ring.getDataLinkURL()).toEqual(`ws://${USC_HOST}/${USC_PREFIX}/datalink`);
+  expect(ring.getDataLinkURL()).toEqual(`wss://${USC_HOST}:443/${USC_PREFIX}/datalink`);
   const dlpacketFun = function(packet: DataLinkPacket) {
     expect(packet).toBeDefined();
     expect(packet.isMiniseed()).toBeTrue();

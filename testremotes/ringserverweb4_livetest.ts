@@ -10,14 +10,14 @@ setDefaultFetch(fetch);
 test("do id test", () => {
   // def is IRIS, but is only ringserver 3
   const ring = new RingserverConnection();
-  expect(ring.formBaseURL()).toEqual("http://rtserve.iris.washington.edu/");
+  expect(ring.formBaseURL()).toEqual("https://rtserve.earthscope.org/");
   return ring.pullId().then(id => {
     expect(id.organization).toBeDefined();
-    expect(id.software).toContain("ringserver/2");
-    expect(id.organization).toContain("IRIS DMC");
+    expect(id.software).toContain("ringserver/4");
+    expect(id.organization).toContain("EarthScope");
     expect(id.datalink_protocol.length).toEqual(1);
-    expect(id.seedlink_protocol.length).toEqual(1);
-    expect(id.datalink_protocol[0]).toContain("DLPROTO:1.0");
+    expect(id.seedlink_protocol.length).toEqual(2);
+    expect(id.datalink_protocol[0]).toContain("DLPROTO:1.1");
     expect(id.seedlink_protocol[0]).toContain("SLPROTO:3.1");
   });
 });
@@ -28,11 +28,11 @@ test("do usc id test", () => {
   const USC_HOST = "eeyore.seis.sc.edu";
   ring.host(USC_HOST);
   ring.prefix("testringserver");
-  expect(ring.formBaseURL()).toEqual("http://eeyore.seis.sc.edu/testringserver/");
-  expect(ring.formIdURL()).toEqual("http://eeyore.seis.sc.edu/testringserver/id/json");
+  expect(ring.formBaseURL()).toEqual("https://eeyore.seis.sc.edu/testringserver/");
+  expect(ring.formIdURL()).toEqual("https://eeyore.seis.sc.edu/testringserver/id/json");
 
   return ring.pullId().then(id => {
-    expect(id.software).toContain("ringserver/4.1");
+    expect(id.software).toContain("ringserver/4");
     expect(id.organization).toContain("Test Ring Server 4");
     expect(id.datalink_protocol.length).toEqual(1);
     expect(id.seedlink_protocol.length).toEqual(2);
@@ -50,10 +50,10 @@ test("do usc streams test", () => {
   const USC_HOST = "eeyore.seis.sc.edu";
   ring.host(USC_HOST);
   ring.prefix("testringserver");
-  expect(ring.formBaseURL()).toEqual("http://eeyore.seis.sc.edu/testringserver/");
+  expect(ring.formBaseURL()).toEqual("https://eeyore.seis.sc.edu/testringserver/");
 
   return ring.pullStreams().then(id => {
-    expect(id.software).toContain("ringserver/4.1");
+    expect(id.software).toContain("ringserver/4");
     expect(id.organization).toContain("Test Ring Server 4");
     expect(id.stream.length).toBeGreaterThan(1);
     const stream = id.stream[0];
@@ -70,7 +70,7 @@ test("do usc streamids test", () => {
   const USC_HOST = "eeyore.seis.sc.edu";
   ring.host(USC_HOST);
   ring.prefix("testringserver");
-  expect(ring.formBaseURL()).toEqual("http://eeyore.seis.sc.edu/testringserver/");
+  expect(ring.formBaseURL()).toEqual("https://eeyore.seis.sc.edu/testringserver/");
 
   return ring.pullStreamIds().then(idList => {
     expect(idList).toBeArray();
