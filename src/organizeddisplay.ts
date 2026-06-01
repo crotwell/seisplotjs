@@ -259,6 +259,14 @@ export class OrganizedDisplay extends SeisPlotElement {
 
     return seisDispItems;
   }
+  getTools(): OrganizedDisplayTools|null {
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);
+    if (toolsElement) {
+       return toolsElement as OrganizedDisplayTools;
+    }
+    return null;
+  }
   drawTools(sortedData: Array<SeismogramDisplayData>) {
     if (!this.isConnected) {
       return;

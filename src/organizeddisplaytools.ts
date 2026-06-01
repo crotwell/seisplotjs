@@ -174,6 +174,14 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     this.updateOrientationCheckboxes(orgdisp);
     this.updateQuakeCheckboxes(orgdisp);
   }
+  allStationCheckboxes() {
+    const div = this.shadowRoot?.querySelector("fieldset.stations") as HTMLElement;
+    if (div == null) {
+      // ???
+      return [];
+    }
+    return div.querySelectorAll("input");
+  }
   updateStationCheckboxes(orgdisp: OrganizedDisplay) {
     const staDiv = this.shadowRoot?.querySelector("fieldset.stations") as HTMLElement;
     if (staDiv === null) {
@@ -227,6 +235,14 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     this.updateOrientationCheckboxes(orgdisp);
     return orientDiv;
   }
+  allOrientationCheckboxes() {
+    const div = this.shadowRoot?.querySelector("fieldset.orientations") as HTMLElement;
+    if (div == null) {
+      // ???
+      return [];
+    }
+    return div.querySelectorAll("input");
+  }
   updateOrientationCheckboxes(orgdisp: OrganizedDisplay) {
     const div = this.shadowRoot?.querySelector("fieldset.orientations") as HTMLElement;
     if (div == null) {
@@ -257,6 +273,14 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     this.updateQuakeCheckboxes(orgdisp);
 
     return quakeDiv;
+  }
+  allQuakeCheckboxes() {
+    const div = this.shadowRoot?.querySelector("fieldset.quakes") as HTMLElement;
+    if (div == null) {
+      // ???
+      return [];
+    }
+    return div.querySelectorAll("input");
   }
   updateQuakeCheckboxes(orgdisp: OrganizedDisplay) {
     const div = this.shadowRoot?.querySelector("fieldset.quakes") as HTMLElement;
