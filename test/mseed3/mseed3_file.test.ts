@@ -44,7 +44,7 @@ fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float64.mseed3',4
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int16.mseed3',499);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int32.mseed3',2059);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',1595);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1-large-source-id.mseed3',1612);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1-large-source-id.mseed3',1611);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',1595);
 fileSizeMap.set('test/mseed3/reference-data/reference-text.mseed3',294);
 
