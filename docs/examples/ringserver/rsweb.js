@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.2.3-snapshot_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.3_standalone.mjs";
 
 const hostUrl = "https://rtserve.iris.washington.edu";
 const rs = new sp.ringserverweb.RingserverConnection(hostUrl);
