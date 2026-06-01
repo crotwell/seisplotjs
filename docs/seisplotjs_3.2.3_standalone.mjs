@@ -88957,7 +88957,7 @@ var RingserverConnection = class {
     __publicField(this, "_timeoutSec");
     __publicField(this, "isFDSNSourceId", false);
     __publicField(this, "dlproto", "1.0");
-    const hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST2;
+    const hostStr = isNonEmptyStringArg(host) ? host : EARTHSCOPE_HOST2;
     if (hostStr.startsWith("http")) {
       const rs_url = new URL(hostStr);
       this._host = rs_url.hostname;
