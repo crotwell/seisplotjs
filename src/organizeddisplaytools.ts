@@ -1,8 +1,14 @@
 import { SeisPlotElement } from "./spelement";
-
 import {OrganizedDisplay} from "./organizeddisplay";
 import {createQuakeFilterId} from "./organizeddisplayselect";
-import { SeismogramDisplayData, uniqueStations, uniqueQuakes } from "./seismogram";
+import {
+  SeismogramDisplayData,
+  uniqueStations,
+  uniqueQuakes,
+  //uniqueBandCodes,
+  //uniqueSourceCodes,
+  uniqueSubsourceCodes
+} from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
 
 const UNDERSCORE = '_';
@@ -27,7 +33,7 @@ export const TOOLS_HTML = `
       </span>
     </fieldset>
     <fieldset class="overlay">
-    <legend>Overlay Type</legend>
+    <legend>Overlay:</legend>
     <span>
       <input type="radio" name="overlay" id="overlay_individual" value="individual" checked>
       <label for="overlay_individual">individual</label>
@@ -110,19 +116,25 @@ export class OrganizedDisplayTools extends SeisPlotElement {
       const details = shadow?.querySelector("div.wrapper details");
       details?.querySelector("fieldset.sort")?.remove();
       details?.appendChild(this.createSortCheckboxes(orgdisp));
-      details?.querySelector("fieldset.stations")?.remove();
-      details?.appendChild(this.createStationCheckboxes(orgdisp));
-      details?.querySelector("fieldset.channels")?.remove();
-      details?.appendChild(this.createChannelCheckboxes(orgdisp));
-      details?.querySelector("fieldset.quakes")?.remove();
-      details?.appendChild(this.createQuakeCheckboxes(orgdisp));
+      const select = document.createElement("fieldset");
+      select.classList.add("selection");
+      const selectlegend = document.createElement("legend");
+      selectlegend.textContent = "Select:";
+      select.appendChild(selectlegend);
+      details?.appendChild(select);
+      select.querySelector("fieldset.stations")?.remove();
+      select.appendChild(this.createStationCheckboxes(orgdisp));
+      select.querySelector("fieldset.orientations")?.remove();
+      select.appendChild(this.createOrientationCheckboxes(orgdisp));
+      select.querySelector("fieldset.quakes")?.remove();
+      select.appendChild(this.createQuakeCheckboxes(orgdisp));
     }
   }
   createSortCheckboxes(orgdisp: OrganizedDisplay) {
     const sortFS = document.createElement("fieldset");
     sortFS.classList.add("sort");
     const legend = document.createElement("legend");
-    legend.textContent = "Sort Type";
+    legend.textContent = "Sort:";
     sortFS.appendChild(legend);
     const sortKeyList = Array.from(orgdisp._sorting.keys());
     sortKeyList.push("none");
@@ -152,13 +164,14 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     const staDiv = document.createElement("fieldset");
     staDiv.classList.add("stations");
     const staDivLabel = document.createElement("legend");
-    staDivLabel.textContent = "Stations";
+    staDivLabel.textContent = "Station:";
     staDiv.appendChild(staDivLabel);
     this.updateStationCheckboxes(orgdisp);
     return staDiv;
   }
   updateCheckboxes(orgdisp: OrganizedDisplay) {
     this.updateStationCheckboxes(orgdisp);
+    this.updateOrientationCheckboxes(orgdisp);
     this.updateQuakeCheckboxes(orgdisp);
   }
   updateStationCheckboxes(orgdisp: OrganizedDisplay) {
@@ -194,9 +207,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     input.checked = true;
     input.addEventListener("change", (_e) => {
       if (this._organizedDisplay) {
-        //this._organizedDisplay?.setAttribute("sort", input.value);
-        console.log(`should tell orgdisp to display ${name}=${key}`)
-        this._organizedDisplay.redraw();//(this._organizedDisplay.selectedData());
+        this._organizedDisplay.redraw();
       }
     });
     span.appendChild(input);
@@ -207,20 +218,41 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     staDiv.appendChild(span);
     return input;
   }
-  createChannelCheckboxes(orgdisp: OrganizedDisplay) {
-    const chanDiv = document.createElement("fieldset");
-    chanDiv.classList.add("channels");
-    const chanDivLabel = document.createElement("legend");
-    chanDivLabel.textContent = "Channels";
-    chanDiv.appendChild(chanDivLabel);
+  createOrientationCheckboxes(orgdisp: OrganizedDisplay) {
+    const orientDiv = document.createElement("fieldset");
+    orientDiv.classList.add("orientations");
+    const orientDivLabel = document.createElement("legend");
+    orientDivLabel.textContent = "Orientation:";
+    orientDiv.appendChild(orientDivLabel);
+    this.updateOrientationCheckboxes(orgdisp);
+    return orientDiv;
+  }
+  updateOrientationCheckboxes(orgdisp: OrganizedDisplay) {
+    const div = this.shadowRoot?.querySelector("fieldset.orientations") as HTMLElement;
+    if (div == null) {
+      // ???
+      return;
+    }
 
-    return chanDiv;
+    let orientations = uniqueSubsourceCodes(orgdisp.sortedSeisData()).sort();
+    orientations.forEach(orient => {
+      const key = `orient_${orient}`;
+      const name = "orientation";
+      let found = false;
+      div.querySelectorAll("input").forEach((cb: HTMLInputElement) => {
+        if (cb.value === key) {found = true;}
+      });
+      if (!found) {
+        this.createCheckbox(div, name, key, orient);
+      }
+    });
+
   }
   createQuakeCheckboxes(orgdisp: OrganizedDisplay) {
     const quakeDiv = document.createElement("fieldset");
     quakeDiv.classList.add("quakes");
     const quakeDivLabel = document.createElement("legend");
-    quakeDivLabel.textContent = "Earthquakes";
+    quakeDivLabel.textContent = "Earthquake:";
     quakeDiv.appendChild(quakeDivLabel);
     this.updateQuakeCheckboxes(orgdisp);
 

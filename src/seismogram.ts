@@ -1514,6 +1514,45 @@ export function uniqueChannels(
   });
   return Array.from(out.values());
 }
+export function uniqueLocationCodes(seisData: Array<SeismogramDisplayData>) {
+  const out = new Set<string>();
+  seisData.forEach((sdd) => {
+      out.add(sdd.sourceId.locationCode);
+  });
+  return Array.from(out.values());
+}
+export function uniqueBandCodes(seisData: Array<SeismogramDisplayData>) {
+  const out = new Set<string>();
+  seisData.forEach((sdd) => {
+      out.add(sdd.sourceId.bandCode);
+  });
+  return Array.from(out.values());
+}
+
+export function uniqueSourceCodes(seisData: Array<SeismogramDisplayData>) {
+  const out = new Set<string>();
+  seisData.forEach((sdd) => {
+      out.add(sdd.sourceId.sourceCode);
+  });
+  return Array.from(out.values());
+}
+
+export function uniqueSubsourceCodes(seisData: Array<SeismogramDisplayData>) {
+  const out = new Set<string>();
+  seisData.forEach((sdd) => {
+      out.add(sdd.sourceId.subsourceCode);
+  });
+  return Array.from(out.values());
+}
+export function uniqueSourceIds(seisData: Array<SeismogramDisplayData>) {
+  // use Map based on String as Set does object by reference equality,
+  // not object equals() equality. Strings will eliminate duplicates.
+  const out = new Map<String, FDSNSourceId>();
+  seisData.forEach((sdd) => {
+      out.set(sdd.sourceId.toString(), sdd.sourceId);
+  });
+  return Array.from(out.values());
+}
 export function uniqueQuakes(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Quake> {

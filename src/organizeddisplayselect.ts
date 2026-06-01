@@ -9,17 +9,17 @@ export function stationFilter(sdd: SeismogramDisplayData, container?: Element|nu
 }
 
 export function orientFilter(sdd: SeismogramDisplayData, container?: Element|null) {
-  const inputId = `input#orient_${sdd.channelCode.charAt(2)}`;
+  const inputId = `orient_${sdd.sourceId.subsourceCode}`;
   return inputIdFilter(inputId, container);
 }
 
 export function bandFilter(sdd: SeismogramDisplayData, container?: Element|null) {
-  const inputId = `input#band_${sdd.channelCode.charAt(0)}`;
+  const inputId = `band_${sdd.sourceId.bandCode}`;
   return inputIdFilter(inputId, container);
 }
 
 export function gainFilter(sdd: SeismogramDisplayData, container?: Element|null) {
-  const inputId = `input#gain_${sdd.channelCode.charAt(1)}`;
+  const inputId = `gain_${sdd.sourceId.sourceCode}`;
   return inputIdFilter(inputId, container);
 }
 export function createQuakeFilterId(quake: Quake) {

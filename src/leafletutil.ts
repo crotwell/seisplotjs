@@ -16,6 +16,7 @@ import * as L from "leaflet";
 import { LatLngTuple } from "leaflet";
 
 export const HIGHLIGHT = "highlight";
+export const UNSELECTED = "unselected";
 export const MAP_ELEMENT = "sp-station-quake-map";
 export const TRIANGLE = "triangle";
 export const DOWNTRIANGLE = "downtriangle";
@@ -77,6 +78,12 @@ export const defaultMarker_css = `
 }
 .${QuakeMarkerClassName}.${HIGHLIGHT} {
   stroke: white;
+}
+.${StationMarkerClassName}.${UNSELECTED} {
+  fill: lightgrey;
+}
+.${QuakeMarkerClassName}.${UNSELECTED} {
+  stroke: tomato;
 }
 `;
 /**

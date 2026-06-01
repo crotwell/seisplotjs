@@ -1,6 +1,7 @@
 import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
 import {
   MAP_ELEMENT,
+  UNSELECTED,
   QuakeStationMap,
 } from "./leafletutil";
 import { SeisPlotElement } from "./spelement";
@@ -179,7 +180,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     const allData = this.sortedSeisData();
     const selectedData = this.selectedData();
     this.drawTools(allData);
-    this.drawMap(selectedData);
+    this.drawMap(allData, selectedData);
     this.drawInfo(selectedData);
     this.drawSeismograph(selectedData);
   }
@@ -282,7 +283,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       }
     }
   }
-  drawMap(sortedData: Array<SeismogramDisplayData>) {
+  drawMap(allData: Array<SeismogramDisplayData>, sortedData: Array<SeismogramDisplayData>) {
     if (!this.isConnected) {
       return;
     }
@@ -310,8 +311,13 @@ export class OrganizedDisplay extends SeisPlotElement {
       } else {
         wrapper.insertBefore(mapdisp, wrapper.firstElementChild);
       }
-    } else if (this.map === "true" && isDef(mapElement)) {
+    }
+    if (this.map === "true" && isDef(mapElement)) {
       mapElement.seisData = sortedData;
+      const allStations = uniqueStations(allData);
+      const selectedStations = uniqueStations(sortedData);
+      const unselectedStations = allStations.filter(sta => ! selectedStations.includes(sta));
+      mapElement.addStation(unselectedStations, UNSELECTED);
     }
   }
   drawInfo(sortedData: Array<SeismogramDisplayData>) {
@@ -354,8 +360,7 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === WITH_MAP) {
-      const sortedData = this.selectedData();
-      this.drawMap(sortedData);
+      this.drawMap(this.sortedSeisData(), this.selectedData());
     } else if (name === WITH_INFO) {
       const sortedData = this.selectedData();
       this.drawInfo(sortedData);
