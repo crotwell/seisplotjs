@@ -386,7 +386,11 @@ export class Helicorder extends SeisPlotElement {
       }
 
       if (lineNumber === 0) {
-        const utcDiv = document.createElement("div");
+        let utcDiv = seismographWrapper.querySelector("div.utclabels");
+        if (utcDiv != null) {
+          seismographWrapper.removeChild(utcDiv);
+        }
+        utcDiv = document.createElement("div");
         utcDiv.setAttribute("class", "utclabels");
         const innerDiv = utcDiv.appendChild(document.createElement("div"));
         innerDiv.setAttribute("style", `top: ${lineSeisConfig.margin.top}px;`);
