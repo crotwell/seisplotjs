@@ -376,7 +376,7 @@ export class Quake extends BaseElement {
     } else if (this.magnitudeList.length > 0) {
       return this.magnitudeList[0];
     } else {
-      throw new Error("No magnitudes in quake");
+      return ZERO_MAGNITUDE;
     }
   }
   get time(): DateTime {
@@ -1099,7 +1099,7 @@ export class Magnitude extends BaseElement {
   constructor(mag: RealQuantity | number, type?: string) {
     super();
     if (typeof mag === "number") {
-      this.magQuantity = new Quantity(mag);
+      this.magQuantity = new Quantity<number>(mag);
     } else {
       this.magQuantity = mag;
     }
@@ -2353,6 +2353,8 @@ export function createUnknownId() {
   s = s.padStart(6, "0");
   return `${UNKNOWN_PUBLIC_ID}_${s}`;
 }
+
+export const ZERO_MAGNITUDE = new Magnitude(new Quantity<number>(0.0), "unk");
 
 // these are similar methods as in seisplotjs.stationxml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...

@@ -5,6 +5,7 @@ import {
   CreationInfo,
   EventDescription,
   EventParameters,
+  ZERO_MAGNITUDE,
 } from "./quakeml";
 import { JSON_MIME, doFetchWithTimeout, UTC_OPTIONS,
   defaultFetchInitObj, stringify } from "./util";
@@ -268,11 +269,11 @@ export function parseFeatureAsQuake(feature: USGSGeoJsonFeature): Quake {
   );
   origin.depth = feature.geometry.coordinates[2] * 1000;
   quake.originList.push(origin);
-  const mag = new Magnitude(p.mag);
-  mag.type = p.magType;
-  quake.magnitudeList.push(mag);
+  const mag = (p?.mag != null) ? new Magnitude(p.mag) : ZERO_MAGNITUDE;
+  mag.type = p.magType ? p.magType : ZERO_MAGNITUDE.type;
   quake.preferredOrigin = origin;
   quake.preferredMagnitude = mag;
+  quake.magnitudeList.push(mag);
   return quake;
 }
 
