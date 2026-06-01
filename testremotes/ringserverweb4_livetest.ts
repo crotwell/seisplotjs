@@ -18,7 +18,7 @@ test("do id test", () => {
     expect(id.datalink_protocol.length).toEqual(1);
     expect(id.seedlink_protocol.length).toEqual(2);
     expect(id.datalink_protocol[0]).toContain("DLPROTO:1.1");
-    expect(id.seedlink_protocol[0]).toContain("SLPROTO:3.1");
+    expect(id.seedlink_protocol[0]).toContain("SLPROTO:4.0");
   });
 });
 
