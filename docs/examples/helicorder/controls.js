@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.2.5-snapshot_standalone.mjs";
+import sp from "../../seisplotjs_3.2.5-snapshot_standalone.mjs";
 import { getNowTime, loadDataReal } from "./doplot.js";
 
 const luxon = sp.luxon;
