@@ -42,3 +42,16 @@ test("do test", () => {
     expect(quakeList.length).toEqual(1);
   });
 });
+
+
+
+test("zero mag sonic boom", () => {
+  const eid = "us7000sp6m";
+  const localEventQuery = new EventQuery()
+  .eventId(eid);
+
+  return localEventQuery.query().then((quakeList: Array<Quake>) => {
+    expect(quakeList.length).toEqual(1);
+    expect(quakeList[0].magnitude.magQuantity.value).toEqual(0);
+  });
+})
