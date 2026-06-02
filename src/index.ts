@@ -71,7 +71,7 @@ import * as luxon from "luxon";
 import * as leaflet from "leaflet";
 
 /* reexport */
-export {
+export default {
   animatedseismograph,
   axisutil,
   components,
