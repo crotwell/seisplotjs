@@ -31,7 +31,7 @@ test("do seedlink4 test", done => {
   ring.host(USC_HOST);
   ring.prefix(USC_PREFIX);
   //ring.protocol("https");
-  expect(ring.getSeedLinkURL()).toEqual(`ws://${USC_HOST}/${USC_PREFIX}/seedlink`);
+  expect(ring.getSeedLinkURL()).toEqual(`wss://${USC_HOST}:443/${USC_PREFIX}/seedlink`);
 
   const start = DateTime.utc().minus(Duration.fromISO('PT3M'));
   const dataCmd = createDataTimeCommand(start);

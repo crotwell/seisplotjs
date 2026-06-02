@@ -88,7 +88,7 @@ export class RingserverConnection {
   dlproto = "1.0";
 
   constructor(host?: string, port?: number) {
-    const hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST;
+    const hostStr = isNonEmptyStringArg(host) ? host : EARTHSCOPE_HOST;
 
     if (hostStr.startsWith("http")) {
       const rs_url = new URL(hostStr);

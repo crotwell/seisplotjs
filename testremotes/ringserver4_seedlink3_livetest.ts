@@ -29,7 +29,7 @@ test("do seedlink3 test", done => {
   const USC_PREFIX = "testringserver";
   ring.host(USC_HOST);
   ring.prefix(USC_PREFIX);
-  expect(ring.getSeedLinkURL()).toEqual(`ws://${USC_HOST}/${USC_PREFIX}/seedlink`);
+  expect(ring.getSeedLinkURL()).toEqual(`wss://${USC_HOST}:443/${USC_PREFIX}/seedlink`);
   const config = ['STATION JSC CO',
                   'SELECT 00HHZ.D' ];
   function packetFun(mseedPacket: SequencedDataRecord) {
