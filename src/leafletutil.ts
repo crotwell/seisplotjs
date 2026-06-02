@@ -19,6 +19,7 @@ export const HIGHLIGHT = "highlight";
 export const UNSELECTED = "unselected";
 export const MAP_ELEMENT = "sp-station-quake-map";
 export const TRIANGLE = "triangle";
+export const CIRCLE = "circle";
 export const DOWNTRIANGLE = "downtriangle";
 export const SQUARE = "square";
 export const CROSS = "cross";
@@ -127,6 +128,8 @@ export function createStationSVG(iconSize=STATION_ICON_SIZE, symbol: string=TRIA
   } else if (symbol === CROSS) {
     out += `<line x1="${xCent-shift}" y1="${yCent}" x2="${xCent+shift}" y2="${yCent}" stroke-width="${strokeWidth}"/>
     <line x1="${xCent}" y1="${yCent-shift}" x2="${xCent}" y2="${yCent+shift}"  stroke-width="${strokeWidth}"/>`;
+  } else if (symbol === CIRCLE) {
+    out += `<circle cx="${xCent}" cy="${yCent}" r="${shift}" stroke-width="${strokeWidth}"/>`;
   } else {
     //if (symbol === TRIANGLE) {
     out += `
@@ -183,8 +186,8 @@ export function createStationMarker(
 export function getRadiusForMag(magnitude: number, magScaleFactor: number): number {
   // in case no mag
   let radius = magnitude ? magnitude * magScaleFactor : 1;
-  if (radius < 1) {
-    radius = 1;
+  if (radius < 2) {
+    radius = 2;
   }
   return radius;
 }
@@ -217,14 +220,21 @@ export function createQuakeMarker(
   const magnitude = quake.magnitude ? quake.magnitude.mag : 1;
   const radius = magToRadius(magnitude, magScaleFactor);
 
-  const circle = L.circleMarker([quake.latitude, qLon], {
-    color: "currentColor",
-    radius: radius,
+  const iconSize = 2*radius+2;
+  const iconSymbol = CIRCLE;
+  const icon = L.divIcon({
+    html: createStationSVG(iconSize, iconSymbol),
     className: allClassList.join(" "),
+    iconSize: [iconSize,iconSize],
+    iconAnchor: [iconSize/2,iconSize/2]
   });
+  const m = L.marker([quake.latitude, qLon], {
+    icon: icon,
+  });
+
   const magStr = quake.magnitude ? quake.magnitude.toString() : "unkn";
-  circle.bindTooltip(`${quake.time.toISO()} ${magStr}`);
-  return circle;
+  m.bindTooltip(`${quake.time.toISO()} ${magStr}`);
+  return m;
 }
 
 export const leaflet_css = import_leaflet_css.leaflet_css;
