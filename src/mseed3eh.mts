@@ -4,7 +4,7 @@
 import {FDSNSourceId} from "./fdsnsourceid.mjs";
 import {Quake, createQuakeFromValues, Magnitude} from "./quakeml.mjs";
 import {Network, Station, Channel} from "./stationxml.mjs";
-import {
+import type {
   MS3ExtraHeader,
   Marker as EHMarker,
   Event as EHEvent,
@@ -14,7 +14,7 @@ import {
   Timeseries as EHTimeseries,
   BagExtraHeader as EHBag,
 } from "./ms3ehtypes.mjs";
-import {MarkerType} from "./seismographmarker.mjs";
+import type {MarkerType} from "./seismographmarker.mjs";
 import { isoToDateTime, stringify } from "./util.mjs";
 
 export const STD_EH = "bag";

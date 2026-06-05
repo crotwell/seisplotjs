@@ -1,7 +1,9 @@
 import { kmPerDeg } from "./distaz.mjs";
-import { Quake, createQuakeClickEvent, QuakeClickEventMap } from "./quakeml.mjs";
+import { Quake, createQuakeClickEvent } from "./quakeml.mjs";
+import type { QuakeClickEventMap } from "./quakeml.mjs";
 import * as import_leaflet_css from "./leaflet_css.mjs";
-import { Network, Station, createStationClickEvent, StationClickEventMap } from "./stationxml.mjs";
+import { Network, Station, createStationClickEvent } from "./stationxml.mjs";
+import type { StationClickEventMap } from "./stationxml.mjs";
 import { SeisPlotElement } from "./spelement.mjs";
 import {
   SeismogramDisplayData,
@@ -13,7 +15,7 @@ import { LatLonBox, LatLonRadius } from "./fdsncommon.mjs";
 import { fixProtocolInUrl } from "./util.mjs";
 
 import * as L from "leaflet";
-import { LatLngTuple } from "leaflet";
+import type { LatLngTuple } from "leaflet";
 
 export const HIGHLIGHT = "highlight";
 export const UNSELECTED = "unselected";

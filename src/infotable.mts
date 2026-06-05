@@ -1,11 +1,12 @@
-import { Quake, createQuakeClickEvent, QuakeClickEventMap } from "./quakeml.mjs";
+import { Quake, createQuakeClickEvent } from "./quakeml.mjs";
+import type { QuakeClickEventMap } from "./quakeml.mjs";
 import {
   Channel,
   Station,
   createStationClickEvent,
   createChannelClickEvent,
-  StationClickEventMap, ChannelClickEventMap
 } from "./stationxml.mjs";
+import type {StationClickEventMap, ChannelClickEventMap} from "./stationxml.mjs";
 import { SeisPlotElement, addStyleToElement } from "./spelement.mjs";
 import { SeismogramDisplayData } from "./seismogram.mjs";
 import { SeismographConfig } from "./seismographconfig.mjs";

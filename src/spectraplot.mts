@@ -14,8 +14,10 @@ import { extent as d3extent } from "d3-array";
 import { select as d3select } from "d3-selection";
 import {
   scaleLinear as d3scaleLinear,
-  ScaleContinuousNumeric as d3ScaleContinuousNumeric,
   scaleLog as d3scaleLog,
+} from "d3-scale";
+import type {
+  ScaleContinuousNumeric as d3ScaleContinuousNumeric
 } from "d3-scale";
 import { line as d3line } from "d3-shape";
 import { axisLeft as d3axisLeft, axisBottom as d3axisBottom } from "d3-axis";

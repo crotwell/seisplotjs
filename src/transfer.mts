@@ -11,7 +11,8 @@ import { Response, PolesZeros } from "./stationxml.mjs";
 import { Complex } from "./oregondsputil.mjs";
 
 import configureMeasurements from "convert-units";
-import allMeasures, {
+import allMeasures from "convert-units/definitions/all";
+import type {
   AllMeasures,
   AllMeasuresSystems,
   AllMeasuresUnits,
