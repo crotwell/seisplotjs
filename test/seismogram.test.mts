@@ -1,11 +1,11 @@
 
-import {FDSNSourceId} from '../src/fdsnsourceid';
-import { createQuakeFromValues, UNKNOWN_PUBLIC_ID} from '../src/quakeml';
-import {AMPLITUDE_MODE } from '../src/scale';
-import {Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange} from '../src/seismogram';
-import {SeismogramSegment} from '../src/seismogramsegment';
-import  {isDef, isoToDateTime} from '../src/util';
-import {DateTime, Duration, Interval} from 'luxon';
+import {FDSNSourceId} from "../src/fdsnsourceid.mjs";
+import { createQuakeFromValues, UNKNOWN_PUBLIC_ID} from "../src/quakeml.mjs";
+import {AMPLITUDE_MODE } from "../src/scale.mjs";
+import {Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange} from "../src/seismogram.mjs";
+import {SeismogramSegment} from "../src/seismogramsegment.mjs";
+import  {isDef, isoToDateTime} from "../src/util.mjs";
+import {DateTime, Duration, Interval} from "luxon";
 
 test("simple seismogram seg creation", () => {
   const yValues = Int32Array.from([0, 1, 2]);

@@ -1,14 +1,14 @@
 
 
-import { TextDecoder } from 'util';
+import { TextDecoder } from "util";
 global.TextDecoder = TextDecoder;
 
-import {isoToDateTime} from '../../src/util';
+import {isoToDateTime} from "../../src/util.mjs";
 
-import {MS3ExtraHeader} from '../../src/ms3ehtypes';
-import * as mseed3 from '../../src/mseed3';
-import * as mseed3eh from '../../src/mseed3eh';
-import fs from 'fs';
+import {MS3ExtraHeader} from "../../src/ms3ehtypes.mjs";
+import * as mseed3 from "../../src/mseed3.mjs";
+import * as mseed3eh from "../../src/mseed3eh.mjs";
+import fs from "fs";
 
 const filename = "test/mseed3/testeh.ms3";
 test("bag mseed3 extra headers"+filename, () => {

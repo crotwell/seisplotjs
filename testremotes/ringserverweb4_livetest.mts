@@ -1,9 +1,9 @@
 
-import {RingserverConnection} from '../src/ringserverweb4';
+import {RingserverConnection} from "../src/ringserverweb4.mjs";
 
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 

@@ -1,10 +1,10 @@
 
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
-import * as taup3 from '../src/taup3';
+import * as taup3 from "../src/taup3.mjs";
 
 test("formURL", () => {
   const query = new taup3.TauPQuery(taup3.USC_HOST);

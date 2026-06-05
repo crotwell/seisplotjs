@@ -1,9 +1,9 @@
 
-import {DataSelectQuery} from '../src/fdsndataselect';
-import {Seismogram} from '../src/seismogram';
-import {setDefaultFetch} from '../src/util';
+import {DataSelectQuery} from "../src/fdsndataselect.mjs";
+import {Seismogram} from "../src/seismogram.mjs";
+import {setDefaultFetch} from "../src/util.mjs";
 
-import fetch from 'cross-fetch';
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 test("version", () => {

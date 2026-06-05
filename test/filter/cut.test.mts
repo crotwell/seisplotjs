@@ -1,9 +1,9 @@
 
-import {FDSNSourceId} from '../../src/fdsnsourceid';
-import {Seismogram} from '../../src/seismogram';
-import {SeismogramSegment} from '../../src/seismogramsegment';
-import  {isoToDateTime} from '../../src/util';
-import { Duration, Interval} from 'luxon';
+import {FDSNSourceId} from "../../src/fdsnsourceid.mjs";
+import {Seismogram} from "../../src/seismogram.mjs";
+import {SeismogramSegment} from "../../src/seismogramsegment.mjs";
+import  {isoToDateTime} from "../../src/util.mjs";
+import { Duration, Interval} from "luxon";
 
 test("simple seismogram cut", () => {
   const yValues = new Int32Array(100);

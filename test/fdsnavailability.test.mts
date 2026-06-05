@@ -1,9 +1,9 @@
 
-import * as fdsnavailability from '../src/fdsnavailability';
-import {EARTHSCOPE_HOST} from '../src/fdsncommon';
-import * as util from '../src/util';
-import {validStartTime, validEndTime} from '../src/util';
-import {Duration, Interval} from 'luxon';
+import * as fdsnavailability from "../src/fdsnavailability.mjs";
+import {EARTHSCOPE_HOST} from "../src/fdsncommon.mjs";
+import * as util from "../src/util.mjs";
+import {validStartTime, validEndTime} from "../src/util.mjs";
+import {Duration, Interval} from "luxon";
 
 test( "query setter test", () => {
   const dsQuery = new fdsnavailability.AvailabilityQuery();

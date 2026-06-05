@@ -1,8 +1,8 @@
 
-import * as fdsndataselect from '../../src/fdsndataselect';
-import * as util from '../../src/util';
-import {validStartTime, validEndTime} from '../../src/util';
-import {Duration, Interval} from 'luxon';
+import * as fdsndataselect from "../../src/fdsndataselect.mjs";
+import * as util from "../../src/util.mjs";
+import {validStartTime, validEndTime} from "../../src/util.mjs";
+import {Duration, Interval} from "luxon";
 
 test( "query setter test", () => {
   const dsQuery = new fdsndataselect.DataSelectQuery();

@@ -1,6 +1,6 @@
 
-import * as util from '../src/util';
-import {isoToDateTime, toIsoWoZ} from '../src/util';
+import * as util from "../src/util.mjs";
+import {isoToDateTime, toIsoWoZ} from "../src/util.mjs";
 
 test( "_toIsoWoZ test", () => {
   const s = "2018-01-01T12:34:45.000";

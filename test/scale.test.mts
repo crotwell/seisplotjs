@@ -10,13 +10,13 @@ import {
   AMPLITUDE_MODE,
   TimeScalable,
   MinMaxable
-} from "../src/scale";
-import { SeismogramDisplayData} from '../src/seismogram';
-import {Seismograph} from '../src/seismograph';
-import {SeismographConfig} from '../src/seismographconfig';
-import {InstrumentSensitivity} from '../src/stationxml';
-import  { isoToDateTime} from '../src/util';
-import { Duration} from 'luxon';
+} from "../src/scale.mjs";
+import { SeismogramDisplayData} from "../src/seismogram.mjs";
+import {Seismograph} from "../src/seismograph.mjs";
+import {SeismographConfig} from "../src/seismographconfig.mjs";
+import {InstrumentSensitivity} from "../src/stationxml.mjs";
+import  { isoToDateTime} from "../src/util.mjs";
+import { Duration} from "luxon";
 
 test("amp scalable test", () => {
   const hwA = 5;

@@ -1,9 +1,9 @@
-import '../jestRatioMatchers';
+import "../jestRatioMatchers.mjs";
 
-import * as fft from '../../src/fft';
-import {Seismogram } from '../../src/seismogram';
-import {readSac, parseSac, readDataView, writeSac, replaceYData, asSeismogram} from './sacfile';
-import {DateTime} from 'luxon';
+import * as fft from "../../src/fft.mjs";
+import {Seismogram } from "../../src/seismogram.mjs";
+import {readSac, parseSac, readDataView, writeSac, replaceYData, asSeismogram} from "./sacfile";
+import {DateTime} from "luxon";
 
 const OVERWRITE_OUTPUT = false;
 

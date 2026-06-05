@@ -1,10 +1,10 @@
 
-import * as fs from 'fs/promises';
-import { Buffer } from 'buffer';
-import {SacPoleZero} from '../../src/sacpolezero';
-import {Seismogram} from '../../src/seismogram';
-import {UTC_OPTIONS} from '../../src/util';
-import {DateTime} from 'luxon';
+import * as fs from "fs/promises";
+import { Buffer } from "buffer";
+import {SacPoleZero} from "../../src/sacpolezero.mjs";
+import {Seismogram} from "../../src/seismogram.mjs";
+import {UTC_OPTIONS} from "../../src/util.mjs";
+import {DateTime} from "luxon";
 
 export const NVHDR_OFFSET = 76 * 4;
 export const NPTS_OFFSET = 79 * 4;

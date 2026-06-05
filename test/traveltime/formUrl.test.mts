@@ -1,8 +1,8 @@
 
-import fs from 'fs';
+import fs from "fs";
 
-import {IRIS_HOST} from '../../src/fdsncommon';
-import * as traveltime from '../../src/traveltime';
+import {IRIS_HOST} from "../../src/fdsncommon.mjs";
+import * as traveltime from "../../src/traveltime.mjs";
 
 test("formURL", () => {
   const query = new traveltime.TraveltimeQuery();

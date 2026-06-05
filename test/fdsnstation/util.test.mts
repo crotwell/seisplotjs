@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 
-import * as stationxml from '../../src/stationxml';
+import * as stationxml from "../../src/stationxml.mjs";
 
 test( "_grabFirstEl test", () => {
   const LATITUDE = "Latitude";

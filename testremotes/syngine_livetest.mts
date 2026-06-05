@@ -1,10 +1,10 @@
 
-import {IRIS_HOST} from '../src/fdsncommon';
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {IRIS_HOST} from "../src/fdsncommon.mjs";
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
-import * as syngine from '../src/syngine';
+import * as syngine from "../src/syngine.mjs";
 
 test("version", () => {
   const query = new syngine.SyngineQuery();

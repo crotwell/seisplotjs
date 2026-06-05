@@ -1,6 +1,6 @@
 
 
-import {kmtodeg, degtokm, distaz } from '../src/distaz';
+import {kmtodeg, degtokm, distaz } from "../src/distaz.mjs";
 
 test("deg km convert", () => {
   expect(kmtodeg(degtokm(45))).toBe(45);

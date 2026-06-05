@@ -1,11 +1,11 @@
 
-import {EventQuery} from '../src/fdsnevent';
-import {Quake} from '../src/quakeml';
-import {setDefaultFetch, isoToDateTime} from '../src/util';
+import {EventQuery} from "../src/fdsnevent.mjs";
+import {Quake} from "../src/quakeml.mjs";
+import {setDefaultFetch, isoToDateTime} from "../src/util.mjs";
 
-import { Interval} from 'luxon';
+import { Interval} from "luxon";
 
-import fetch from 'cross-fetch';
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 test("version", () => {

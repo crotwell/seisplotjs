@@ -1,7 +1,7 @@
 
-import * as nws from '../../src/nws';
+import * as nws from "../../src/nws.mjs";
 
-import fs from 'fs';
+import fs from "fs";
 
 let pointsJson: nws.NWSPointInfo;
 let forecastJson: nws.NWSForecast;

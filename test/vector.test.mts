@@ -1,10 +1,10 @@
-import './jestRatioMatchers';
+import "./jestRatioMatchers";
 
-import {FDSNSourceId} from '../src/fdsnsourceid';
-import * as vector from '../src/vector';
-import {DateTime} from 'luxon';
+import {FDSNSourceId} from "../src/fdsnsourceid.mjs";
+import * as vector from "../src/vector.mjs";
+import {DateTime} from "luxon";
 
-import { Seismogram }  from "../src/seismogram";
+import { Seismogram }  from "../src/seismogram.mjs";
 
 const a = Float32Array.from([ 1, 1, 0]);
 const b = Float32Array.from([ 2, 0, 2]);

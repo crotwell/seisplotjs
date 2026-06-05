@@ -1,6 +1,6 @@
 
-import {SacPoleZero} from '../../src/sacpolezero';
-import {readSacPoleZero} from './sacfile';
+import {SacPoleZero} from "../../src/sacpolezero.mjs";
+import {readSacPoleZero} from "./sacfile";
 
 
 test("parse sac polezero", () => {

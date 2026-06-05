@@ -1,13 +1,13 @@
-import { SeismogramLoader } from '../src/seismogramloader';
+import { SeismogramLoader } from "../src/seismogramloader.mjs";
 
-import {isoToDateTime} from '../src/util';
-import {EventQuery} from '../src/fdsnevent';
-import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation';
-import { Duration, Interval} from 'luxon';
+import {isoToDateTime} from "../src/util.mjs";
+import {EventQuery} from "../src/fdsnevent.mjs";
+import {StationQuery, LEVEL_CHANNEL} from "../src/fdsnstation.mjs";
+import { Duration, Interval} from "luxon";
 
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 test( "load HODGE for local eq test", () => {

@@ -1,11 +1,11 @@
 
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
-import * as usgsgeosjon from '../src/usgsgeojson';
-import type {Quake} from '../src/quakeml';
+import * as usgsgeosjon from "../src/usgsgeojson.mjs";
+import type {Quake} from "../src/quakeml.mjs";
 
 test("grab", () => {
   return usgsgeosjon.loadHourSummaryAll().then((quakeList: Array<Quake>) => {

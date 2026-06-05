@@ -3,9 +3,9 @@
  * @jest-environment jsdom
  */
 
-import * as fdsnstation from '../../src/fdsnstation';
-import * as stationxml from '../../src/stationxml';
-import {isoToDateTime} from '../../src/util';
+import * as fdsnstation from "../../src/fdsnstation.mjs";
+import * as stationxml from "../../src/stationxml.mjs";
+import {isoToDateTime} from "../../src/util.mjs";
 
 
 test( "station parse test", () => {

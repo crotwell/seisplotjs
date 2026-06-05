@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 
-import * as fdsndatacenters from '../src/fdsndatacenters';
+import * as fdsndatacenters from "../src/fdsndatacenters.mjs";
 
 
 test( "form url test", () => {

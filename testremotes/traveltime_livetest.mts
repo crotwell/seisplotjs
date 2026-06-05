@@ -1,10 +1,10 @@
 
-import {IRIS_HOST} from '../src/fdsncommon';
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {IRIS_HOST} from "../src/fdsncommon.mjs";
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
-import * as traveltime from '../src/traveltime';
+import * as traveltime from "../src/traveltime.mjs";
 
 test("version", () => {
   const ttQuery = new traveltime.TraveltimeQuery();

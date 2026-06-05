@@ -1,14 +1,14 @@
-import '../jestRatioMatchers';
+import "../jestRatioMatchers.mjs";
 
-import * as fft from '../../src/fft';
-import * as filter from '../../src/filter';
-import { createComplex} from '../../src/oregondsputil';
-import * as taper from '../../src/taper';
-import * as transfer from '../../src/transfer';
-import { Seismogram} from '../../src/seismogram';
-import {SacPoleZero} from '../../src/sacpolezero';
-import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
-import {DateTime} from 'luxon';
+import * as fft from "../../src/fft.mjs";
+import * as filter from "../../src/filter.mjs";
+import { createComplex} from "../../src/oregondsputil.mjs";
+import * as taper from "../../src/taper.mjs";
+import * as transfer from "../../src/transfer.mjs";
+import { Seismogram} from "../../src/seismogram.mjs";
+import {SacPoleZero} from "../../src/sacpolezero.mjs";
+import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from "./sacfile";
+import {DateTime} from "luxon";
 
 const ONE_COMPLEX = createComplex(1, 0);
 /**

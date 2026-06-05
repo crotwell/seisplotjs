@@ -3,10 +3,10 @@
  * @jest-environment jsdom
  */
 
-import fs from 'fs';
+import fs from "fs";
 
-import * as quakeml from '../../src/quakeml';
-import {isoToDateTime} from '../../src/util';
+import * as quakeml from "../../src/quakeml.mjs";
+import {isoToDateTime} from "../../src/util.mjs";
 
 test("time getset", () => {
   const t = isoToDateTime("2019-10-31T01:20:58.661000Z");

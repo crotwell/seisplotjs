@@ -1,10 +1,10 @@
-import '../jestRatioMatchers';
+import "../jestRatioMatchers.mjs";
 
-import * as filter from '../../src/filter';
-import * as taper from '../../src/taper';
-import {Seismogram, ensureIsSeismogram } from '../../src/seismogram';
-import {readSac} from './sacfile';
-import {DateTime} from 'luxon';
+import * as filter from "../../src/filter.mjs";
+import * as taper from "../../src/taper.mjs";
+import {Seismogram, ensureIsSeismogram } from "../../src/seismogram.mjs";
+import {readSac} from "./sacfile";
+import {DateTime} from "luxon";
 
 test("simple value taper", () => {
   const taperLen = 10;

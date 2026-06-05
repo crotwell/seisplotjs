@@ -2,14 +2,14 @@
 // git clone https://github.com/iris-edu/miniSEED3.git
 // cp -r miniSEED3/reference-data test/mseed3/.
 
-import { TextDecoder } from 'util';
+import { TextDecoder } from "util";
 global.TextDecoder = TextDecoder;
 
 
-import { isDef } from '../../src/util';
-import * as mseed3 from '../../src/mseed3';
-import * as miniseed from '../../src/miniseed';
-import fs from 'fs';
+import { isDef } from "../../src/util.mjs";
+import * as mseed3 from "../../src/mseed3.mjs";
+import * as miniseed from "../../src/miniseed.mjs";
+import fs from "fs";
 
 const MISSING_REF_DATA_MSG =`
 Missing reference data, download from:

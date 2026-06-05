@@ -1,8 +1,8 @@
 
 
-//import {WS_DATALINK_SUBPROTOCOL} from '../src/datalink';
-import {WS_SEEDLINK3_SUBPROTOCOL} from '../src/seedlink';
-//import {WS_SEEDLINK4_SUBPROTOCOL} from '../src/seedlink4';
+//import {WS_DATALINK_SUBPROTOCOL} from "../src/datalink.mjs";
+import {WS_SEEDLINK3_SUBPROTOCOL} from "../src/seedlink.mjs";
+//import {WS_SEEDLINK4_SUBPROTOCOL} from "../src/seedlink4.mjs";
 
 test("do websocket open test", (done) => {
   const USC_HOST = "eeyore.seis.sc.edu";

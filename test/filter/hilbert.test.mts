@@ -1,7 +1,7 @@
 
-import * as filter from '../../src/filter';
-import {readSeismogram} from './sacfile';
-import * as OregonDSPTop from 'oregondsp';
+import * as filter from "../../src/filter.mjs";
+import {readSeismogram} from "./sacfile";
+import * as OregonDSPTop from "oregondsp";
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 test("init hilbert filter", () => {

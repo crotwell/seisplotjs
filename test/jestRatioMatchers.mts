@@ -1,5 +1,5 @@
 
-import { expect} from '@jest/globals';
+import { expect} from "@jest/globals";
 
 const ratioTest = function(received: number, argument: number, digits: number, closeZero: number, closeZeroDigits: number) {
     if (argument === 0 || Math.abs(argument) < closeZero) {

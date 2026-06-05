@@ -1,18 +1,18 @@
-import {seismogramSegmentAsLine} from '../src/seismographutil';
-import {Seismogram, SeismogramDisplayData} from '../src/seismogram';
-import {Seismograph} from '../src/seismograph';
-import {SeismographConfig} from '../src/seismographconfig';
-import {isoToDateTime} from '../src/util';
-import {LuxonTimeScale} from '../src/axisutil';
-import { Interval} from 'luxon';
+import {seismogramSegmentAsLine} from "../src/seismographutil.mjs";
+import {Seismogram, SeismogramDisplayData} from "../src/seismogram.mjs";
+import {Seismograph} from "../src/seismograph.mjs";
+import {SeismographConfig} from "../src/seismographconfig.mjs";
+import {isoToDateTime} from "../src/util.mjs";
+import {LuxonTimeScale} from "../src/axisutil.mjs";
+import { Interval} from "luxon";
 
-import * as mseed3 from '../src/mseed3';
+import * as mseed3 from "../src/mseed3.mjs";
 import { scaleLinear as d3scaleLinear } from "d3-scale";
 
-import { TextDecoder } from 'util';
+import { TextDecoder } from "util";
 global.TextDecoder = TextDecoder;
 
-import fs from 'fs';
+import fs from "fs";
 
 
 test("line create test", () => {

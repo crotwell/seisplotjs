@@ -1,5 +1,5 @@
 
-import {FDSNSourceId, NetworkSourceId, StationSourceId} from '../src/fdsnsourceid';
+import {FDSNSourceId, NetworkSourceId, StationSourceId} from "../src/fdsnsourceid.mjs";
 
 test("simple FDSN sourceId", () => {
   const netCode = "XX";

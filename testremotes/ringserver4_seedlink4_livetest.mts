@@ -1,12 +1,12 @@
 
-import {RingserverConnection} from '../src/ringserverweb4';
+import {RingserverConnection} from "../src/ringserverweb4.mjs";
 import {SeedlinkConnection as Seedlink4Connection,
-  SEPacket, createDataTimeCommand} from '../src/seedlink4';
-import { DateTime, Duration} from 'luxon';
+  SEPacket, createDataTimeCommand} from "../src/seedlink4.mjs";
+import { DateTime, Duration} from "luxon";
 
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 test.skip("do id test", () => {

@@ -1,5 +1,5 @@
 
-import {Network, Station, Channel} from '../../src/stationxml';
+import {Network, Station, Channel} from "../../src/stationxml.mjs";
 
 test("simple station", () => {
   const NET_CODE = "AA";

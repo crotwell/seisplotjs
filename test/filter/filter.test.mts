@@ -1,8 +1,8 @@
 
-import * as filter from '../../src/filter';
-import {Seismogram} from '../../src/seismogram';
-import {readSeismogram} from './sacfile';
-import {checkStringOrDate} from "../../src/util";
+import * as filter from "../../src/filter.mjs";
+import {Seismogram} from "../../src/seismogram.mjs";
+import {readSeismogram} from "./sacfile";
+import {checkStringOrDate} from "../../src/util.mjs";
 
 test("init butterworth filter", () => {
   const n= 2;

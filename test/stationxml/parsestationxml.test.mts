@@ -3,12 +3,12 @@
  * @jest-environment jsdom
  */
 
-import fs from 'fs';
+import fs from "fs";
 
-import * as stationxml from '../../src/stationxml';
-import { PolesZeros, Network } from '../../src/stationxml';
-import {convertToSacPoleZero} from '../../src/transfer';
-import { createComplex} from '../../src/oregondsputil';
+import * as stationxml from "../../src/stationxml.mjs";
+import { PolesZeros, Network } from "../../src/stationxml.mjs";
+import {convertToSacPoleZero} from "../../src/transfer.mjs";
+import { createComplex} from "../../src/oregondsputil.mjs";
 
 let networks: Array<Network> = [];
 

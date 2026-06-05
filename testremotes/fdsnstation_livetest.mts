@@ -1,8 +1,8 @@
 
-import * as fdsnstation from '../src/fdsnstation';
+import * as fdsnstation from "../src/fdsnstation.mjs";
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 test("version", () => {

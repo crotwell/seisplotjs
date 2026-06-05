@@ -3,10 +3,10 @@
  * @jest-environment jsdom
  */
 
-import * as fdsnevent from '../../src/fdsnevent';
-import * as quakeml from '../../src/quakeml';
-import * as util from '../../src/util';
-import {isoToDateTime} from '../../src/util';
+import * as fdsnevent from "../../src/fdsnevent.mjs";
+import * as quakeml from "../../src/quakeml.mjs";
+import * as util from "../../src/util.mjs";
+import {isoToDateTime} from "../../src/util.mjs";
 
 test( "query setter test", () => {
   const eventQuery = new fdsnevent.EventQuery();

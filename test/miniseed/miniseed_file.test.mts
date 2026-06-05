@@ -1,10 +1,10 @@
 
-import * as miniseed from '../../src/miniseed';
-import * as seedcodec from '../../src/seedcodec';
-import {UTC_OPTIONS} from '../../src/util';
-import {DateTime} from 'luxon';
+import * as miniseed from "../../src/miniseed.mjs";
+import * as seedcodec from "../../src/seedcodec.mjs";
+import {UTC_OPTIONS} from "../../src/util.mjs";
+import {DateTime} from "luxon";
 
-import fs from 'fs';
+import fs from "fs";
 
 test("load miniseed file", () => {
 

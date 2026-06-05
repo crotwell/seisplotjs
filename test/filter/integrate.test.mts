@@ -1,8 +1,8 @@
-import '../jestRatioMatchers';
+import "../jestRatioMatchers.mjs";
 
-import * as filter from '../../src/filter';
-import {isoToDateTime} from '../../src/util';
-import {Seismogram } from '../../src/seismogram';
+import * as filter from "../../src/filter.mjs";
+import {isoToDateTime} from "../../src/util.mjs";
+import {Seismogram } from "../../src/seismogram.mjs";
 
 
 

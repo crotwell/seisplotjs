@@ -1,7 +1,7 @@
 
-import * as filter from '../../src/filter';
-import {Seismogram } from '../../src/seismogram';
-import {DateTime} from 'luxon';
+import * as filter from "../../src/filter.mjs";
+import {Seismogram } from "../../src/seismogram.mjs";
+import {DateTime} from "luxon";
 
 test("lineFit", () => {
   const dataLen = 10;

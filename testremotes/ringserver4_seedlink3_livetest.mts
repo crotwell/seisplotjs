@@ -1,11 +1,11 @@
 
-import {RingserverConnection} from '../src/ringserverweb4';
-import {SeedlinkConnection as Seedlink3Connection, SequencedDataRecord} from '../src/seedlink';
-import { DateTime, Duration} from 'luxon';
+import {RingserverConnection} from "../src/ringserverweb4.mjs";
+import {SeedlinkConnection as Seedlink3Connection, SequencedDataRecord} from "../src/seedlink.mjs";
+import { DateTime, Duration} from "luxon";
 
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 test("do id test", () => {

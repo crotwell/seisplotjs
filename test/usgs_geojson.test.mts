@@ -1,6 +1,6 @@
-import { parseGeoJSON, isValidUSGSGeoJsonSummary }  from '../src/usgsgeojson';
-import {EventParameters} from '../src/quakeml';
-import {checkStringOrDate} from '../src/util';
+import { parseGeoJSON, isValidUSGSGeoJsonSummary }  from "../src/usgsgeojson.mjs";
+import {EventParameters} from "../src/quakeml.mjs";
+import {checkStringOrDate} from "../src/util.mjs";
 
 test( "hour magnitude test", () => {
   const hour_mag1 = `{"type":"FeatureCollection","metadata":{"generated":1676731747000,"url":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_hour.geojson","title":"USGS Magnitude 1.0+ Earthquakes, Past Hour","status":200,"api":"1.10.3","count":5},"features":[{"type":"Feature","properties":{"mag":1.31,"place":"2km SSE of San Ramon, CA","time":1676731374430,"updated":1676731473387,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/nc73848131","detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc73848131.geojson","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"automatic","tsunami":0,"sig":26,"net":"nc","code":"73848131","ids":",nc73848131,","sources":",nc,","types":",nearby-cities,origin,phase-data,","nst":6,"dmin":0.08154,"rms":0.01,"gap":184,"magType":"md","type":"earthquake","title":"M 1.3 - 2km SSE of San Ramon, CA"},"geometry":{"type":"Point","coordinates":[-121.9691696,37.7678337,9.29]},"id":"nc73848131"},

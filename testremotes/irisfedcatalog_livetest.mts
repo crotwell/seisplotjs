@@ -1,13 +1,13 @@
 
-import { FedCatalogQuery } from '../src/irisfedcatalog';
-import { allChannels } from '../src/stationxml';
-import { isoToDateTime } from '../src/util';
-import { SeismogramDisplayData } from '../src/seismogram';
-import { isDef } from '../src/util';
-import {Interval} from 'luxon';
+import { FedCatalogQuery } from "../src/irisfedcatalog.mjs";
+import { allChannels } from "../src/stationxml.mjs";
+import { isoToDateTime } from "../src/util.mjs";
+import { SeismogramDisplayData } from "../src/seismogram.mjs";
+import { isDef } from "../src/util.mjs";
+import {Interval} from "luxon";
 
-import {setDefaultFetch} from '../src/util';
-import fetch from 'cross-fetch';
+import {setDefaultFetch} from "../src/util.mjs";
+import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
 test("version", () => {
