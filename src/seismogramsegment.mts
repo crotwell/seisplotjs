@@ -4,10 +4,10 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval } from "luxon";
-import { checkStringOrDate, isDef, checkLuxonValid } from "./util";
-import { MinMaxable } from "./scale";
-import * as seedcodec from "./seedcodec";
-import { FDSNSourceId, NslcId } from "./fdsnsourceid";
+import { checkStringOrDate, isDef, checkLuxonValid } from "./util.mjs";
+import { MinMaxable } from "./scale.mjs";
+import * as seedcodec from "./seedcodec.mjs";
+import { FDSNSourceId, NslcId } from "./fdsnsourceid.mjs";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;

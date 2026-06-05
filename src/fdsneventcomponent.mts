@@ -1,12 +1,12 @@
-import { EventQuery } from "./fdsnevent";
+import { EventQuery } from "./fdsnevent.mjs";
 import {
   LatLonChoice,
   LatLonBoxEl,
   LatLonRadiusEl,
   LabeledMinMax,
-} from "./components";
-import { TimeRangeChooser } from "./datechooser";
-import { isoToDateTime } from "./util";
+} from "./components.mjs";
+import { TimeRangeChooser } from "./datechooser.mjs";
+import { isoToDateTime } from "./util.mjs";
 import { DateTime, Duration } from "luxon";
 
 const eqsearchHtml = `

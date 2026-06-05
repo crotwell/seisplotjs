@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { version } from "./version";
+import { version } from "./version.mjs";
 import { DateTime, Duration, Interval, Zone, FixedOffsetZone } from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";

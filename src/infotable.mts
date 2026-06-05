@@ -1,17 +1,17 @@
-import { Quake, createQuakeClickEvent, QuakeClickEventMap } from "./quakeml";
+import { Quake, createQuakeClickEvent, QuakeClickEventMap } from "./quakeml.mjs";
 import {
   Channel,
   Station,
   createStationClickEvent,
   createChannelClickEvent,
   StationClickEventMap, ChannelClickEventMap
-} from "./stationxml";
-import { SeisPlotElement, addStyleToElement } from "./spelement";
-import { SeismogramDisplayData } from "./seismogram";
-import { SeismographConfig } from "./seismographconfig";
-import { stringify, nameForTimeZone } from "./util";
-import * as textformat from "./textformat";
-import { Handlebars } from "./handlebarshelpers";
+} from "./stationxml.mjs";
+import { SeisPlotElement, addStyleToElement } from "./spelement.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { stringify, nameForTimeZone } from "./util.mjs";
+import * as textformat from "./textformat.mjs";
+import { Handlebars } from "./handlebarshelpers.mjs";
 import {DateTime, Zone} from "luxon";
 import {csvFormatRows} from "d3-dsv";
 

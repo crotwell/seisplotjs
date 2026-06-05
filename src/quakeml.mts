@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { Station, Channel } from "./stationxml";
+import { Station, Channel } from "./stationxml.mjs";
 import {
   isDef,
   isObject,
@@ -17,8 +17,8 @@ import {
   dataViewToString,
   XML_MIME,
   warn,
-} from "./util";
-import { latlonFormat, depthFormat, magFormat } from "./textformat";
+} from "./util.mjs";
+import { latlonFormat, depthFormat, magFormat } from "./textformat.mjs";
 
 import { DateTime } from "luxon";
 

@@ -3,13 +3,13 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath } from "./fdsncommon";
-import { NslcId } from "./fdsnsourceid";
-import * as util from "./util"; // for util.log
+import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath } from "./fdsncommon.mjs";
+import { NslcId } from "./fdsnsourceid.mjs";
+import * as util from "./util.mjs"; // for util.log
 import { DateTime, Interval } from "luxon";
-import * as miniseed from "./miniseed";
-import * as mseed3 from "./mseed3";
-import { Seismogram, SeismogramDisplayData } from "./seismogram";
+import * as miniseed from "./miniseed.mjs";
+import * as mseed3 from "./mseed3.mjs";
+import { Seismogram, SeismogramDisplayData } from "./seismogram.mjs";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -27,7 +27,7 @@ import {
   defaultFetchInitObj,
   validStartTime,
   validEndTime,
-} from "./util";
+} from "./util.mjs";
 
 /** const for miniseed format, mseed */
 export const FORMAT_MINISEED = "miniseed";

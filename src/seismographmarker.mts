@@ -1,7 +1,7 @@
-import type { TraveltimeJsonType } from "./traveltime";
-import { Quake, Origin } from "./quakeml";
-import { Station, Channel } from "./stationxml";
-import * as distaz from "./distaz";
+import type { TraveltimeJsonType } from "./traveltime.mjs";
+import { Quake, Origin } from "./quakeml.mjs";
+import { Station, Channel } from "./stationxml.mjs";
+import * as distaz from "./distaz.mjs";
 
 import { DateTime, Duration } from "luxon";
 

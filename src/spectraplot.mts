@@ -3,13 +3,13 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FFTResult } from "./fft";
-import { COLOR_CSS_ID } from "./seismograph";
-import { SeismographConfig } from "./seismographconfig";
-import { SeismogramDisplayData } from "./seismogram";
-import { addStyleToElement } from "./spelement";
-import { Complex } from "./oregondsputil";
-import { SVG_NS } from "./util";
+import { FFTResult } from "./fft.mjs";
+import { COLOR_CSS_ID } from "./seismograph.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { addStyleToElement } from "./spelement.mjs";
+import { Complex } from "./oregondsputil.mjs";
+import { SVG_NS } from "./util.mjs";
 import { extent as d3extent } from "d3-array";
 import { select as d3select } from "d3-selection";
 import {
@@ -19,8 +19,8 @@ import {
 } from "d3-scale";
 import { line as d3line } from "d3-shape";
 import { axisLeft as d3axisLeft, axisBottom as d3axisBottom } from "d3-axis";
-import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR } from "./cssutil";
-import { drawAxisLabels } from "./axisutil";
+import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR } from "./cssutil.mjs";
+import { drawAxisLabels } from "./axisutil.mjs";
 
 export const SPECTRA_ELEMENT = "sp-spectra";
 

@@ -1,9 +1,9 @@
 
 
-//import {MSeed3Record} from "./mseed3";
-import {FDSNSourceId} from "./fdsnsourceid";
-import {Quake, createQuakeFromValues, Magnitude} from "./quakeml";
-import {Network, Station, Channel} from "./stationxml";
+//import {MSeed3Record} from "./mseed3.mjs";
+import {FDSNSourceId} from "./fdsnsourceid.mjs";
+import {Quake, createQuakeFromValues, Magnitude} from "./quakeml.mjs";
+import {Network, Station, Channel} from "./stationxml.mjs";
 import {
   MS3ExtraHeader,
   Marker as EHMarker,
@@ -13,9 +13,9 @@ import {
   Channel as EHChannel,
   Timeseries as EHTimeseries,
   BagExtraHeader as EHBag,
-} from "./ms3ehtypes";
-import {MarkerType} from "./seismographmarker";
-import { isoToDateTime, stringify } from "./util";
+} from "./ms3ehtypes.mjs";
+import {MarkerType} from "./seismographmarker.mjs";
+import { isoToDateTime, stringify } from "./util.mjs";
 
 export const STD_EH = "bag";
 

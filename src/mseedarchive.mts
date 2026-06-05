@@ -4,12 +4,12 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval } from "luxon";
-import { appendToPath} from "./fdsncommon";
-import * as util from "./util";
-import * as miniseed from "./miniseed";
-import { SeismogramDisplayData } from "./seismogram";
-import { Channel } from "./stationxml";
-import { isDef, fixProtocolInUrl } from "./util";
+import { appendToPath} from "./fdsncommon.mjs";
+import * as util from "./util.mjs";
+import * as miniseed from "./miniseed.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { Channel } from "./stationxml.mjs";
+import { isDef, fixProtocolInUrl } from "./util.mjs";
 
 export const Allowed_Flags = ["n", "s", "l", "c", "Y", "j", "H"];
 

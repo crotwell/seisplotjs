@@ -11,7 +11,7 @@ import {
   validStartTime,
   validEndTime,
   stringify,
-} from "./util";
+} from "./util.mjs";
 
 export const CLOCK_ELEMENT = "sp-clock";
 export const HOURMIN_ELEMENT = "sp-hourmin";

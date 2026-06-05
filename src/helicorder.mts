@@ -4,23 +4,23 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval, Zone, FixedOffsetZone } from "luxon";
-import { removeTrend } from "./filter";
-import { AMPLITUDE_MODE, FixedHalfWidthAmplitudeScale } from "./scale";
+import { removeTrend } from "./filter.mjs";
+import { AMPLITUDE_MODE, FixedHalfWidthAmplitudeScale } from "./scale.mjs";
 import {
   Seismogram,
   SeismogramDisplayData,
   findMinMaxOverTimeRange,
-} from "./seismogram";
-import { SeismogramSegment } from "./seismogramsegment";
-import { Seismograph } from "./seismograph";
-import { SeismographConfig } from "./seismographconfig";
-import { SeisPlotElement } from "./spelement";
-import {Channel} from "./stationxml";
+} from "./seismogram.mjs";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
+import { Seismograph } from "./seismograph.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { SeisPlotElement } from "./spelement.mjs";
+import {Channel} from "./stationxml.mjs";
 import {
   isDef, validStartTime, validEndTime, startDuration, nameForTimeZone,
   anplusb,
   warn
-} from "./util";
+} from "./util.mjs";
 
 export const HELI_CLICK_EVENT = "heliclick";
 export const HELI_MOUSE_MOVE_EVENT = "helimousemove";

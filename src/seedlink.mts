@@ -3,11 +3,11 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import * as util from "./util"; // for util.log
-import * as miniseed from "./miniseed";
-import { DataRecord } from "./miniseed";
+import * as util from "./util.mjs"; // for util.log
+import * as miniseed from "./miniseed.mjs";
+import { DataRecord } from "./miniseed.mjs";
 import { DateTime } from "luxon";
-import { dataViewToString, stringify, toError } from "./util";
+import { dataViewToString, stringify, toError } from "./util.mjs";
 export const WS_SEEDLINK3_SUBPROTOCOL = "SeedLink3.1";
 export type SequencedDataRecord = {
   rawsequence: string;

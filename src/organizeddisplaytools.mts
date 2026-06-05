@@ -1,6 +1,6 @@
-import { SeisPlotElement } from "./spelement";
-import {OrganizedDisplay} from "./organizeddisplay";
-import {createQuakeFilterId} from "./organizeddisplayselect";
+import { SeisPlotElement } from "./spelement.mjs";
+import {OrganizedDisplay} from "./organizeddisplay.mjs";
+import {createQuakeFilterId} from "./organizeddisplayselect.mjs";
 import {
   SeismogramDisplayData,
   uniqueStations,
@@ -8,8 +8,8 @@ import {
   //uniqueBandCodes,
   //uniqueSourceCodes,
   uniqueSubsourceCodes
-} from "./seismogram";
-import { SeismographConfig } from "./seismographconfig";
+} from "./seismogram.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
 
 const UNDERSCORE = '_';
 

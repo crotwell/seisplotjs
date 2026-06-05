@@ -10,19 +10,19 @@ import { scaleLinear as d3scaleLinear } from "d3-scale";
 import { line as d3line, curveLinear as d3curveLinear } from "d3-shape";
 import { axisLeft as d3axisLeft, axisBottom as d3axisBottom } from "d3-axis";
 import { Interval } from "luxon";
-import { SeisPlotElement } from "./spelement";
-import { MinMaxable } from "./scale";
-import { SeismographConfig, numberFormatWrapper } from "./seismographconfig";
+import { SeisPlotElement } from "./spelement.mjs";
+import { MinMaxable } from "./scale.mjs";
+import { SeismographConfig, numberFormatWrapper } from "./seismographconfig.mjs";
 import {
   Seismogram,
   SeismogramDisplayData,
   findMinMaxOfSDD,
-} from "./seismogram";
-import { SeismogramSegment } from "./seismogramsegment";
-import { COLOR_CSS_ID } from "./seismograph";
-import { isDef, isNumArg, SVG_NS, validStartTime, validEndTime } from "./util";
-import * as axisutil from "./axisutil";
-import type { HandlebarsInput } from "./axisutil";
+} from "./seismogram.mjs";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
+import { COLOR_CSS_ID } from "./seismograph.mjs";
+import { isDef, isNumArg, SVG_NS, validStartTime, validEndTime } from "./util.mjs";
+import * as axisutil from "./axisutil.mjs";
+import type { HandlebarsInput } from "./axisutil.mjs";
 
 import type { Axis } from "d3-axis";
 import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";

@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { Seismogram, SeismogramDisplayData } from "./seismogram";
-import { isDef } from "./util";
-import { RDFT, Complex, complexFromPolar } from "./oregondsputil";
+import { Seismogram, SeismogramDisplayData } from "./seismogram.mjs";
+import { isDef } from "./util.mjs";
+import { RDFT, Complex, complexFromPolar } from "./oregondsputil.mjs";
 
 /**
  * A higher level function to calculate DFT. Returns a

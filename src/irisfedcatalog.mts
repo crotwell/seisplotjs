@@ -3,9 +3,9 @@
  * University of South Carolina, 2020
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE, appendToPath } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE, appendToPath } from "./fdsncommon.mjs";
 import { DateTime, Interval } from "luxon";
-import { Network } from "./stationxml";
+import { Network } from "./stationxml.mjs";
 import {
   LEVELS,
   LEVEL_NETWORK,
@@ -13,10 +13,10 @@ import {
   LEVEL_CHANNEL,
   LEVEL_RESPONSE,
   StationQuery,
-} from "./fdsnstation";
-import { NslcId } from "./fdsnsourceid";
-import { DataSelectQuery } from "./fdsndataselect";
-import { SeismogramDisplayData } from "./seismogram";
+} from "./fdsnstation.mjs";
+import { NslcId } from "./fdsnsourceid.mjs";
+import { DataSelectQuery } from "./fdsndataselect.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
 import {
   TEXT_MIME,
   makeParam,
@@ -37,7 +37,7 @@ import {
   isNumArg,
   validStartTime,
   validEndTime,
-} from "./util";
+} from "./util.mjs";
 
 
 /** const for service name */

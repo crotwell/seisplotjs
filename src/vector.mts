@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { SeismogramSegment } from "./seismogramsegment";
-import { Seismogram } from "./seismogram";
-import { isDef } from "./util";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
+import { Seismogram } from "./seismogram.mjs";
+import { isDef } from "./util.mjs";
 
 /**
  * const for degrees to radians, pi/180

@@ -3,14 +3,14 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import * as util from "./util"; // for util.log
-import * as miniseed from "./miniseed";
-import * as mseed3 from "./mseed3";
-import { DataRecord } from "./miniseed";
-import { MSeed3Record } from "./mseed3";
+import * as util from "./util.mjs"; // for util.log
+import * as miniseed from "./miniseed.mjs";
+import * as mseed3 from "./mseed3.mjs";
+import { DataRecord } from "./miniseed.mjs";
+import { MSeed3Record } from "./mseed3.mjs";
 import { DateTime } from "luxon";
-import { version } from "./version";
-import { dataViewToString, isDef, stringify, toError } from "./util";
+import { version } from "./version.mjs";
+import { dataViewToString, isDef, stringify, toError } from "./util.mjs";
 export const SEEDLINK4_SLPROTO = "SLPROTO";
 export const SEEDLINK4_PROTOCOL = `${SEEDLINK4_SLPROTO}:4.0`;
 export const WS_SEEDLINK4_SUBPROTOCOL = `SeedLink4.0`; // web socket procotol can't have :

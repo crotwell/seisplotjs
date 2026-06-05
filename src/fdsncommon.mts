@@ -2,7 +2,7 @@
  * commonalities with all types of FDSN Web Services
  */
 
-import { isNonEmptyStringArg, checkProtocol } from "./util";
+import { isNonEmptyStringArg, checkProtocol } from "./util.mjs";
 
 export const IRIS_HOST = "service.iris.edu";
 export const EARTHSCOPE_HOST = "service.earthscope.org";

@@ -4,7 +4,7 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval } from "luxon";
-import { FDSNSourceId, NslcId } from "./fdsnsourceid";
+import { FDSNSourceId, NslcId } from "./fdsnsourceid.mjs";
 import {
   meanOfSlice,
   isDef,
@@ -13,21 +13,21 @@ import {
   validStartTime,
   validEndTime,
   startDuration,
-} from "./util";
-import * as seedcodec from "./seedcodec";
-import { distaz, DistAzOutput } from "./distaz";
+} from "./util.mjs";
+import * as seedcodec from "./seedcodec.mjs";
+import { distaz, DistAzOutput } from "./distaz.mjs";
 import {
   Network,
   Station,
   Channel,
   InstrumentSensitivity,
   findChannels,
-} from "./stationxml";
-import { Quake } from "./quakeml";
-import { AMPLITUDE_MODE, MinMaxable } from "./scale";
-import { SeismogramSegment } from "./seismogramsegment";
+} from "./stationxml.mjs";
+import { Quake } from "./quakeml.mjs";
+import { AMPLITUDE_MODE, MinMaxable } from "./scale.mjs";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
 //export {SeismogramSegment} from "./seismogramsegment";
-import type { TraveltimeJsonType, TraveltimeArrivalType } from "./traveltime";
+import type { TraveltimeJsonType, TraveltimeArrivalType } from "./traveltime.mjs";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;
@@ -36,7 +36,7 @@ export type HighLowType = {
   samplesPerPixel: number;
   highlowArray: Array<number>;
 };
-import type { MarkerType } from "./seismographmarker";
+import type { MarkerType } from "./seismographmarker.mjs";
 /**
  * Represents time window for a single channel that may
  * contain gaps or overlaps, but is otherwise more or less

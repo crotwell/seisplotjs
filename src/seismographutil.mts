@@ -1,7 +1,7 @@
-import { LuxonTimeScale } from "./axisutil";
-import { SeismogramSegment } from "./seismogramsegment";
-import { SeismogramDisplayData } from "./seismogram";
-import { isDef } from "./util";
+import { LuxonTimeScale } from "./axisutil.mjs";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { isDef } from "./util.mjs";
 
 import type { ScaleLinear, ScaleTime } from "d3-scale";
 

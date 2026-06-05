@@ -3,19 +3,19 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { calcDFT, inverseDFT, FFTResult } from "./fft";
-import { SeismogramSegment } from "./seismogramsegment";
-import { Seismogram } from "./seismogram";
-import { SacPoleZero } from "./sacpolezero";
-import { Response, PolesZeros } from "./stationxml";
-import { Complex } from "./oregondsputil";
+import { calcDFT, inverseDFT, FFTResult } from "./fft.mjs";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
+import { Seismogram } from "./seismogram.mjs";
+import { SacPoleZero } from "./sacpolezero.mjs";
+import { Response, PolesZeros } from "./stationxml.mjs";
+import { Complex } from "./oregondsputil.mjs";
 
-import configureMeasurements from 'convert-units';
+import configureMeasurements from "convert-units";
 import allMeasures, {
   AllMeasures,
   AllMeasuresSystems,
   AllMeasuresUnits,
-} from 'convert-units/definitions/all';
+} from "convert-units/definitions/all";
 const convert = configureMeasurements<
   AllMeasures,
   AllMeasuresSystems,

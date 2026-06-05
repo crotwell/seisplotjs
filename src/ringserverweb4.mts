@@ -5,15 +5,15 @@
  */
 import { DateTime } from "luxon";
 import { z } from "zod/v4";
-import {defaultPortStringForProtocol, appendToPath} from "./fdsncommon";
+import {defaultPortStringForProtocol, appendToPath} from "./fdsncommon.mjs";
 import {
   FDSN_PREFIX,
   FDSNSourceId,
   StationSourceId,
   NetworkSourceId,
   NslcId,
-  parseSourceId } from "./fdsnsourceid";
-//import * as util from "./util"; // for util.log
+  parseSourceId } from "./fdsnsourceid.mjs";
+//import * as util from "./util.mjs"; // for util.log
 
 import {
   doIntGetterSetter,
@@ -26,7 +26,7 @@ import {
   isoToDateTime,
   pullJson,
   pullText
-} from "./util";
+} from "./util.mjs";
 export const SEEDLINK_PATH = "seedlink";
 export const DATALINK_PATH = "datalink";
 const RingserverId = z.object({

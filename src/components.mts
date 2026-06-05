@@ -1,7 +1,7 @@
-import { Channel } from "./stationxml";
-import { LatLonBox, LatLonRadius } from "./fdsncommon";
-import { FDSNSourceId } from "./fdsnsourceid";
-import { stringify } from "./util";
+import { Channel } from "./stationxml.mjs";
+import { LatLonBox, LatLonRadius } from "./fdsncommon.mjs";
+import { FDSNSourceId } from "./fdsnsourceid.mjs";
+import { stringify } from "./util.mjs";
 
 export const SOURCEID_LIST_ELEMENT = "sp-sourceid-list";
 export const CHANNEL_LIST_ELEMENT = "sp-channel-list";

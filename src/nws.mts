@@ -1,5 +1,5 @@
-import {defaultFetchInitObj, doFetchWithTimeout} from './util';
-import {Station} from './stationxml';
+import {defaultFetchInitObj, doFetchWithTimeout} from "./util.mjs";
+import {Station} from "./stationxml.mjs";
 import * as z from "zod";
 
 

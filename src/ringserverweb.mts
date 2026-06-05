@@ -4,8 +4,8 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration } from "luxon";
-import {extractDLProto} from "./datalink";
-import {defaultPortStringForProtocol, appendToPath} from "./fdsncommon";
+import {extractDLProto} from "./datalink.mjs";
+import {defaultPortStringForProtocol, appendToPath} from "./fdsncommon.mjs";
 import {
   FDSN_PREFIX,
   StationSourceId,
@@ -13,12 +13,12 @@ import {
   NslcId,
   parseSourceId,
   FDSNSourceId
-} from "./fdsnsourceid";
+} from "./fdsnsourceid.mjs";
 import {
   sidForId,
   //typeForId
-} from "./ringserverweb4";
-import * as util from "./util"; // for util.log
+} from "./ringserverweb4.mjs";
+import * as util from "./util.mjs"; // for util.log
 
 import {
   doIntGetterSetter,
@@ -30,7 +30,7 @@ import {
   isDef,
   isoToDateTime,
   pullText
-} from "./util";
+} from "./util.mjs";
 export const SEEDLINK_PATH = "seedlink";
 export const DATALINK_PATH = "datalink";
 export type RingserverVersion = {

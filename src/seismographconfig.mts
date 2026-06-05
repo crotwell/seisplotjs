@@ -3,22 +3,22 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR } from "./cssutil";
+import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR } from "./cssutil.mjs";
 import {
   IndividualAmplitudeScale,
   LinkedAmplitudeScale,
   LinkedTimeScale,
   AMPLITUDE_MODE,
-} from "./scale";
-import { DEFAULT_GRID_LINE_COLOR } from "./seismographutil";
-import { SeismogramDisplayData, Seismogram } from "./seismogram";
+} from "./scale.mjs";
+import { DEFAULT_GRID_LINE_COLOR } from "./seismographutil.mjs";
+import { SeismogramDisplayData, Seismogram } from "./seismogram.mjs";
 import {
   isDef, validStartTime, stringify, isStringArg, nameForTimeZone
- } from "./util";
+ } from "./util.mjs";
 import { DateTime, Duration, Interval, Zone, FixedOffsetZone, IANAZone } from "luxon";
 import { format as d3format } from "d3-format";
 import type { AxisDomain } from "d3-axis";
-import { Handlebars, registerHelpers } from "./handlebarshelpers";
+import { Handlebars, registerHelpers } from "./handlebarshelpers.mjs";
 registerHelpers();
 
 export type MarginType = {

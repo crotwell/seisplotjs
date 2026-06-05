@@ -4,7 +4,7 @@
  * https://www.seis.sc.edu
  */
 
-import { FDSNCommon, appendToPath } from "./fdsncommon";
+import { FDSNCommon, appendToPath } from "./fdsncommon.mjs";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -13,17 +13,17 @@ import {
   makeParam,
   isDef,
   isNonEmptyStringArg,
-} from "./util";
+} from "./util.mjs";
 import {
   TEXT_MIME,
   JSON_MIME,
   doFetchWithTimeout,
   defaultFetchInitObj,
-} from "./util";
-import * as fdsnavailability from "./fdsnavailability";
-import * as fdsndataselect from "./fdsndataselect";
-import * as fdsnevent from "./fdsnevent";
-import * as fdsnstation from "./fdsnstation";
+} from "./util.mjs";
+import * as fdsnavailability from "./fdsnavailability.mjs";
+import * as fdsndataselect from "./fdsndataselect.mjs";
+import * as fdsnevent from "./fdsnevent.mjs";
+import * as fdsnstation from "./fdsnstation.mjs";
 
 /** const for fdsn web service host, www.fdsn.org */
 export const FDSN_HOST = "www.fdsn.org";

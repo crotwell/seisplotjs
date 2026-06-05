@@ -9,7 +9,7 @@ import {
   LatLonBox,
   LatLonRadius,
   appendToPath
-} from "./fdsncommon";
+} from "./fdsncommon.mjs";
 import { DateTime, Interval } from "luxon";
 import {
   EventParameters,
@@ -17,7 +17,7 @@ import {
   USGS_HOST,
   parseQuakeML,
   FAKE_EMPTY_XML,
-} from "./quakeml";
+} from "./quakeml.mjs";
 import {
   XML_MIME,
   TEXT_MIME,
@@ -38,7 +38,7 @@ import {
   validStartTime,
   validEndTime,
   stringify,
-} from "./util";
+} from "./util.mjs";
 
 /** const for service name */
 export const EVENT_SERVICE = "event";

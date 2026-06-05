@@ -1,6 +1,6 @@
 import type { DateTime } from "luxon";
-import { SeismogramDisplayData } from "./seismogram";
-import { WAY_FUTURE } from "./util";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { WAY_FUTURE } from "./util.mjs";
 
 export const SORT_NONE = "none";
 export const SORT_DISTANCE = "distance";

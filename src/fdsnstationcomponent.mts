@@ -1,13 +1,13 @@
-import { StationQuery } from "./fdsnstation";
+import { StationQuery } from "./fdsnstation.mjs";
 import {
   CHANNEL_CODE_ELEMENT,
   ChannelCodeInput,
   LatLonChoice,
   LatLonBoxEl,
   LatLonRadiusEl,
-} from "./components";
-import { TimeRangeChooser } from "./datechooser";
-import { isoToDateTime } from "./util";
+} from "./components.mjs";
+import { TimeRangeChooser } from "./datechooser.mjs";
+import { isoToDateTime } from "./util.mjs";
 import { Duration } from "luxon";
 
 const channelsearchHtml = `

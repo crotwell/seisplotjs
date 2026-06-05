@@ -11,10 +11,10 @@ import {
   LatLonBox,
   LatLonRadius,
   appendToPath,
-} from "./fdsncommon";
-import { NslcId } from "./fdsnsourceid";
+} from "./fdsncommon.mjs";
+import { NslcId } from "./fdsnsourceid.mjs";
 import { DateTime, Interval } from "luxon";
-import { parseStationXml, Network, FAKE_EMPTY_XML } from "./stationxml";
+import { parseStationXml, Network, FAKE_EMPTY_XML } from "./stationxml.mjs";
 import {
   XML_MIME,
   TEXT_MIME,
@@ -35,7 +35,7 @@ import {
   stringify,
   validStartTime,
   validEndTime,
-} from "./util";
+} from "./util.mjs";
 export const LEVEL_NETWORK = "network";
 export const LEVEL_STATION = "station";
 export const LEVEL_CHANNEL = "channel";

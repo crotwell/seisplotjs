@@ -1,17 +1,17 @@
-import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
+import { INFO_ELEMENT, QuakeStationTable } from "./infotable.mjs";
 import {
   MAP_ELEMENT,
   UNSELECTED,
   QuakeStationMap,
-} from "./leafletutil";
-import { SeisPlotElement } from "./spelement";
-import { SeismogramDisplayData, uniqueStations, uniqueQuakes } from "./seismogram";
-import { SeismographConfig } from "./seismographconfig";
-import { isDef } from "./util";
+} from "./leafletutil.mjs";
+import { SeisPlotElement } from "./spelement.mjs";
+import { SeismogramDisplayData, uniqueStations, uniqueQuakes } from "./seismogram.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { isDef } from "./util.mjs";
 
-import {OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT} from "./organizeddisplaytools";
-import {OrganizedDisplayItem, ORG_DISP_ITEM, SEISMOGRAPH, MAP} from "./organizeddisplayitem";
-import {defaultPlotSelect} from "./organizeddisplayselect";
+import {OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT} from "./organizeddisplaytools.mjs";
+import {OrganizedDisplayItem, ORG_DISP_ITEM, SEISMOGRAPH, MAP} from "./organizeddisplayitem.mjs";
+import {defaultPlotSelect} from "./organizeddisplayselect.mjs";
 
 export {
   OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT,

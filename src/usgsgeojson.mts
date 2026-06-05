@@ -6,9 +6,9 @@ import {
   EventDescription,
   EventParameters,
   ZERO_MAGNITUDE,
-} from "./quakeml";
+} from "./quakeml.mjs";
 import { JSON_MIME, doFetchWithTimeout, UTC_OPTIONS,
-  defaultFetchInitObj, stringify } from "./util";
+  defaultFetchInitObj, stringify } from "./util.mjs";
 import { DateTime } from "luxon";
 
 import type { Feature, Point, Polygon, FeatureCollection } from "geojson";

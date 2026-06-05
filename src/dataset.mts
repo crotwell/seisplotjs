@@ -1,14 +1,14 @@
 import { Duration } from "luxon";
-import * as mseed3 from "./mseed3";
+import * as mseed3 from "./mseed3.mjs";
 import {
   ehToMarkers, ehToQuake, extractBagEH, createBagEH,
   quakeToEH, markerToEH
-} from "./mseed3eh";
-import { Quake, parseQuakeML } from "./quakeml";
-import { Network, parseStationXml, allChannels } from "./stationxml";
-import { SeismogramDisplayData } from "./seismogram";
-import { isValidMarker } from "./seismographmarker";
-import { isValidTraveltimeArrivalType } from "./traveltime";
+} from "./mseed3eh.mjs";
+import { Quake, parseQuakeML } from "./quakeml.mjs";
+import { Network, parseStationXml, allChannels } from "./stationxml.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { isValidMarker } from "./seismographmarker.mjs";
+import { isValidTraveltimeArrivalType } from "./traveltime.mjs";
 import {
   downloadBlobAsFile,
   doFetchWithTimeout,
@@ -18,12 +18,12 @@ import {
   BINARY_MIME,
   isoToDateTime,
   startDuration,
-} from "./util";
+} from "./util.mjs";
 import JSZip from "jszip";
 
 import type {
   BagExtraHeader as EHBag,
-} from "./ms3ehtypes";
+} from "./ms3ehtypes.mjs";
 
 export const DATASET_DIR = "dataset";
 export const DOT_ZIP_EXT = ".zip";

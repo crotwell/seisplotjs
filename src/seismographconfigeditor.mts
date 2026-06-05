@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { insertCSS } from "./cssutil";
-import { SeismographConfig } from "./seismographconfig";
-import { isDef } from "./util";
+import { insertCSS } from "./cssutil.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { isDef } from "./util.mjs";
 import { select as d3select } from "d3-selection";
 
 import type { Selection } from "d3-selection";

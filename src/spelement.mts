@@ -1,13 +1,13 @@
 import type { DateTime } from "luxon";
-import { SeismogramDisplayData, Seismogram } from "./seismogram";
-import { SeismographConfig } from "./seismographconfig";
+import { SeismogramDisplayData, Seismogram } from "./seismogram.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
 import {
   createDefaultSortingOptions,
   SORT_NONE,
   createSortValueFunction,
   sortByFunction
-} from "./sorting";
-import { isDef } from "./util";
+} from "./sorting.mjs";
+import { isDef } from "./util.mjs";
 
 export const SORT_BY = "sort";
 

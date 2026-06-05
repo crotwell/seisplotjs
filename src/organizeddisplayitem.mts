@@ -1,16 +1,16 @@
-import { fftForward } from "./fft";
-import * as spectraplot from "./spectraplot";
-import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
-import { Seismograph } from "./seismograph";
+import { fftForward } from "./fft.mjs";
+import * as spectraplot from "./spectraplot.mjs";
+import { ParticleMotion, createParticleMotionConfig } from "./particlemotion.mjs";
+import { Seismograph } from "./seismograph.mjs";
 import * as querystringify from "querystringify";
-import { SeisPlotElement } from "./spelement";
-import { SeismogramDisplayData } from "./seismogram";
-import { SeismographConfig } from "./seismographconfig";
-import { QuakeStationTable } from "./infotable";
+import { SeisPlotElement } from "./spelement.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { QuakeStationTable } from "./infotable.mjs";
 import {
   QuakeStationMap,
-} from "./leafletutil";
-import { isDef, isStringArg, stringify } from "./util";
+} from "./leafletutil.mjs";
+import { isDef, isStringArg, stringify } from "./util.mjs";
 
 
 export const ORG_DISP_ITEM = "sp-organized-display-item";

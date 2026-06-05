@@ -1,20 +1,20 @@
-import { Dataset } from "./dataset";
+import { Dataset } from "./dataset.mjs";
 import { Duration, Interval } from "luxon";
-import type { TraveltimeJsonType } from "./traveltime";
-import { distaz } from "./distaz";
-import { TraveltimeQuery, createOriginArrival } from "./traveltime";
-import { DataSelectQuery } from "./fdsndataselect";
-import { EventQuery } from "./fdsnevent";
-import { StationQuery } from "./fdsnstation";
-import { FedCatalogQuery } from "./irisfedcatalog";
-import { Quake } from "./quakeml";
-import { allStations, Network } from "./stationxml";
-import { SeismogramDisplayData } from "./seismogram";
+import type { TraveltimeJsonType } from "./traveltime.mjs";
+import { distaz } from "./distaz.mjs";
+import { TraveltimeQuery, createOriginArrival } from "./traveltime.mjs";
+import { DataSelectQuery } from "./fdsndataselect.mjs";
+import { EventQuery } from "./fdsnevent.mjs";
+import { StationQuery } from "./fdsnstation.mjs";
+import { FedCatalogQuery } from "./irisfedcatalog.mjs";
+import { Quake } from "./quakeml.mjs";
+import { allStations, Network } from "./stationxml.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
 import {
   createMarkersForTravelTimes,
   createMarkerForOriginTime,
-} from "./seismographmarker";
-import { isDef, isStringArg, stringify } from "./util";
+} from "./seismographmarker.mjs";
+import { isDef, isStringArg, stringify } from "./util.mjs";
 
 /**
  * Loads seismograms based on queries to Station and Event web services.

@@ -1,6 +1,6 @@
-import { isDef } from "./util";
-import * as util from "./util";
-import {transition} from "./transition";
+import { isDef } from "./util.mjs";
+import * as util from "./util.mjs";
+import {transition} from "./transition.mjs";
 import { Duration } from "luxon";
 
 /** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */

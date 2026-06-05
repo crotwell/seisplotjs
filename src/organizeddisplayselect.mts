@@ -1,5 +1,5 @@
-import {SeismogramDisplayData} from "./seismogram";
-import {Quake} from "./quakeml";
+import {SeismogramDisplayData} from "./seismogram.mjs";
+import {Quake} from "./quakeml.mjs";
 
 export function createStationFilterId(sdd: SeismogramDisplayData) {
   return `station_${sdd.networkCode}_${sdd.stationCode}`;

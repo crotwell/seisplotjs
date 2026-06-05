@@ -1,16 +1,16 @@
-import { kmPerDeg } from "./distaz";
-import { Quake, createQuakeClickEvent, QuakeClickEventMap } from "./quakeml";
-import * as import_leaflet_css from "./leaflet_css";
-import { Network, Station, createStationClickEvent, StationClickEventMap } from "./stationxml";
-import { SeisPlotElement } from "./spelement";
+import { kmPerDeg } from "./distaz.mjs";
+import { Quake, createQuakeClickEvent, QuakeClickEventMap } from "./quakeml.mjs";
+import * as import_leaflet_css from "./leaflet_css.mjs";
+import { Network, Station, createStationClickEvent, StationClickEventMap } from "./stationxml.mjs";
+import { SeisPlotElement } from "./spelement.mjs";
 import {
   SeismogramDisplayData,
   uniqueQuakes,
   uniqueStations,
-} from "./seismogram";
-import { SeismographConfig } from "./seismographconfig";
-import { LatLonBox, LatLonRadius } from "./fdsncommon";
-import { fixProtocolInUrl } from "./util";
+} from "./seismogram.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { LatLonBox, LatLonRadius } from "./fdsncommon.mjs";
+import { fixProtocolInUrl } from "./util.mjs";
 
 import * as L from "leaflet";
 import { LatLngTuple } from "leaflet";

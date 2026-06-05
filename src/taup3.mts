@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, LOCALWS_PATH_BASE, appendToPath } from "./fdsncommon";
+import { FDSNCommon, LOCALWS_PATH_BASE, appendToPath } from "./fdsncommon.mjs";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -18,9 +18,9 @@ import {
   makeParam,
   defaultFetchInitObj,
   doFetchWithTimeout,
-} from "./util";
-import { Station, Channel } from "./stationxml";
-import { Quake } from "./quakeml";
+} from "./util.mjs";
+import { Station, Channel } from "./stationxml.mjs";
+import { Quake } from "./quakeml.mjs";
 export const USC_HOST = "www.seis.sc.edu";
 export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";

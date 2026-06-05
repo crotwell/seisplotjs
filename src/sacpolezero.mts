@@ -3,8 +3,8 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { Complex } from "./oregondsputil";
-import { isNumArg, stringify } from "./util";
+import { Complex } from "./oregondsputil.mjs";
+import { isNumArg, stringify } from "./util.mjs";
 
 /**
  * SAC style response file. This contains poles and zeros to represent the

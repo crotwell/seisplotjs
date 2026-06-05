@@ -16,15 +16,15 @@ import {
   mightBeXml,
   dataViewToString,
   XML_MIME,
-} from "./util";
-import { Complex } from "./oregondsputil";
+} from "./util.mjs";
+import { Complex } from "./oregondsputil.mjs";
 import {
   FDSNSourceId,
   NetworkSourceId,
   StationSourceId,
   NslcId,
   SourceIdSorter,
-} from "./fdsnsourceid";
+} from "./fdsnsourceid.mjs";
 import { DateTime, Interval } from "luxon";
 
 export const STAXML_MIME="application/vnd.fdsn.stationxml+xml";

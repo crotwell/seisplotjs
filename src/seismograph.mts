@@ -15,9 +15,9 @@ import {
   axisRight as d3axisRight,
 } from "d3-axis";
 
-import { AUTO_COLOR_SELECTOR } from "./cssutil";
-import { AmplitudeScalable, TimeScalable, MinMaxable } from "./scale";
-import { SeismographConfig, numberFormatWrapper } from "./seismographconfig";
+import { AUTO_COLOR_SELECTOR } from "./cssutil.mjs";
+import { AmplitudeScalable, TimeScalable, MinMaxable } from "./scale.mjs";
+import { SeismographConfig, numberFormatWrapper } from "./seismographconfig.mjs";
 import {
   createMarkersForTravelTimes,
   createMarkerForOriginTime,
@@ -25,7 +25,7 @@ import {
   createFullMarkersForQuakeAtChannel,
   createMarkerForQuakePicks,
   createMarkerForPicks,
-} from "./seismographmarker";
+} from "./seismographmarker.mjs";
 // re-export for compatibility with ver 3.1.3
 export {
   createMarkersForTravelTimes,
@@ -41,15 +41,15 @@ import {
   drawAllOnCanvas,
   drawXScaleGridLines,
   drawYScaleGridLines,
-} from "./seismographutil";
-import { XHTML_NS, warn } from "./util";
-import type { MarkerType } from "./seismographmarker";
-import type { HandlebarsInput } from "./axisutil";
+} from "./seismographutil.mjs";
+import { XHTML_NS, warn } from "./util.mjs";
+import type { MarkerType } from "./seismographmarker.mjs";
+import type { HandlebarsInput } from "./axisutil.mjs";
 import type { Axis } from "d3-axis";
 import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
 import type { Selection } from "d3-selection";
 
-import {PanZoomer} from "./scale";
+import {PanZoomer} from "./scale.mjs";
 import {
   SeismogramDisplayData,
   calcMinMax,
@@ -59,13 +59,13 @@ import {
   findMinMaxOverRelativeTimeRange,
   Seismogram,
   COUNT_UNIT,
-} from "./seismogram";
-import { SeisPlotElement } from "./spelement";
-import * as axisutil from "./axisutil";
-import * as util from "./util"; // for util.log to replace console.log
+} from "./seismogram.mjs";
+import { SeisPlotElement } from "./spelement.mjs";
+import * as axisutil from "./axisutil.mjs";
+import * as util from "./util.mjs"; // for util.log to replace console.log
 
-import { isDef, isNumArg, validStartTime, validEndTime } from "./util";
-import { registerHelpers } from "./handlebarshelpers";
+import { isDef, isNumArg, validStartTime, validEndTime } from "./util.mjs";
+import { registerHelpers } from "./handlebarshelpers.mjs";
 registerHelpers();
 
 const CLIP_PREFIX = "seismographclip";

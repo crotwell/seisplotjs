@@ -2,9 +2,9 @@ import Handlebars from "handlebars";
 // re-export
 export { Handlebars };
 
-import { SeismogramDisplayData } from "./seismogram";
+import { SeismogramDisplayData } from "./seismogram.mjs";
 import { DateTime, Duration, Interval } from "luxon";
-import { checkStringOrDate } from "./util";
+import { checkStringOrDate } from "./util.mjs";
 
 /**
  * Registers Handlebars helpers like onlyChangesChannel and other formatters

@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath } from "./fdsncommon.mjs";
 import { DateTime, Interval } from "luxon";
-import { SeismogramDisplayData } from "./seismogram";
+import { SeismogramDisplayData } from "./seismogram.mjs";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -26,8 +26,8 @@ import {
   defaultFetchInitObj,
   validStartTime,
   validEndTime,
-} from "./util";
-import { Network, Station, Channel } from "./stationxml";
+} from "./util.mjs";
+import { Network, Station, Channel } from "./stationxml.mjs";
 
 /** const for json format, json */
 export const FORMAT_JSON = "json";

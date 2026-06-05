@@ -5,11 +5,11 @@
  */
 
 import { DateTime, Duration } from "luxon";
-import { FDSNSourceId } from "./fdsnsourceid";
-import { SeismogramSegment } from "./seismogramsegment";
-import { Seismogram } from "./seismogram";
-import { EncodedDataSegment } from "./seedcodec";
-import { isDef, isNonEmptyStringArg, UTC_OPTIONS } from "./util";
+import { FDSNSourceId } from "./fdsnsourceid.mjs";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
+import { Seismogram } from "./seismogram.mjs";
+import { EncodedDataSegment } from "./seedcodec.mjs";
+import { isDef, isNonEmptyStringArg, UTC_OPTIONS } from "./util.mjs";
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";
 // type codes as number (ascii)
 export const R_TYPECODE: number = "R".charCodeAt(0);

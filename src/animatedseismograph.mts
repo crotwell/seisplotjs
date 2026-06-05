@@ -1,18 +1,18 @@
 import { DateTime, Duration, Interval } from "luxon";
-import { DataLinkPacket } from "./datalink";
-import type {SequencedDataRecord} from "./seedlink";
-import { SEPacket } from "./seedlink4";
-import * as miniseed from "./miniseed";
-import * as mseed3 from "./mseed3";
-import {removeTrend} from "./filter";
-import { OrganizedDisplay } from "./organizeddisplay";
-import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from "./scale";
-import { SORT_ALPHABETICAL} from "./sorting";
-import { SeismogramDisplayData } from "./seismogram";
-import { SeisPlotElement } from "./spelement";
-import { SeismographConfig } from "./seismographconfig";
-import { Network } from "./stationxml";
-import {warn} from "./util";
+import { DataLinkPacket } from "./datalink.mjs";
+import type {SequencedDataRecord} from "./seedlink.mjs";
+import { SEPacket } from "./seedlink4.mjs";
+import * as miniseed from "./miniseed.mjs";
+import * as mseed3 from "./mseed3.mjs";
+import {removeTrend} from "./filter.mjs";
+import { OrganizedDisplay } from "./organizeddisplay.mjs";
+import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from "./scale.mjs";
+import { SORT_ALPHABETICAL} from "./sorting.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
+import { SeisPlotElement } from "./spelement.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { Network } from "./stationxml.mjs";
+import {warn} from "./util.mjs";
 
 export class AnimatedTimeScaler {
   alignmentTime: DateTime;

@@ -4,8 +4,8 @@
  * https://www.seis.sc.edu
  */
 import { Duration, DateTime } from "luxon";
-import { Seismogram } from "./seismogram";
-import { InstrumentSensitivity } from "./stationxml";
+import { Seismogram } from "./seismogram.mjs";
+import { InstrumentSensitivity } from "./stationxml.mjs";
 import {
   Butterworth,
   ChebyshevI,
@@ -16,8 +16,8 @@ import {
   LOWPASS,
   BANDPASS,
   HIGHPASS,
-} from "./oregondsputil";
-import { isDef } from "./util";
+} from "./oregondsputil.mjs";
+import { isDef } from "./util.mjs";
 
 /**
  * Constant for bandpass OregonDSP filter creation.

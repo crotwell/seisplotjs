@@ -1,5 +1,5 @@
-import { SeismographConfig } from "./seismographconfig";
-import { createSVGElement, checkLuxonValid, toJSDate } from "./util";
+import { SeismographConfig } from "./seismographconfig.mjs";
+import { createSVGElement, checkLuxonValid, toJSDate } from "./util.mjs";
 //import * as d3 from "d3";
 import { scaleUtc as d3scaleUtc } from "d3-scale";
 import { select as d3select } from "d3-selection";
@@ -10,7 +10,7 @@ import type {
 } from "d3-scale";
 import { DateTime, Interval } from "luxon";
 
-//import type {HandlebarsInput} from "./handlebarshelpers";
+//import type {HandlebarsInput} from "./handlebarshelpers.mjs";
 
 export interface HandlebarsInput {
   seisConfig?: SeismographConfig;

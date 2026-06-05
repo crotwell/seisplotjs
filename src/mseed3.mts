@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {ehToChannel, ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh";
-import { FDSNSourceId } from "./fdsnsourceid";
-import { isDef, UTC_OPTIONS } from "./util";
+import {ehToChannel, ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh.mjs";
+import { FDSNSourceId } from "./fdsnsourceid.mjs";
+import { isDef, UTC_OPTIONS } from "./util.mjs";
 import {
   EncodedDataSegment,
   FLOAT,
@@ -13,16 +13,16 @@ import {
   DOUBLE,
   STEIM1,
   STEIM2,
-} from "./seedcodec";
-import { SeismogramSegment } from "./seismogramsegment";
-import { Seismogram, SeismogramDisplayData } from "./seismogram";
+} from "./seedcodec.mjs";
+import { SeismogramSegment } from "./seismogramsegment.mjs";
+import { Seismogram, SeismogramDisplayData } from "./seismogram.mjs";
 import {
   DataRecord,
   R_TYPECODE,
   D_TYPECODE,
   Q_TYPECODE,
   M_TYPECODE,
-} from "./miniseed";
+} from "./miniseed.mjs";
 import { DateTime, Duration } from "luxon";
 
 export type json_object = Record<string, unknown>;

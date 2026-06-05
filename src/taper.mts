@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { Seismogram } from "./seismogram";
+import { Seismogram } from "./seismogram.mjs";
 
 /**
  * Applies a time domain taper of the given type.

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import * as util from "./util"; // for util.log
+import * as util from "./util.mjs"; // for util.log
 
 import {
   isoToDateTime,
@@ -13,10 +13,10 @@ import {
   isNonEmptyStringArg,
   toError,
   UTC_OPTIONS,
-} from "./util";
-import * as miniseed from "./miniseed";
-import * as mseed3 from "./mseed3";
-import { parseUtil } from "./stationxml";
+} from "./util.mjs";
+import * as miniseed from "./miniseed.mjs";
+import * as mseed3 from "./mseed3.mjs";
+import { parseUtil } from "./stationxml.mjs";
 import { DateTime } from "luxon";
 
 /** const for websocket subprotocol for datalink, DataLink1.0 */

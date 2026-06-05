@@ -3,15 +3,15 @@
  * University of South Carolina, 2025
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE, appendToPath } from "./fdsncommon";
-import { FORMAT_MINISEED } from "./fdsndataselect";
-import { TESTING_NETWORK } from "./fdsnsourceid";
-import { Quake } from "./quakeml";
-import { Channel } from "./stationxml";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE, appendToPath } from "./fdsncommon.mjs";
+import { FORMAT_MINISEED } from "./fdsndataselect.mjs";
+import { TESTING_NETWORK } from "./fdsnsourceid.mjs";
+import { Quake } from "./quakeml.mjs";
+import { Channel } from "./stationxml.mjs";
 import { DateTime } from "luxon";
-import * as miniseed from "./miniseed";
-import * as mseed3 from "./mseed3";
-import { SeismogramDisplayData } from "./seismogram";
+import * as miniseed from "./miniseed.mjs";
+import * as mseed3 from "./mseed3.mjs";
+import { SeismogramDisplayData } from "./seismogram.mjs";
 import {
   doStringGetterSetter,
   doIntGetterSetter,
@@ -27,7 +27,7 @@ import {
   doFetchWithTimeout,
   defaultFetchInitObj,
   TEXT_MIME
-} from "./util";
+} from "./util.mjs";
 
 /** const for service name */
 export const SYNGINE_SERVICE = "syngine";
