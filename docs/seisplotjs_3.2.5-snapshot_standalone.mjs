@@ -4,7 +4,6 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __require = /* @__PURE__ */ ((x2) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x2, {
   get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x2)(function(x2) {
@@ -34,7 +33,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
 // node_modules/oregondsp/kotlin/kotlin-kotlin-stdlib-js-ir.js
 var require_kotlin_kotlin_stdlib_js_ir = __commonJS({
@@ -36661,7 +36659,7 @@ var require_jszip_min = __commonJS({
   }
 });
 
-// src/animatedseismograph.ts
+// src/animatedseismograph.mts
 var animatedseismograph_exports = {};
 __export(animatedseismograph_exports, {
   AnimatedTimeScaler: () => AnimatedTimeScaler,
@@ -43194,7 +43192,7 @@ function friendlyDateTime(dateTimeish) {
 }
 var VERSION = "3.7.2";
 
-// src/datalink.ts
+// src/datalink.mts
 var datalink_exports = {};
 __export(datalink_exports, {
   ConnectionsResponse: () => ConnectionsResponse,
@@ -43234,7 +43232,7 @@ __export(datalink_exports, {
   stringToUint8Array: () => stringToUint8Array
 });
 
-// src/util.ts
+// src/util.mts
 var util_exports = {};
 __export(util_exports, {
   BINARY_MIME: () => BINARY_MIME,
@@ -43304,10 +43302,10 @@ __export(util_exports, {
   warn: () => warn
 });
 
-// src/version.ts
+// src/version.mts
 var version = "3.2.5-snapshot";
 
-// src/util.ts
+// src/util.mts
 var XML_MIME = "application/xml";
 var JSON_MIME = "application/json";
 var JSONAPI_MIME = "application/vnd.api+json";
@@ -43935,7 +43933,7 @@ function anplusb(value) {
   return [a, b];
 }
 
-// src/miniseed.ts
+// src/miniseed.mts
 var miniseed_exports = {};
 __export(miniseed_exports, {
   BTime: () => BTime,
@@ -43965,7 +43963,7 @@ __export(miniseed_exports, {
   seismogramSegmentPerChannel: () => seismogramSegmentPerChannel
 });
 
-// src/fdsnsourceid.ts
+// src/fdsnsourceid.mts
 var fdsnsourceid_exports = {};
 __export(fdsnsourceid_exports, {
   EMPTY_LOC_CODE: () => EMPTY_LOC_CODE,
@@ -43988,12 +43986,6 @@ var TESTING_NETWORK = "XX";
 var TESTING_STATION = "ABC";
 var FDSNSourceId = class _FDSNSourceId {
   constructor(networkCode, stationCode, locationCode, bandCode, sourceCode, subsourceCode) {
-    __publicField(this, "networkCode");
-    __publicField(this, "stationCode");
-    __publicField(this, "locationCode");
-    __publicField(this, "bandCode");
-    __publicField(this, "sourceCode");
-    __publicField(this, "subsourceCode");
     this.networkCode = networkCode;
     this.stationCode = stationCode;
     this.locationCode = locationCode;
@@ -44121,7 +44113,6 @@ var FDSNSourceId = class _FDSNSourceId {
 };
 var NetworkSourceId = class _NetworkSourceId {
   constructor(networkCode) {
-    __publicField(this, "networkCode");
     this.networkCode = networkCode;
   }
   static parse(id2) {
@@ -44150,8 +44141,6 @@ var NetworkSourceId = class _NetworkSourceId {
 };
 var StationSourceId = class _StationSourceId {
   constructor(networkCode, stationCode) {
-    __publicField(this, "networkCode");
-    __publicField(this, "stationCode");
     this.networkCode = networkCode;
     this.stationCode = stationCode;
   }
@@ -44184,9 +44173,6 @@ var StationSourceId = class _StationSourceId {
 };
 var LocationSourceId = class {
   constructor(networkCode, stationCode, locationCode) {
-    __publicField(this, "networkCode");
-    __publicField(this, "stationCode");
-    __publicField(this, "locationCode");
     this.networkCode = networkCode;
     this.stationCode = stationCode;
     this.locationCode = locationCode;
@@ -44249,10 +44235,6 @@ function bandCodeForRate(sampRate, resp_lb) {
 var EMPTY_LOC_CODE = "--";
 var NslcId = class _NslcId {
   constructor(net, sta, loc, chan) {
-    __publicField(this, "networkCode");
-    __publicField(this, "stationCode");
-    __publicField(this, "locationCode");
-    __publicField(this, "channelCode");
     this.networkCode = net;
     this.stationCode = sta;
     this.locationCode = loc;
@@ -44336,14 +44318,14 @@ function SourceIdSorter(aSid, bSid) {
   return aSid.subsourceCode.localeCompare(bSid.subsourceCode);
 }
 
-// src/seismogramsegment.ts
+// src/seismogramsegment.mts
 var seismogramsegment_exports = {};
 __export(seismogramsegment_exports, {
   COUNT_UNIT: () => COUNT_UNIT,
   SeismogramSegment: () => SeismogramSegment
 });
 
-// src/scale.ts
+// src/scale.mts
 var scale_exports = {};
 __export(scale_exports, {
   AMPLITUDE_MODE: () => AMPLITUDE_MODE,
@@ -44360,7 +44342,7 @@ __export(scale_exports, {
   TimeScalable: () => TimeScalable
 });
 
-// src/transition.ts
+// src/transition.mts
 var transition_exports = {};
 __export(transition_exports, {
   transition: () => transition
@@ -44382,7 +44364,7 @@ function transition(drawFn, duration_millis) {
   window.requestAnimationFrame(transFn);
 }
 
-// src/scale.ts
+// src/scale.mts
 var AMPLITUDE_MODE = /* @__PURE__ */ ((AMPLITUDE_MODE2) => {
   AMPLITUDE_MODE2["Raw"] = "raw";
   AMPLITUDE_MODE2["Zero"] = "zero";
@@ -44395,8 +44377,6 @@ var PHI = (1 + Math.sqrt(5)) / 2;
 var SQRT_PHI = Math.sqrt(PHI);
 var MinMaxable = class _MinMaxable {
   constructor(min, max) {
-    __publicField(this, "min");
-    __publicField(this, "max");
     this.min = min;
     this.max = max;
   }
@@ -44454,7 +44434,6 @@ var MinMaxable = class _MinMaxable {
 };
 var AmplitudeScalable = class {
   constructor(minMax) {
-    __publicField(this, "minMax");
     if (minMax) {
       this.minMax = minMax;
     } else {
@@ -44484,8 +44463,6 @@ var AmplitudeScalable = class {
 };
 var TimeScalable = class {
   constructor(alignmentTimeOffset, duration3) {
-    __publicField(this, "alignmentTimeOffset");
-    __publicField(this, "duration");
     this.alignmentTimeOffset = alignmentTimeOffset;
     this.duration = duration3;
   }
@@ -44494,13 +44471,6 @@ var TimeScalable = class {
 };
 var LinkedAmplitudeScale = class {
   constructor(graphList) {
-    /**
-     * @private
-     */
-    __publicField(this, "_graphSet");
-    __publicField(this, "_halfWidth");
-    __publicField(this, "_recalcTimeoutID");
-    __publicField(this, "_scaleId");
     this._scaleId = ++_lastId;
     const glist = graphList ? graphList : [];
     this._halfWidth = 0;
@@ -44637,17 +44607,8 @@ var FixedHalfWidthAmplitudeScale = class extends LinkedAmplitudeScale {
 };
 var LinkedTimeScale = class {
   constructor(graphList, originalDuration, originalOffset, scaleId) {
-    /**
-     * @private
-     */
-    __publicField(this, "_graphSet");
-    __publicField(this, "_originalDuration");
-    __publicField(this, "_originalOffset");
-    __publicField(this, "_zoomedDuration");
-    __publicField(this, "_zoomedOffset");
-    __publicField(this, "_scaleId");
-    __publicField(this, "_prev_zoom_k", 1);
-    __publicField(this, "_prev_zoom_x", 0);
+    this._prev_zoom_k = 1;
+    this._prev_zoom_x = 0;
     if (scaleId) {
       this._scaleId = scaleId;
     } else {
@@ -44821,15 +44782,12 @@ var AlignmentLinkedTimeScale = class extends LinkedTimeScale {
 };
 var PanZoomer = class {
   constructor(target, linkedTimeScale, wheelZoom) {
-    __publicField(this, "isMouseDown", false);
-    __publicField(this, "_target");
-    __publicField(this, "width");
-    __publicField(this, "linkedTimeScale");
-    __publicField(this, "wheelZoom", false);
-    __publicField(this, "_prev_zoom_k", 1);
-    __publicField(this, "_prev_zoom_x", 0);
-    __publicField(this, "min_k", 1 / 8192);
-    __publicField(this, "max_k", 8192);
+    this.isMouseDown = false;
+    this.wheelZoom = false;
+    this._prev_zoom_k = 1;
+    this._prev_zoom_x = 0;
+    this.min_k = 1 / 8192;
+    this.max_k = 8192;
     this._target = target;
     this.target = target;
     this.width = target.getBoundingClientRect().width;
@@ -44929,7 +44887,7 @@ var PanZoomer = class {
   }
 };
 
-// src/seedcodec.ts
+// src/seedcodec.mts
 var seedcodec_exports = {};
 __export(seedcodec_exports, {
   ASCII: () => ASCII,
@@ -44984,10 +44942,6 @@ function isFloatCompression(compressionType) {
 }
 var EncodedDataSegment = class {
   constructor(compressionType, dataView, numSamples, littleEndian) {
-    __publicField(this, "compressionType");
-    __publicField(this, "dataView");
-    __publicField(this, "numSamples");
-    __publicField(this, "littleEndian");
     this.compressionType = compressionType;
     this.dataView = dataView;
     this.numSamples = numSamples;
@@ -45269,26 +45223,10 @@ function extractSteim2Samples(dataView, offset2, swapBytes) {
   return temp.slice(0, currNum);
 }
 
-// src/seismogramsegment.ts
+// src/seismogramsegment.mts
 var COUNT_UNIT = "count";
 var SeismogramSegment = class _SeismogramSegment {
   constructor(yArray, sampleRate, startTime, sourceId) {
-    /** Array of y values */
-    __publicField(this, "_y");
-    __publicField(this, "_compressed");
-    /**
-     * the sample rate in hertz
-     *
-     * @private
-     */
-    __publicField(this, "_sampleRate");
-    /** @private */
-    __publicField(this, "_startTime");
-    __publicField(this, "_endTime_cache");
-    __publicField(this, "_endTime_cache_numPoints");
-    __publicField(this, "_sourceId");
-    __publicField(this, "yUnit");
-    __publicField(this, "_highlow");
     if (yArray instanceof Int32Array || yArray instanceof Float32Array || yArray instanceof Float64Array) {
       this._y = yArray;
       this._compressed = null;
@@ -45594,7 +45532,7 @@ var SeismogramSegment = class _SeismogramSegment {
   }
 };
 
-// src/seismogram.ts
+// src/seismogram.mts
 var seismogram_exports = {};
 __export(seismogram_exports, {
   COUNT_UNIT: () => COUNT_UNIT2,
@@ -45623,7 +45561,7 @@ __export(seismogram_exports, {
   uniqueSubsourceCodes: () => uniqueSubsourceCodes
 });
 
-// src/distaz.ts
+// src/distaz.mts
 var distaz_exports = {};
 __export(distaz_exports, {
   DistAzOutput: () => DistAzOutput,
@@ -45641,13 +45579,6 @@ function kmtodeg(km) {
 }
 var DistAzOutput = class {
   constructor(delta, az, baz) {
-    __publicField(this, "delta");
-    __publicField(this, "az");
-    __publicField(this, "baz");
-    __publicField(this, "stalat");
-    __publicField(this, "stalon");
-    __publicField(this, "evtlat");
-    __publicField(this, "evtlon");
     this.delta = delta ? delta : 0;
     this.az = az ? az : 0;
     this.baz = baz ? baz : 0;
@@ -45725,7 +45656,7 @@ function distaz(lat1, lon1, lat2, lon2) {
   return result;
 }
 
-// src/stationxml.ts
+// src/stationxml.mts
 var stationxml_exports = {};
 __export(stationxml_exports, {
   AbstractFilterType: () => AbstractFilterType,
@@ -45788,7 +45719,7 @@ __export(stationxml_exports, {
   uniqueStations: () => uniqueStations
 });
 
-// src/oregondsputil.ts
+// src/oregondsputil.mts
 var oregondsputil_exports = {};
 __export(oregondsputil_exports, {
   Allpass: () => Allpass,
@@ -45888,7 +45819,7 @@ function createComplex(real, imag) {
   );
 }
 
-// src/stationxml.ts
+// src/stationxml.mts
 var STAXML_MIME = "application/vnd.fdsn.stationxml+xml";
 var STAML_NS = "http://www.fdsn.org/xml/station/1";
 var COUNT_UNIT_NAME = "count";
@@ -45944,13 +45875,6 @@ function createStationClickEvent(sta, mouseclick) {
 }
 var Network = class {
   constructor(networkCode) {
-    __publicField(this, "networkCode");
-    __publicField(this, "_startDate");
-    __publicField(this, "_endDate");
-    __publicField(this, "restrictedStatus");
-    __publicField(this, "description");
-    __publicField(this, "totalNumberStations");
-    __publicField(this, "stations");
     this.networkCode = networkCode;
     this._startDate = FAKE_START_DATE;
     this._endDate = null;
@@ -45997,27 +45921,6 @@ var Network = class {
 };
 var Station = class {
   constructor(network, stationCode) {
-    __publicField(this, "network");
-    __publicField(this, "stationCode");
-    __publicField(this, "sourceID");
-    /** @private */
-    __publicField(this, "_startDate");
-    /** @private */
-    __publicField(this, "_endDate");
-    __publicField(this, "restrictedStatus");
-    __publicField(this, "name");
-    __publicField(this, "latitude");
-    __publicField(this, "longitude");
-    __publicField(this, "elevation");
-    __publicField(this, "waterLevel");
-    __publicField(this, "comments");
-    __publicField(this, "equipmentList");
-    __publicField(this, "dataAvailability");
-    __publicField(this, "identifierList");
-    __publicField(this, "description");
-    __publicField(this, "geology");
-    __publicField(this, "vault");
-    __publicField(this, "channels");
     this.network = network;
     this.name = "";
     this.description = "";
@@ -46078,34 +45981,12 @@ var Station = class {
 };
 var Channel = class {
   constructor(station, channelCode, locationCode) {
-    __publicField(this, "station");
-    /** @private */
-    __publicField(this, "_locationCode");
-    __publicField(this, "channelCode");
-    /** @private */
-    __publicField(this, "_sourceId");
-    /** @private */
-    __publicField(this, "_startDate");
-    /** @private */
-    __publicField(this, "_endDate");
-    __publicField(this, "restrictedStatus");
-    __publicField(this, "latitude");
-    __publicField(this, "longitude");
-    __publicField(this, "elevation");
-    __publicField(this, "depth");
-    __publicField(this, "azimuth");
-    __publicField(this, "dip");
-    __publicField(this, "sampleRate");
-    __publicField(this, "waterLevel", null);
-    __publicField(this, "comments", []);
-    __publicField(this, "equipmentList", []);
-    __publicField(this, "dataAvailability", null);
-    __publicField(this, "identifierList", []);
-    __publicField(this, "description", "");
-    __publicField(this, "response");
-    __publicField(this, "sensor");
-    __publicField(this, "preamplifier");
-    __publicField(this, "datalogger");
+    this.waterLevel = null;
+    this.comments = [];
+    this.equipmentList = [];
+    this.dataAvailability = null;
+    this.identifierList = [];
+    this.description = "";
     this.station = station;
     this._startDate = FAKE_START_DATE;
     this._endDate = null;
@@ -46239,10 +46120,6 @@ var Channel = class {
 };
 var InstrumentSensitivity = class {
   constructor(sensitivity, frequency, inputUnits, outputUnits) {
-    __publicField(this, "sensitivity");
-    __publicField(this, "frequency");
-    __publicField(this, "inputUnits");
-    __publicField(this, "outputUnits");
     this.sensitivity = sensitivity;
     this.frequency = frequency;
     this.inputUnits = inputUnits;
@@ -46251,16 +46128,6 @@ var InstrumentSensitivity = class {
 };
 var Equipment = class {
   constructor() {
-    __publicField(this, "resourceId");
-    __publicField(this, "type");
-    __publicField(this, "description");
-    __publicField(this, "manufacturer");
-    __publicField(this, "vendor");
-    __publicField(this, "model");
-    __publicField(this, "serialNumber");
-    __publicField(this, "installationDate");
-    __publicField(this, "removalDate");
-    __publicField(this, "calibrationDateList");
     this.resourceId = "";
     this.type = "";
     this.description = "";
@@ -46275,8 +46142,6 @@ var Equipment = class {
 };
 var Response2 = class {
   constructor(instrumentSensitivity, stages) {
-    __publicField(this, "instrumentSensitivity");
-    __publicField(this, "stages");
     if (instrumentSensitivity) {
       this.instrumentSensitivity = instrumentSensitivity;
     } else {
@@ -46291,9 +46156,6 @@ var Response2 = class {
 };
 var Stage = class {
   constructor(filter2, decimation, gain) {
-    __publicField(this, "filter");
-    __publicField(this, "decimation");
-    __publicField(this, "gain");
     this.filter = filter2;
     this.decimation = decimation;
     this.gain = gain;
@@ -46301,10 +46163,6 @@ var Stage = class {
 };
 var AbstractFilterType = class {
   constructor(inputUnits, outputUnits) {
-    __publicField(this, "inputUnits");
-    __publicField(this, "outputUnits");
-    __publicField(this, "name");
-    __publicField(this, "description");
     this.inputUnits = inputUnits;
     this.outputUnits = outputUnits;
     this.description = "";
@@ -46314,11 +46172,6 @@ var AbstractFilterType = class {
 var PolesZeros = class extends AbstractFilterType {
   constructor(inputUnits, outputUnits) {
     super(inputUnits, outputUnits);
-    __publicField(this, "pzTransferFunctionType");
-    __publicField(this, "normalizationFactor");
-    __publicField(this, "normalizationFrequency");
-    __publicField(this, "zeros");
-    __publicField(this, "poles");
     this.pzTransferFunctionType = "";
     this.normalizationFactor = 1;
     this.normalizationFrequency = 0;
@@ -46329,8 +46182,6 @@ var PolesZeros = class extends AbstractFilterType {
 var FIR = class extends AbstractFilterType {
   constructor(inputUnits, outputUnits) {
     super(inputUnits, outputUnits);
-    __publicField(this, "symmetry");
-    __publicField(this, "numerator");
     this.symmetry = "none";
     this.numerator = [1];
   }
@@ -46338,9 +46189,6 @@ var FIR = class extends AbstractFilterType {
 var CoefficientsFilter = class extends AbstractFilterType {
   constructor(inputUnits, outputUnits) {
     super(inputUnits, outputUnits);
-    __publicField(this, "cfTransferFunction");
-    __publicField(this, "numerator");
-    __publicField(this, "denominator");
     this.cfTransferFunction = "";
     this.numerator = [1];
     this.denominator = new Array(0);
@@ -46348,57 +46196,45 @@ var CoefficientsFilter = class extends AbstractFilterType {
 };
 var Decimation = class {
   constructor(inputSampleRate, factor) {
-    __publicField(this, "inputSampleRate");
-    __publicField(this, "factor");
-    __publicField(this, "offset");
-    __publicField(this, "delay");
-    __publicField(this, "correction");
     this.inputSampleRate = inputSampleRate;
     this.factor = factor;
   }
 };
 var Gain = class {
   constructor(value, frequency) {
-    __publicField(this, "value");
-    __publicField(this, "frequency");
     this.value = value;
     this.frequency = frequency;
   }
 };
 var Span = class {
   constructor(interval2) {
-    __publicField(this, "interval");
-    __publicField(this, "numberSegments", 0);
-    __publicField(this, "maximumTimeTear");
+    this.numberSegments = 0;
     this.maximumTimeTear = null;
     this.interval = interval2;
   }
 };
 var DataAvailability = class {
   constructor() {
-    __publicField(this, "extent");
-    __publicField(this, "spanList");
     this.extent = null;
     this.spanList = [];
   }
 };
 var Comment = class {
   constructor(value) {
-    __publicField(this, "id", null);
-    __publicField(this, "subject", null);
-    __publicField(this, "value");
-    __publicField(this, "beginEffectiveTime", null);
-    __publicField(this, "endEffectiveTime", null);
-    __publicField(this, "authorList", []);
+    this.id = null;
+    this.subject = null;
+    this.beginEffectiveTime = null;
+    this.endEffectiveTime = null;
+    this.authorList = [];
     this.value = value;
   }
 };
 var Author = class {
   constructor() {
-    __publicField(this, "name", null);
-    __publicField(this, "agency", null);
-    __publicField(this, "email", null);
-    __publicField(this, "phone", null);
+    this.name = null;
+    this.agency = null;
+    this.email = null;
+    this.phone = null;
   }
 };
 function parseStationXml(rawXml) {
@@ -47197,13 +47033,1816 @@ var parseUtil = {
   _grabAttributeNS
 };
 
-// src/seismogram.ts
+// src/quakeml.mts
+var quakeml_exports = {};
+__export(quakeml_exports, {
+  ANSS_CATALOG_NS: () => ANSS_CATALOG_NS,
+  ANSS_NS: () => ANSS_NS,
+  Amplitude: () => Amplitude,
+  Arrival: () => Arrival,
+  Axis: () => Axis,
+  BED_NS: () => BED_NS,
+  Comment: () => Comment2,
+  CompositeTime: () => CompositeTime,
+  ConfidenceEllipsoid: () => ConfidenceEllipsoid,
+  CreationInfo: () => CreationInfo,
+  DataUsed: () => DataUsed,
+  EventDescription: () => EventDescription,
+  EventParameters: () => EventParameters,
+  FAKE_EMPTY_XML: () => FAKE_EMPTY_XML2,
+  FAKE_ORIGIN_TIME: () => FAKE_ORIGIN_TIME,
+  FocalMechanism: () => FocalMechanism,
+  IRIS_NS: () => IRIS_NS,
+  Magnitude: () => Magnitude,
+  MomentTensor: () => MomentTensor,
+  NodalPlane: () => NodalPlane,
+  NodalPlanes: () => NodalPlanes,
+  Origin: () => Origin,
+  OriginQuality: () => OriginQuality,
+  OriginUncertainty: () => OriginUncertainty,
+  Pick: () => Pick,
+  PrincipalAxes: () => PrincipalAxes,
+  QML_NS: () => QML_NS,
+  QUAKE_CLICK_EVENT: () => QUAKE_CLICK_EVENT,
+  Quake: () => Quake,
+  Quantity: () => Quantity,
+  SourceTimeFunction: () => SourceTimeFunction,
+  StationMagnitude: () => StationMagnitude,
+  StationMagnitudeContribution: () => StationMagnitudeContribution,
+  Tensor: () => Tensor,
+  TimeWindow: () => TimeWindow,
+  UNKNOWN_MAG_TYPE: () => UNKNOWN_MAG_TYPE,
+  UNKNOWN_PUBLIC_ID: () => UNKNOWN_PUBLIC_ID,
+  USGS_HOST: () => USGS_HOST,
+  WaveformID: () => WaveformID,
+  ZERO_MAGNITUDE: () => ZERO_MAGNITUDE,
+  createQuakeClickEvent: () => createQuakeClickEvent,
+  createQuakeFromValues: () => createQuakeFromValues,
+  createUnknownId: () => createUnknownId,
+  fetchQuakeML: () => fetchQuakeML,
+  isQuakeClickCustomEvent: () => isQuakeClickCustomEvent,
+  mightBeQuakeML: () => mightBeQuakeML,
+  parseQuakeML: () => parseQuakeML,
+  parseUtil: () => parseUtil2
+});
+
+// src/textformat.mts
+var lang = typeof navigator !== "undefined" && navigator?.language ? navigator?.language : "en-US";
+var latlonFormat = new Intl.NumberFormat(lang, {
+  style: "unit",
+  unit: "degree",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 2
+});
+var magFormat = new Intl.NumberFormat(lang, {
+  style: "decimal",
+  maximumFractionDigits: 2
+});
+var depthNoUnitFormat = new Intl.NumberFormat(lang, {
+  style: "decimal",
+  maximumFractionDigits: 2
+});
+var depthFormat = new Intl.NumberFormat(lang, {
+  style: "unit",
+  unit: "kilometer",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2
+});
+var depthMeterFormat = new Intl.NumberFormat(lang, {
+  style: "unit",
+  unit: "meter",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 1,
+  minimumFractionDigits: 1
+});
+
+// src/quakeml.mts
+var QML_NS = "http://quakeml.org/xmlns/quakeml/1.2";
+var BED_NS = "http://quakeml.org/xmlns/bed/1.2";
+var IRIS_NS = "http://service.iris.edu/fdsnws/event/1/";
+var ANSS_NS = "http://anss.org/xmlns/event/0.1";
+var ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1";
+var USGS_HOST = "earthquake.usgs.gov";
+var UNKNOWN_MAG_TYPE = "unknown";
+var UNKNOWN_PUBLIC_ID = "unknownId";
+var FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
+var FAKE_EMPTY_XML2 = '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
+var QUAKE_CLICK_EVENT = "quakeclick";
+function isQuakeClickCustomEvent(event) {
+  if ("detail" in event) {
+    const customEvent = event;
+    return "quake" in customEvent.detail;
+  }
+  return false;
+}
+function createQuakeClickEvent(q, mouseclick) {
+  const detail = {
+    mouseevent: mouseclick,
+    quake: q
+  };
+  return new CustomEvent(
+    QUAKE_CLICK_EVENT,
+    {
+      detail,
+      bubbles: true,
+      cancelable: false,
+      composed: true
+    }
+  );
+}
+var BaseElement = class {
+  constructor() {
+    this.publicId = UNKNOWN_PUBLIC_ID;
+    this.comments = [];
+  }
+  populate(qml) {
+    let pid = _grabAttribute3(qml, "publicID");
+    if (!isNonEmptyStringArg(pid)) {
+      warn(`missing publicID on ${qml.localName}`);
+      pid = `${createUnknownId()}_${qml.localName}`;
+    }
+    this.publicId = pid;
+    this.comments = _grabAllElComment(qml, "comment");
+    this.creationInfo = _grabFirstElCreationInfo(qml, "creationInfo");
+  }
+};
+var EventParameters = class _EventParameters extends BaseElement {
+  constructor() {
+    super(...arguments);
+    this.eventList = [];
+  }
+  /**
+   * Parses a QuakeML event parameters xml element into an EventParameters object.
+   *
+   * @param eventParametersQML the event parameters xml Element
+   * @param host optional source of the xml, helpful for parsing the eventid
+   * @returns EventParameters instance
+   */
+  static createFromXml(eventParametersQML, host) {
+    if (eventParametersQML.localName !== "eventParameters") {
+      throw new Error(
+        `Cannot extract, not a QuakeML event parameters: ${eventParametersQML.localName}`
+      );
+    }
+    const eventEls = Array.from(
+      eventParametersQML.getElementsByTagNameNS(BED_NS, "event")
+    );
+    const events = eventEls.map((e) => Quake.createFromXml(e, host));
+    const description = _grabFirstElText3(eventParametersQML, "description");
+    const out = new _EventParameters();
+    out.populate(eventParametersQML);
+    out.eventList = events;
+    out.description = description;
+    return out;
+  }
+};
+var Quake = class _Quake extends BaseElement {
+  constructor() {
+    super(...arguments);
+    this.descriptionList = [];
+    this.amplitudeList = [];
+    this.stationMagnitudeList = [];
+    this.magnitudeList = [];
+    this.originList = [];
+    this.pickList = [];
+    this.focalMechanismList = [];
+  }
+  /**
+   * Parses a QuakeML event xml element into a Quake object. Pass in
+   * host=seisplotjs.fdsnevent.USGS_HOST for xml from the USGS service
+   * in order to parse the eventid, otherwise this can be left out
+   *
+   * @param qml the event xml Element
+   * @param host optional source of the xml, helpful for parsing the eventid
+   * @returns QuakeML Quake(Event) object
+   */
+  static createFromXml(qml, host) {
+    if (qml.localName !== "event") {
+      throw new Error(`Cannot extract, not a QuakeML Event: ${qml.localName}`);
+    }
+    const out = new _Quake();
+    out.populate(qml);
+    const descriptionEls = Array.from(qml.children).filter(
+      (e) => e.tagName === "description"
+    );
+    out.descriptionList = descriptionEls.map(
+      (d) => EventDescription.createFromXml(d)
+    );
+    const allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
+    const allPicks = [];
+    for (const pickEl of allPickEls) {
+      allPicks.push(Pick.createFromXml(pickEl));
+    }
+    const allAmplitudeEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "amplitude")
+    );
+    const allAmplitudes = [];
+    for (const amplitudeEl of allAmplitudeEls) {
+      allAmplitudes.push(Amplitude.createFromXml(amplitudeEl, allPicks));
+    }
+    const allOriginEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "origin")
+    );
+    const allOrigins = [];
+    for (const originEl of allOriginEls) {
+      allOrigins.push(Origin.createFromXml(originEl, allPicks));
+    }
+    const allStationMagEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "stationMagnitude")
+    );
+    const allStationMags = [];
+    for (const stationMagEl of allStationMagEls) {
+      allStationMags.push(
+        StationMagnitude.createFromXml(stationMagEl, allOrigins, allAmplitudes)
+      );
+    }
+    const allMagEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "magnitude")
+    );
+    const allMags = [];
+    for (const magEl of allMagEls) {
+      allMags.push(Magnitude.createFromXml(magEl, allOrigins, allStationMags));
+    }
+    const allFocalMechEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "focalMechanism")
+    );
+    const allFocalMechs = [];
+    for (const focalMechEl of allFocalMechEls) {
+      allFocalMechs.push(
+        FocalMechanism.createFromXml(focalMechEl, allOrigins, allMags)
+      );
+    }
+    out.originList = allOrigins;
+    out.magnitudeList = allMags;
+    out.pickList = allPicks;
+    out.amplitudeList = allAmplitudes;
+    out.stationMagnitudeList = allStationMags;
+    out.focalMechanismList = allFocalMechs;
+    out.eventId = _Quake.extractEventId(qml, host);
+    const preferredOriginId = _grabFirstElText3(qml, "preferredOriginID");
+    const preferredMagnitudeId = _grabFirstElText3(qml, "preferredMagnitudeID");
+    const preferredFocalMechId = _grabFirstElText3(
+      qml,
+      "preferredFocalMechanismID"
+    );
+    if (isNonEmptyStringArg(preferredOriginId)) {
+      out.preferredOrigin = allOrigins.find(
+        (o) => o.publicId === preferredOriginId
+      );
+      if (!out.preferredOrigin) {
+        throw new Error(`no preferredOriginId match: ${preferredOriginId}`);
+      }
+    }
+    if (isNonEmptyStringArg(preferredMagnitudeId)) {
+      out.preferredMagnitude = allMags.find(
+        (m) => m.publicId === preferredMagnitudeId
+      );
+      if (!out.preferredMagnitude) {
+        throw new Error(`no match: ${preferredMagnitudeId}`);
+      }
+    }
+    if (isNonEmptyStringArg(preferredFocalMechId)) {
+      out.preferredFocalMechanism = allFocalMechs.find(
+        (m) => m.publicId === preferredFocalMechId
+      );
+      if (!out.preferredFocalMechanism) {
+        throw new Error(`no match: ${preferredFocalMechId}`);
+      }
+    }
+    out.type = _grabFirstElText3(qml, "type");
+    out.typeCertainty = _grabFirstElText3(qml, "typeCertainty");
+    return out;
+  }
+  /**
+   * Extracts the EventId from a QuakeML element, guessing from one of several
+   * incompatible (grumble grumble) formats.
+   *
+   * @param   qml Quake(Event) to extract from
+   * @param   host optional source of the xml to help determine the event id style
+   * @returns     Extracted Id, or "unknownEventId" if we can't figure it out
+   */
+  static extractEventId(qml, _host) {
+    const dataId = _grabAttributeNS2(qml, ANSS_CATALOG_NS, "dataid");
+    if (isNonEmptyStringArg(dataId)) {
+      return dataId;
+    }
+    const eventId = _grabAttributeNS2(qml, ANSS_CATALOG_NS, "eventid");
+    const catalogEventSource = _grabAttributeNS2(
+      qml,
+      ANSS_CATALOG_NS,
+      "eventsource"
+    );
+    if (isNonEmptyStringArg(eventId)) {
+      if (isNonEmptyStringArg(catalogEventSource)) {
+        return catalogEventSource + eventId;
+      } else {
+        return eventId;
+      }
+    }
+    const publicid = _grabAttribute3(qml, "publicID");
+    if (isNonEmptyStringArg(publicid)) {
+      let re2 = /eventid=([\w\d]+)/;
+      let parsed = re2.exec(publicid);
+      if (parsed) {
+        return parsed[1];
+      }
+      re2 = /evid=([\w\d]+)/;
+      parsed = re2.exec(publicid);
+      if (parsed) {
+        return parsed[1];
+      }
+      re2 = /quakeml:se.anss.org\/Event\/([\w\d]+)\/([\w\d]+)/;
+      parsed = re2.exec(publicid);
+      if (parsed) {
+        return parsed[1] + parsed[2];
+      }
+      return publicid;
+    }
+    return createUnknownId();
+  }
+  hasPreferredOrigin() {
+    return isDef(this.preferredOrigin);
+  }
+  hasOrigin() {
+    return isDef(this.preferredOrigin) || this.originList.length > 1;
+  }
+  get origin() {
+    if (isDef(this.preferredOrigin)) {
+      return this.preferredOrigin;
+    } else if (this.originList.length > 0) {
+      return this.originList[0];
+    } else {
+      throw new Error("No origins in quake");
+    }
+  }
+  hasPreferredMagnitude() {
+    return isDef(this.preferredMagnitude);
+  }
+  hasMagnitude() {
+    return isDef(this.preferredMagnitude) || this.magnitudeList.length > 1;
+  }
+  get magnitude() {
+    if (isDef(this.preferredMagnitude)) {
+      return this.preferredMagnitude;
+    } else if (this.magnitudeList.length > 0) {
+      return this.magnitudeList[0];
+    } else {
+      return ZERO_MAGNITUDE;
+    }
+  }
+  get time() {
+    return this.origin.time;
+  }
+  get latitude() {
+    return this.origin.latitude;
+  }
+  get longitude() {
+    return this.origin.longitude;
+  }
+  get depth() {
+    return this.origin.depth;
+  }
+  get depthKm() {
+    return this.depth / 1e3;
+  }
+  get description() {
+    return this.descriptionList.length > 0 ? this.descriptionList[0].text : "";
+  }
+  get arrivals() {
+    return this.origin.arrivalList;
+  }
+  get picks() {
+    return this.pickList;
+  }
+  toString() {
+    if (this.hasOrigin()) {
+      const magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
+      const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
+      const depth = depthFormat.format(this.depth / 1e3);
+      return `${this.time.toISO()} ${latlon} ${depth} ${magStr}`;
+    } else if (this.eventId != null) {
+      return `Event: ${this.eventId}`;
+    } else {
+      return `Event: unknown`;
+    }
+  }
+};
+var EventDescription = class _EventDescription {
+  constructor(text) {
+    this.text = text;
+  }
+  /**
+   * Parses a QuakeML description xml element into a EventDescription object.
+   *
+   * @param descriptionQML the description xml Element
+   * @returns EventDescription instance
+   */
+  static createFromXml(descriptionQML) {
+    if (descriptionQML.localName !== "description") {
+      throw new Error(
+        `Cannot extract, not a QuakeML description ID: ${descriptionQML.localName}`
+      );
+    }
+    const text = _grabFirstElText3(descriptionQML, "text");
+    if (!isNonEmptyStringArg(text)) {
+      throw new Error("description missing text");
+    }
+    const out = new _EventDescription(text);
+    out.type = _grabFirstElText3(descriptionQML, "type");
+    return out;
+  }
+  toString() {
+    return this.text;
+  }
+};
+var Amplitude = class _Amplitude extends BaseElement {
+  constructor(genericAmplitude) {
+    super();
+    this.genericAmplitude = genericAmplitude;
+  }
+  /**
+   * Parses a QuakeML amplitude xml element into an Amplitude object.
+   *
+   * @param amplitudeQML the amplitude xml Element
+   * @param allPicks picks already extracted from the xml for linking arrivals with picks
+   * @returns Amplitude instance
+   */
+  static createFromXml(amplitudeQML, allPicks) {
+    if (amplitudeQML.localName !== "amplitude") {
+      throw new Error(
+        `Cannot extract, not a QuakeML amplitude: ${amplitudeQML.localName}`
+      );
+    }
+    const genericAmplitude = _grabFirstElRealQuantity(
+      amplitudeQML,
+      "genericAmplitude"
+    );
+    if (!isDef(genericAmplitude)) {
+      throw new Error("amplitude missing genericAmplitude");
+    }
+    const out = new _Amplitude(genericAmplitude);
+    out.populate(amplitudeQML);
+    out.type = _grabFirstElText3(amplitudeQML, "type");
+    out.category = _grabFirstElText3(amplitudeQML, "category");
+    out.unit = _grabFirstElText3(amplitudeQML, "unit");
+    out.methodID = _grabFirstElText3(amplitudeQML, "methodID");
+    out.period = _grabFirstElRealQuantity(amplitudeQML, "period");
+    out.snr = _grabFirstElFloat3(amplitudeQML, "snr");
+    out.timeWindow = _grabFirstElType(
+      TimeWindow.createFromXml.bind(TimeWindow)
+    )(amplitudeQML, "timeWindow");
+    const pickID = _grabFirstElText3(amplitudeQML, "pickID");
+    out.pick = allPicks.find((p) => p.publicId === pickID);
+    if (pickID && !out.pick) {
+      throw new Error("No pick with ID " + pickID);
+    }
+    out.waveformID = _grabFirstElType(
+      WaveformID.createFromXml.bind(WaveformID)
+    )(amplitudeQML, "waveformID");
+    out.filterID = _grabFirstElText3(amplitudeQML, "filterID");
+    out.scalingTime = _grabFirstElTimeQuantity(amplitudeQML, "scalingTime");
+    out.magnitudeHint = _grabFirstElText3(amplitudeQML, "magnitudeHint");
+    out.evaluationMode = _grabFirstElText3(amplitudeQML, "evaluationMode");
+    out.evaluationStatus = _grabFirstElText3(amplitudeQML, "evaluationStatus");
+    return out;
+  }
+};
+var StationMagnitude = class _StationMagnitude extends BaseElement {
+  constructor(origin, mag) {
+    super();
+    this.origin = origin;
+    this.mag = mag;
+  }
+  /**
+   * Parses a QuakeML station magnitude xml element into a StationMagnitude object.
+   *
+   * @param stationMagnitudeQML the station magnitude xml Element
+   * @param allOrigins origins already extracted from the xml for linking station magnitudes with origins
+   * @param allAmplitudes amplitudes already extracted from the xml for linking station magnitudes with amplitudes
+   * @returns StationMagnitude instance
+   */
+  static createFromXml(stationMagnitudeQML, allOrigins, allAmplitudes) {
+    if (stationMagnitudeQML.localName !== "stationMagnitude") {
+      throw new Error(
+        `Cannot extract, not a QuakeML station magnitude: ${stationMagnitudeQML.localName}`
+      );
+    }
+    const originID = _grabFirstElText3(stationMagnitudeQML, "originID");
+    if (!isNonEmptyStringArg(originID)) {
+      throw new Error("stationMagnitude missing origin ID");
+    }
+    const origin = allOrigins.find((o) => o.publicId === originID);
+    if (!isDef(origin)) {
+      throw new Error("No origin with ID " + originID);
+    }
+    const mag = _grabFirstElRealQuantity(stationMagnitudeQML, "mag");
+    if (!isDef(mag)) {
+      throw new Error("stationMagnitude missing mag");
+    }
+    const out = new _StationMagnitude(origin, mag);
+    out.populate(stationMagnitudeQML);
+    out.type = _grabFirstElText3(stationMagnitudeQML, "type");
+    const amplitudeID = _grabFirstElText3(stationMagnitudeQML, "amplitudeID");
+    out.amplitude = allAmplitudes.find((a) => a.publicId === amplitudeID);
+    if (amplitudeID && !out.amplitude) {
+      throw new Error("No amplitude with ID " + amplitudeID);
+    }
+    out.methodID = _grabFirstElText3(stationMagnitudeQML, "methodID");
+    out.waveformID = _grabFirstElType(
+      WaveformID.createFromXml.bind(WaveformID)
+    )(stationMagnitudeQML, "waveformID");
+    return out;
+  }
+};
+var TimeWindow = class _TimeWindow {
+  constructor(begin, end, reference) {
+    this.begin = begin;
+    this.end = end;
+    this.reference = reference;
+  }
+  /**
+   * Parses a QuakeML time window xml element into a TimeWindow object.
+   *
+   * @param timeWindowQML the time window xml Element
+   * @returns TimeWindow instance
+   */
+  static createFromXml(timeWindowQML) {
+    if (timeWindowQML.localName !== "timeWindow") {
+      throw new Error(
+        `Cannot extract, not a QuakeML time window: ${timeWindowQML.localName}`
+      );
+    }
+    const begin = _grabFirstElFloat3(timeWindowQML, "begin");
+    if (!isDef(begin)) {
+      throw new Error("timeWindow missing begin");
+    }
+    const end = _grabFirstElFloat3(timeWindowQML, "end");
+    if (!isDef(end)) {
+      throw new Error("timeWindow missing end");
+    }
+    const reference = _grabFirstElDateTime(timeWindowQML, "reference");
+    if (!isDef(reference)) {
+      throw new Error("timeWindow missing reference");
+    }
+    const out = new _TimeWindow(begin, end, reference);
+    return out;
+  }
+};
+var Origin = class _Origin extends BaseElement {
+  constructor(time3, latitude, longitude) {
+    super();
+    this.compositeTimes = [];
+    this.arrivalList = [];
+    if (time3 instanceof DateTime) {
+      this.timeQuantity = new Quantity(time3);
+    } else {
+      this.timeQuantity = time3;
+    }
+    if (typeof latitude == "number") {
+      this.latitudeQuantity = new Quantity(latitude);
+    } else {
+      this.latitudeQuantity = latitude;
+    }
+    if (typeof longitude == "number") {
+      this.longitudeQuantity = new Quantity(longitude);
+    } else {
+      this.longitudeQuantity = longitude;
+    }
+  }
+  /**
+   * Parses a QuakeML origin xml element into a Origin object.
+   *
+   * @param qml the origin xml Element
+   * @param allPicks picks already extracted from the xml for linking arrivals with picks
+   * @returns Origin instance
+   */
+  static createFromXml(qml, allPicks) {
+    if (qml.localName !== "origin") {
+      throw new Error(`Cannot extract, not a QuakeML Origin: ${qml.localName}`);
+    }
+    const time3 = _grabFirstElTimeQuantity(qml, "time");
+    if (!isObject(time3)) {
+      throw new Error("origin missing time");
+    }
+    const lat = _grabFirstElRealQuantity(qml, "latitude");
+    if (!isObject(lat)) {
+      throw new Error("origin missing latitude");
+    }
+    const lon = _grabFirstElRealQuantity(qml, "longitude");
+    if (!isObject(lon)) {
+      throw new Error("origin missing longitude");
+    }
+    const out = new _Origin(time3, lat, lon);
+    out.populate(qml);
+    out.originUncertainty = _grabFirstElType(
+      OriginUncertainty.createFromXml.bind(OriginUncertainty)
+    )(qml, "originUncertainty");
+    const allArrivalEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "arrival")
+    );
+    out.arrivalList = allArrivalEls.map(
+      (arrivalEl) => Arrival.createFromXml(arrivalEl, allPicks)
+    );
+    out.depthQuantity = _grabFirstElRealQuantity(qml, "depth");
+    out.depthType = _grabFirstElText3(qml, "depthType");
+    out.timeFixed = _grabFirstElBool(qml, "timeFixed");
+    out.epicenterFixed = _grabFirstElBool(qml, "epicenterFixed");
+    out.referenceSystemID = _grabFirstElText3(qml, "referenceSystemID");
+    out.methodID = _grabFirstElText3(qml, "methodID");
+    out.earthModelID = _grabFirstElText3(qml, "earthModelID");
+    out.quality = _grabFirstElType(
+      OriginQuality.createFromXml.bind(OriginQuality)
+    )(qml, "quality");
+    out.type = _grabFirstElText3(qml, "type");
+    out.region = _grabFirstElText3(qml, "region");
+    out.evaluationMode = _grabFirstElText3(qml, "evaluationMode");
+    out.evaluationStatus = _grabFirstElText3(qml, "evaluationStatus");
+    return out;
+  }
+  toString() {
+    const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
+    const depth = depthFormat.format(this.depth / 1e3);
+    return `${this.time.toISO()} ${latlon} ${depth} km`;
+  }
+  get time() {
+    return this.timeQuantity.value;
+  }
+  set time(t) {
+    if (t instanceof DateTime) {
+      this.timeQuantity.value = t;
+    } else {
+      this.timeQuantity = t;
+    }
+  }
+  get latitude() {
+    return this.latitudeQuantity.value;
+  }
+  set latitude(lat) {
+    if (typeof lat == "number") {
+      this.latitudeQuantity.value = lat;
+    } else {
+      this.latitudeQuantity = lat;
+    }
+  }
+  get longitude() {
+    return this.longitudeQuantity.value;
+  }
+  set longitude(lon) {
+    if (typeof lon == "number") {
+      this.longitudeQuantity.value = lon;
+    } else {
+      this.longitudeQuantity = lon;
+    }
+  }
+  get depthKm() {
+    return this.depth / 1e3;
+  }
+  get depth() {
+    return this.depthQuantity?.value ?? NaN;
+  }
+  set depth(depth) {
+    if (typeof depth == "number") {
+      if (!this.depthQuantity) {
+        this.depthQuantity = new Quantity(depth);
+      } else {
+        this.depthQuantity.value = depth;
+      }
+    } else {
+      this.depthQuantity = depth;
+    }
+  }
+  get arrivals() {
+    return this.arrivalList;
+  }
+};
+var CompositeTime = class _CompositeTime {
+  /**
+   * Parses a QuakeML composite time xml element into an CompositeTime object.
+   *
+   * @param qml the composite time xml Element
+   * @returns CompositeTime instance
+   */
+  static createFromXml(qml) {
+    if (qml.localName !== "compositeTime") {
+      throw new Error(
+        `Cannot extract, not a QuakeML Composite Time: ${qml.localName}`
+      );
+    }
+    const out = new _CompositeTime();
+    out.year = _grabFirstElIntegerQuantity(qml, "year");
+    out.month = _grabFirstElIntegerQuantity(qml, "month");
+    out.day = _grabFirstElIntegerQuantity(qml, "day");
+    out.hour = _grabFirstElIntegerQuantity(qml, "hour");
+    out.minute = _grabFirstElIntegerQuantity(qml, "minute");
+    out.second = _grabFirstElIntegerQuantity(qml, "second");
+    return out;
+  }
+};
+var OriginUncertainty = class _OriginUncertainty {
+  /**
+   * Parses a QuakeML origin uncertainty xml element into an OriginUncertainty object.
+   *
+   * @param qml the origin uncertainty xml Element
+   * @returns OriginUncertainty instance
+   */
+  static createFromXml(qml) {
+    if (qml.localName !== "originUncertainty") {
+      throw new Error(
+        `Cannot extract, not a QuakeML Origin Uncertainty: ${qml.localName}`
+      );
+    }
+    const out = new _OriginUncertainty();
+    out.horizontalUncertainty = _grabFirstElFloat3(qml, "horizontalUncertainty");
+    out.minHorizontalUncertainty = _grabFirstElFloat3(
+      qml,
+      "minHorizontalUncertainty"
+    );
+    out.maxHorizontalUncertainty = _grabFirstElFloat3(
+      qml,
+      "maxHorizontalUncertainty"
+    );
+    out.azimuthMaxHorizontalUncertainty = _grabFirstElFloat3(
+      qml,
+      "azimuthMaxHorizontalUncertainty"
+    );
+    out.confidenceEllipsoid = _grabFirstElType(
+      ConfidenceEllipsoid.createFromXml.bind(ConfidenceEllipsoid)
+    )(qml, "confidenceEllipsoid");
+    out.preferredDescription = _grabFirstElText3(qml, "preferredDescription");
+    out.confidenceLevel = _grabFirstElFloat3(qml, "confidenceLevel");
+    return out;
+  }
+};
+var ConfidenceEllipsoid = class _ConfidenceEllipsoid {
+  constructor(semiMajorAxisLength, semiMinorAxisLength, semiIntermediateAxisLength, majorAxisPlunge, majorAxisAzimuth, majorAxisRotation) {
+    this.semiMajorAxisLength = semiMajorAxisLength;
+    this.semiMinorAxisLength = semiMinorAxisLength;
+    this.semiIntermediateAxisLength = semiIntermediateAxisLength;
+    this.majorAxisPlunge = majorAxisPlunge;
+    this.majorAxisAzimuth = majorAxisAzimuth;
+    this.majorAxisRotation = majorAxisRotation;
+  }
+  /**
+   * Parses a QuakeML confidence ellipsoid xml element into an ConfidenceEllipsoid object.
+   *
+   * @param qml the confidence ellipsoid xml Element
+   * @returns ConfidenceEllipsoid instance
+   */
+  static createFromXml(qml) {
+    if (qml.localName !== "confidenceEllipsoid") {
+      throw new Error(
+        `Cannot extract, not a QuakeML Confidence Ellipsoid: ${qml.localName}`
+      );
+    }
+    const semiMajorAxisLength = _grabFirstElFloat3(qml, "semiMajorAxisLength");
+    if (semiMajorAxisLength === void 0) {
+      throw new Error("confidenceEllipsoid missing semiMajorAxisLength");
+    }
+    const semiMinorAxisLength = _grabFirstElFloat3(qml, "semiMinorAxisLength");
+    if (semiMinorAxisLength === void 0) {
+      throw new Error("confidenceEllipsoid missing semiMinorAxisLength");
+    }
+    const semiIntermediateAxisLength = _grabFirstElFloat3(
+      qml,
+      "semiIntermediateAxisLength"
+    );
+    if (semiIntermediateAxisLength === void 0) {
+      throw new Error("confidenceEllipsoid missing semiIntermediateAxisLength");
+    }
+    const majorAxisPlunge = _grabFirstElFloat3(qml, "majorAxisPlunge");
+    if (majorAxisPlunge === void 0) {
+      throw new Error("confidenceEllipsoid missing majorAxisPlunge");
+    }
+    const majorAxisAzimuth = _grabFirstElFloat3(qml, "majorAxisAzimuth");
+    if (majorAxisAzimuth === void 0) {
+      throw new Error("confidenceEllipsoid missing majorAxisAzimuth");
+    }
+    const majorAxisRotation = _grabFirstElFloat3(qml, "majorAxisRotation");
+    if (majorAxisRotation === void 0) {
+      throw new Error("confidenceEllipsoid missing majorAxisRotation");
+    }
+    const out = new _ConfidenceEllipsoid(
+      semiMajorAxisLength,
+      semiMinorAxisLength,
+      semiIntermediateAxisLength,
+      majorAxisPlunge,
+      majorAxisAzimuth,
+      majorAxisRotation
+    );
+    return out;
+  }
+};
+var OriginQuality = class _OriginQuality {
+  /**
+   * Parses a QuakeML origin quality xml element into an OriginQuality object.
+   *
+   * @param qml the origin quality xml Element
+   * @returns OriginQuality instance
+   */
+  static createFromXml(qml) {
+    if (qml.localName !== "quality") {
+      throw new Error(
+        `Cannot extract, not a QuakeML Origin Quality: ${qml.localName}`
+      );
+    }
+    const out = new _OriginQuality();
+    out.associatedPhaseCount = _grabFirstElInt3(qml, "associatedPhaseCount");
+    out.usedPhaseCount = _grabFirstElInt3(qml, "usedPhaseCount");
+    out.associatedStationCount = _grabFirstElInt3(qml, "associatedStationCount");
+    out.usedStationCount = _grabFirstElInt3(qml, "usedStationCount");
+    out.standardError = _grabFirstElFloat3(qml, "standardError");
+    out.azimuthalGap = _grabFirstElFloat3(qml, "azimuthalGap");
+    out.secondaryAzimuthalGap = _grabFirstElFloat3(qml, "secondaryAzimuthalGap");
+    out.groundTruthLevel = _grabFirstElText3(qml, "groundTruthLevel");
+    out.maximumDistance = _grabFirstElFloat3(qml, "maximumDistance");
+    out.minimumDistance = _grabFirstElFloat3(qml, "minimumDistance");
+    out.medianDistance = _grabFirstElFloat3(qml, "medianDistance");
+    return out;
+  }
+};
+var Magnitude = class _Magnitude extends BaseElement {
+  constructor(mag, type) {
+    super();
+    this.stationMagnitudeContributions = [];
+    if (typeof mag === "number") {
+      this.magQuantity = new Quantity(mag);
+    } else {
+      this.magQuantity = mag;
+    }
+    if (type) {
+      this.type = type;
+    }
+  }
+  /**
+   * Parses a QuakeML magnitude xml element into a Magnitude object.
+   *
+   * @param qml the magnitude xml Element
+   * @param allOrigins origins already extracted from the xml for linking magnitudes with origins
+   * @param allStationMagnitudes station magnitudes already extracted from the xml
+   * @returns Magnitude instance
+   */
+  static createFromXml(qml, allOrigins, allStationMagnitudes) {
+    if (qml.localName !== "magnitude") {
+      throw new Error(
+        `Cannot extract, not a QuakeML Magnitude: ${qml.localName}`
+      );
+    }
+    const mag = _grabFirstElRealQuantity(qml, "mag");
+    if (!mag) {
+      throw new Error("magnitude missing mag");
+    }
+    const out = new _Magnitude(mag);
+    out.populate(qml);
+    const stationMagnitudeContributionEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "stationMagnitudeContribution")
+    );
+    out.stationMagnitudeContributions = stationMagnitudeContributionEls.map(
+      (smc) => StationMagnitudeContribution.createFromXml(smc, allStationMagnitudes)
+    );
+    out.type = _grabFirstElText3(qml, "type");
+    const originID = _grabFirstElText3(qml, "originID");
+    out.origin = allOrigins.find((o) => o.publicId === originID);
+    if (originID && !out.origin) {
+      throw new Error("No origin with ID " + originID);
+    }
+    out.methodID = _grabFirstElText3(qml, "methodID");
+    out.stationCount = _grabFirstElInt3(qml, "stationCount");
+    out.azimuthalGap = _grabFirstElFloat3(qml, "azimuthalGap");
+    out.evaluationMode = _grabFirstElText3(qml, "evaluationMode");
+    out.evaluationStatus = _grabFirstElText3(qml, "evaluationStatus");
+    return out;
+  }
+  toString() {
+    return `${magFormat.format(this.mag)} ${this.type ? this.type : ""}`;
+  }
+  get mag() {
+    return this.magQuantity.value;
+  }
+  set mag(value) {
+    if (typeof value === "number") {
+      this.magQuantity.value = value;
+    } else {
+      this.magQuantity = value;
+    }
+  }
+};
+var StationMagnitudeContribution = class _StationMagnitudeContribution {
+  constructor(stationMagnitude) {
+    this.stationMagnitude = stationMagnitude;
+  }
+  /**
+   * Parses a QuakeML station magnitude contribution xml element into a StationMagnitudeContribution object.
+   *
+   * @param qml the station magnitude contribution xml Element
+   * @param allStationMagnitudes station magnitudes already extracted from the xml for linking station magnitudes with station magnitude contributions
+   * @returns StationMagnitudeContribution instance
+   */
+  static createFromXml(qml, allStationMagnitudes) {
+    if (qml.localName !== "stationMagnitudeContribution") {
+      throw new Error(
+        `Cannot extract, not a QuakeML StationMagnitudeContribution: ${qml.localName}`
+      );
+    }
+    const stationMagnitudeID = _grabFirstElText3(qml, "stationMagnitudeID");
+    if (!isNonEmptyStringArg(stationMagnitudeID)) {
+      throw new Error("stationMagnitudeContribution missing stationMagnitude");
+    }
+    const stationMagnitude = allStationMagnitudes.find(
+      (sm) => sm.publicId === stationMagnitudeID
+    );
+    if (!isDef(stationMagnitude)) {
+      throw new Error("No stationMagnitude with ID " + stationMagnitudeID);
+    }
+    const out = new _StationMagnitudeContribution(stationMagnitude);
+    out.residual = _grabFirstElFloat3(qml, "residual");
+    out.weight = _grabFirstElFloat3(qml, "weight");
+    return out;
+  }
+};
+var Arrival = class _Arrival extends BaseElement {
+  constructor(phase, pick3) {
+    super();
+    this.phase = phase;
+    this.pick = pick3;
+  }
+  /**
+   * Parses a QuakeML arrival xml element into a Arrival object.
+   *
+   * @param arrivalQML the arrival xml Element
+   * @param allPicks picks already extracted from the xml for linking arrivals with picks
+   * @returns Arrival instance
+   */
+  static createFromXml(arrivalQML, allPicks) {
+    if (arrivalQML.localName !== "arrival") {
+      throw new Error(
+        `Cannot extract, not a QuakeML Arrival: ${arrivalQML.localName}`
+      );
+    }
+    const pickId = _grabFirstElText3(arrivalQML, "pickID");
+    const phase = _grabFirstElText3(arrivalQML, "phase");
+    if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
+      const myPick = allPicks.find(function(p) {
+        return p.publicId === pickId;
+      });
+      if (!myPick) {
+        throw new Error("Can't find pick with Id=" + pickId + " for Arrival");
+      }
+      const out = new _Arrival(phase, myPick);
+      out.populate(arrivalQML);
+      out.timeCorrection = _grabFirstElFloat3(arrivalQML, "timeCorrection");
+      out.azimuth = _grabFirstElFloat3(arrivalQML, "azimuth");
+      out.distance = _grabFirstElFloat3(arrivalQML, "distance");
+      out.takeoffAngle = _grabFirstElRealQuantity(arrivalQML, "takeoffAngle");
+      out.timeResidual = _grabFirstElFloat3(arrivalQML, "timeResidual");
+      out.horizontalSlownessResidual = _grabFirstElFloat3(
+        arrivalQML,
+        "horizontalSlownessResidual"
+      );
+      out.backazimuthResidual = _grabFirstElFloat3(
+        arrivalQML,
+        "backazimuthResidual"
+      );
+      out.timeWeight = _grabFirstElFloat3(arrivalQML, "timeWeight");
+      out.horizontalSlownessWeight = _grabFirstElFloat3(
+        arrivalQML,
+        "horizontalSlownessWeight"
+      );
+      out.backazimuthWeight = _grabFirstElFloat3(
+        arrivalQML,
+        "backazimuthWeight"
+      );
+      out.earthModelID = _grabFirstElText3(arrivalQML, "earthModelID");
+      return out;
+    } else {
+      throw new Error(
+        "Arrival does not have phase or pickId: " + stringify(phase) + " " + stringify(pickId)
+      );
+    }
+  }
+};
+var Pick = class _Pick extends BaseElement {
+  constructor(time3, waveformID) {
+    super();
+    if (time3 instanceof DateTime) {
+      this.timeQuantity = new Quantity(time3);
+    } else {
+      this.timeQuantity = time3;
+    }
+    this.waveformID = waveformID;
+  }
+  get time() {
+    return this.timeQuantity.value;
+  }
+  set time(t) {
+    if (t instanceof DateTime) {
+      this.timeQuantity.value = t;
+    } else {
+      this.timeQuantity = t;
+    }
+  }
+  /**
+   * Parses a QuakeML pick xml element into a Pick object.
+   *
+   * @param pickQML the pick xml Element
+   * @returns Pick instance
+   */
+  static createFromXml(pickQML) {
+    if (pickQML.localName !== "pick") {
+      throw new Error(
+        `Cannot extract, not a QuakeML Pick: ${pickQML.localName}`
+      );
+    }
+    const time3 = _grabFirstElTimeQuantity(pickQML, "time");
+    if (!isDef(time3)) {
+      throw new Error("Missing time");
+    }
+    const waveformId = _grabFirstElType(
+      WaveformID.createFromXml.bind(WaveformID)
+    )(pickQML, "waveformID");
+    if (!isObject(waveformId)) {
+      throw new Error("pick missing waveformID");
+    }
+    const out = new _Pick(time3, waveformId);
+    out.populate(pickQML);
+    out.filterID = _grabFirstElText3(pickQML, "filterID");
+    out.methodID = _grabFirstElText3(pickQML, "methodID");
+    out.horizontalSlowness = _grabFirstElRealQuantity(
+      pickQML,
+      "horizontalSlowness"
+    );
+    out.backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
+    out.slownessMethodID = _grabFirstElText3(pickQML, "slownessMethodID");
+    out.onset = _grabFirstElText3(pickQML, "onset");
+    out.phaseHint = _grabFirstElText3(pickQML, "phaseHint");
+    out.polarity = _grabFirstElText3(pickQML, "polarity");
+    out.evaluationMode = _grabFirstElText3(pickQML, "evaluationMode");
+    out.evaluationStatus = _grabFirstElText3(pickQML, "evaluationStatus");
+    return out;
+  }
+  get networkCode() {
+    return this.waveformID.networkCode;
+  }
+  get stationCode() {
+    return this.waveformID.stationCode;
+  }
+  get locationCode() {
+    return this.waveformID.locationCode || "--";
+  }
+  get channelCode() {
+    return this.waveformID.channelCode || "---";
+  }
+  isAtStation(station) {
+    return this.networkCode === station.networkCode && this.stationCode === station.stationCode;
+  }
+  isOnChannel(channel) {
+    return this.networkCode === channel.station.networkCode && this.stationCode === channel.station.stationCode && this.locationCode === channel.locationCode && this.channelCode === channel.channelCode;
+  }
+  toString() {
+    return stringify(this.time) + ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`;
+  }
+};
+var FocalMechanism = class _FocalMechanism extends BaseElement {
+  constructor() {
+    super(...arguments);
+    this.waveformIDList = [];
+    this.momentTensorList = [];
+  }
+  /**
+   * Parses a QuakeML focal mechanism xml element into a FocalMechanism object.
+   *
+   * @param focalMechQML the focal mechanism xml Element
+   * @param allOrigins origins already extracted from the xml for linking focal mechanisms with origins
+   * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
+   * @returns FocalMechanism instance
+   */
+  static createFromXml(focalMechQML, allOrigins, allMagnitudes) {
+    if (focalMechQML.localName !== "focalMechanism") {
+      throw new Error(
+        `Cannot extract, not a QuakeML focalMechanism: ${focalMechQML.localName}`
+      );
+    }
+    const out = new _FocalMechanism();
+    out.populate(focalMechQML);
+    const waveformIDEls = Array.from(
+      focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID")
+    );
+    out.waveformIDList = waveformIDEls.map(
+      (wid) => WaveformID.createFromXml(wid)
+    );
+    const momentTensorEls = Array.from(
+      focalMechQML.getElementsByTagNameNS(BED_NS, "momentTensor")
+    );
+    out.momentTensorList = momentTensorEls.map(
+      (mt) => MomentTensor.createFromXml(mt, allOrigins, allMagnitudes)
+    );
+    const triggeringOriginID = _grabFirstElText3(
+      focalMechQML,
+      "triggeringOriginID"
+    );
+    out.triggeringOrigin = allOrigins.find(
+      (o) => o.publicId === triggeringOriginID
+    );
+    if (triggeringOriginID && !out.triggeringOrigin) {
+      throw new Error("No origin with ID " + triggeringOriginID);
+    }
+    out.nodalPlanes = _grabFirstElType(
+      NodalPlanes.createFromXml.bind(NodalPlanes)
+    )(focalMechQML, "nodalPlanes");
+    out.principalAxes = _grabFirstElType(
+      PrincipalAxes.createFromXml.bind(PrincipalAxes)
+    )(focalMechQML, "principalAxes");
+    out.azimuthalGap = _grabFirstElFloat3(focalMechQML, "azimuthalGap");
+    out.stationPolarityCount = _grabFirstElInt3(
+      focalMechQML,
+      "stationPolarityCount"
+    );
+    out.misfit = _grabFirstElFloat3(focalMechQML, "misfit");
+    out.stationDistributionRatio = _grabFirstElFloat3(
+      focalMechQML,
+      "stationDistributionRatio"
+    );
+    out.methodID = _grabFirstElText3(focalMechQML, "methodID");
+    out.evaluationMode = _grabFirstElText3(focalMechQML, "evaluationMode");
+    out.evaluationStatus = _grabFirstElText3(focalMechQML, "evaluationStatus");
+    return out;
+  }
+};
+var NodalPlanes = class _NodalPlanes {
+  /**
+   * Parses a QuakeML nodal planes xml element into a NodalPlanes object.
+   *
+   * @param nodalPlanesQML the nodal planes xml Element
+   * @returns NodalPlanes instance
+   */
+  static createFromXml(nodalPlanesQML) {
+    const out = new _NodalPlanes();
+    out.nodalPlane1 = _grabFirstElType(
+      NodalPlane.createFromXml.bind(NodalPlane)
+    )(nodalPlanesQML, "nodalPlane1");
+    out.nodalPlane2 = _grabFirstElType(
+      NodalPlane.createFromXml.bind(NodalPlane)
+    )(nodalPlanesQML, "nodalPlane2");
+    const preferredPlaneString = _grabAttribute3(
+      nodalPlanesQML,
+      "preferredPlane"
+    );
+    out.preferredPlane = isNonEmptyStringArg(preferredPlaneString) ? parseInt(preferredPlaneString) : void 0;
+    return out;
+  }
+};
+var NodalPlane = class _NodalPlane {
+  constructor(strike, dip, rake) {
+    this.strike = strike;
+    this.dip = dip;
+    this.rake = rake;
+  }
+  /**
+   * Parses a QuakeML nodal plane xml element into a NodalPlane object.
+   *
+   * @param nodalPlaneQML the nodal plane xml Element
+   * @returns NodalPlane instance
+   */
+  static createFromXml(nodalPlaneQML) {
+    const strike = _grabFirstElRealQuantity(nodalPlaneQML, "strike");
+    if (!isObject(strike)) {
+      throw new Error("nodal plane missing strike");
+    }
+    const dip = _grabFirstElRealQuantity(nodalPlaneQML, "dip");
+    if (!isObject(dip)) {
+      throw new Error("nodal plane missing dip");
+    }
+    const rake = _grabFirstElRealQuantity(nodalPlaneQML, "rake");
+    if (!isObject(rake)) {
+      throw new Error("nodal plane missing rake");
+    }
+    const out = new _NodalPlane(strike, dip, rake);
+    return out;
+  }
+};
+var PrincipalAxes = class _PrincipalAxes {
+  constructor(tAxis, pAxis) {
+    this.tAxis = tAxis;
+    this.pAxis = pAxis;
+  }
+  /**
+   * Parses a QuakeML princpalAxes element into a PrincipalAxes object.
+   *
+   * @param princpalAxesQML the princpalAxes xml Element
+   * @returns PrincipalAxes instance
+   */
+  static createFromXml(princpalAxesQML) {
+    if (princpalAxesQML.localName !== "principalAxes") {
+      throw new Error(
+        `Cannot extract, not a QuakeML princpalAxes: ${princpalAxesQML.localName}`
+      );
+    }
+    const tAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
+      princpalAxesQML,
+      "tAxis"
+    );
+    if (!isObject(tAxis)) {
+      throw new Error("nodal plane missing tAxis");
+    }
+    const pAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
+      princpalAxesQML,
+      "pAxis"
+    );
+    if (!isObject(pAxis)) {
+      throw new Error("nodal plane missing pAxis");
+    }
+    const out = new _PrincipalAxes(tAxis, pAxis);
+    out.nAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
+      princpalAxesQML,
+      "nAxis"
+    );
+    return out;
+  }
+};
+var Axis = class _Axis {
+  constructor(azimuth, plunge, length) {
+    this.azimuth = azimuth;
+    this.plunge = plunge;
+    this.length = length;
+  }
+  /**
+   * Parses a QuakeML axis xml element into a Axis object.
+   *
+   * @param axisQML the axis xml Element
+   * @returns Axis instance
+   */
+  static createFromXml(axisQML) {
+    const azimuth = _grabFirstElRealQuantity(axisQML, "azimuth");
+    if (!isObject(azimuth)) {
+      throw new Error("nodal plane missing azimuth");
+    }
+    const plunge = _grabFirstElRealQuantity(axisQML, "plunge");
+    if (!isObject(plunge)) {
+      throw new Error("nodal plane missing plunge");
+    }
+    const length = _grabFirstElRealQuantity(axisQML, "length");
+    if (!isObject(length)) {
+      throw new Error("nodal plane missing length");
+    }
+    const out = new _Axis(azimuth, plunge, length);
+    return out;
+  }
+};
+var MomentTensor = class _MomentTensor extends BaseElement {
+  constructor(derivedOrigin) {
+    super();
+    this.dataUsedList = [];
+    this.derivedOrigin = derivedOrigin;
+  }
+  /**
+   * Parses a QuakeML momentTensor xml element into a MomentTensor object.
+   *
+   * @param momentTensorQML the momentTensor xml Element
+   * @param allOrigins origins already extracted from the xml for linking moment tensors with origins
+   * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
+   * @returns MomentTensor instance
+   */
+  static createFromXml(momentTensorQML, allOrigins, allMagnitudes) {
+    if (momentTensorQML.localName !== "momentTensor") {
+      throw new Error(
+        `Cannot extract, not a QuakeML momentTensor: ${momentTensorQML.localName}`
+      );
+    }
+    const derivedOriginID = _grabFirstElText3(
+      momentTensorQML,
+      "derivedOriginID"
+    );
+    let derivedOrigin;
+    if (!isNonEmptyStringArg(derivedOriginID)) {
+      console.log("momentTensor missing derivedOriginID");
+    } else {
+      derivedOrigin = allOrigins.find(
+        (o) => o.publicId === derivedOriginID
+      );
+      if (!isDef(derivedOrigin)) {
+        throw new Error("No origin with ID " + derivedOriginID);
+      }
+    }
+    const out = new _MomentTensor(derivedOrigin);
+    out.populate(momentTensorQML);
+    const dataUsedEls = Array.from(
+      momentTensorQML.getElementsByTagNameNS(BED_NS, "dataUsed")
+    );
+    out.dataUsedList = dataUsedEls.map(DataUsed.createFromXml.bind(DataUsed));
+    const momentMagnitudeID = _grabFirstElText3(
+      momentTensorQML,
+      "momentMagnitudeID"
+    );
+    out.momentMagnitude = allMagnitudes.find(
+      (o) => o.publicId === momentMagnitudeID
+    );
+    if (momentMagnitudeID && !out.momentMagnitude) {
+      throw new Error("No magnitude with ID " + momentMagnitudeID);
+    }
+    try {
+      out.scalarMoment = _grabFirstElRealQuantity(
+        momentTensorQML,
+        "scalarMoment"
+      );
+    } catch {
+      const scalMom = _grabFirstElFloat3(momentTensorQML, "scalarMoment");
+      if (scalMom != null) {
+        out.scalarMoment = new Quantity(scalMom);
+      } else {
+        warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl2(momentTensorQML, "scalarMoment")}`);
+      }
+      warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl2(momentTensorQML, "scalarMoment")}`);
+    }
+    out.tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(
+      momentTensorQML,
+      "tensor"
+    );
+    out.variance = _grabFirstElFloat3(momentTensorQML, "variance");
+    out.varianceReduction = _grabFirstElFloat3(
+      momentTensorQML,
+      "varianceReduction"
+    );
+    out.doubleCouple = _grabFirstElFloat3(momentTensorQML, "doubleCouple");
+    out.clvd = _grabFirstElFloat3(momentTensorQML, "clvd");
+    out.iso = _grabFirstElFloat3(momentTensorQML, "iso");
+    out.greensFunctionID = _grabFirstElText3(
+      momentTensorQML,
+      "greensFunctionID"
+    );
+    out.filterID = _grabFirstElText3(momentTensorQML, "filterID");
+    out.sourceTimeFunction = _grabFirstElType(
+      SourceTimeFunction.createFromXml.bind(SourceTimeFunction)
+    )(momentTensorQML, "sourceTimeFunction");
+    out.methodID = _grabFirstElText3(momentTensorQML, "methodID");
+    out.category = _grabFirstElText3(momentTensorQML, "category");
+    out.inversionType = _grabFirstElText3(momentTensorQML, "inversionType");
+    return out;
+  }
+};
+var Tensor = class _Tensor {
+  constructor(Mrr, Mtt, Mpp, Mrt, Mrp, Mtp) {
+    this.Mrr = Mrr;
+    this.Mtt = Mtt;
+    this.Mpp = Mpp;
+    this.Mrt = Mrt;
+    this.Mrp = Mrp;
+    this.Mtp = Mtp;
+  }
+  /**
+   * Parses a QuakeML tensor xml element into a Tensor object.
+   *
+   * @param tensorQML the tensor xml Element
+   * @returns Tensor instance
+   */
+  static createFromXml(tensorQML) {
+    if (tensorQML.localName !== "tensor") {
+      throw new Error(
+        `Cannot extract, not a QuakeML tensor: ${tensorQML.localName}`
+      );
+    }
+    const Mrr = _grabFirstElRealQuantity(tensorQML, "Mrr");
+    if (!isObject(Mrr)) {
+      throw new Error("tensor missing Mrr");
+    }
+    const Mtt = _grabFirstElRealQuantity(tensorQML, "Mtt");
+    if (!isObject(Mtt)) {
+      throw new Error("tensor missing Mtt");
+    }
+    const Mpp = _grabFirstElRealQuantity(tensorQML, "Mpp");
+    if (!isObject(Mpp)) {
+      throw new Error("tensor missing Mpp");
+    }
+    const Mrt = _grabFirstElRealQuantity(tensorQML, "Mrt");
+    if (!isObject(Mrt)) {
+      throw new Error("tensor missing Mrt");
+    }
+    const Mrp = _grabFirstElRealQuantity(tensorQML, "Mrp");
+    if (!isObject(Mrp)) {
+      throw new Error("tensor missing Mrp");
+    }
+    const Mtp = _grabFirstElRealQuantity(tensorQML, "Mtp");
+    if (!isObject(Mtp)) {
+      throw new Error("tensor missing Mtp");
+    }
+    const out = new _Tensor(Mrr, Mtt, Mpp, Mrt, Mrp, Mtp);
+    return out;
+  }
+};
+var SourceTimeFunction = class _SourceTimeFunction {
+  constructor(type, duration3) {
+    this.type = type;
+    this.duration = duration3;
+  }
+  /**
+   * Parses a QuakeML sourceTimeFunction xml element into a SourceTimeFunction object.
+   *
+   * @param sourceTimeFunctionQML the sourceTimeFunction xml Element
+   * @returns SourceTimeFunction instance
+   */
+  static createFromXml(sourceTimeFunctionQML) {
+    if (sourceTimeFunctionQML.localName !== "sourceTimeFunction") {
+      throw new Error(
+        `Cannot extract, not a QuakeML sourceTimeFunction: ${sourceTimeFunctionQML.localName}`
+      );
+    }
+    const type = _grabFirstElText3(sourceTimeFunctionQML, "type");
+    if (!isNonEmptyStringArg(type)) {
+      throw new Error("sourceTimeFunction missing type");
+    }
+    const duration3 = _grabFirstElFloat3(sourceTimeFunctionQML, "duration");
+    if (!isDef(duration3)) {
+      throw new Error("sourceTimeFunction missing duration");
+    }
+    const out = new _SourceTimeFunction(type, duration3);
+    out.riseTime = _grabFirstElFloat3(sourceTimeFunctionQML, "riseTime");
+    out.decayTime = _grabFirstElFloat3(sourceTimeFunctionQML, "decayTime");
+    return out;
+  }
+};
+var DataUsed = class _DataUsed {
+  constructor(waveType) {
+    this.waveType = waveType;
+  }
+  /**
+   * Parses a QuakeML dataUsed xml element into a DataUsed object.
+   *
+   * @param dataUsedQML the dataUsed xml Element
+   * @returns SourceTimeFunction instance
+   */
+  static createFromXml(dataUsedQML) {
+    if (dataUsedQML.localName !== "dataUsed") {
+      throw new Error(
+        `Cannot extract, not a QuakeML dataUsed: ${dataUsedQML.localName}`
+      );
+    }
+    const waveType = _grabFirstElText3(dataUsedQML, "waveType");
+    if (!isNonEmptyStringArg(waveType)) {
+      throw new Error("dataUsed missing waveType");
+    }
+    const out = new _DataUsed(waveType);
+    out.stationCount = _grabFirstElInt3(dataUsedQML, "stationCount");
+    out.componentCount = _grabFirstElInt3(dataUsedQML, "componentCount");
+    out.shortestPeriod = _grabFirstElFloat3(dataUsedQML, "shortestPeriod");
+    out.longestPeriod = _grabFirstElFloat3(dataUsedQML, "longestPeriod");
+    return out;
+  }
+};
+var WaveformID = class _WaveformID {
+  constructor(networkCode, stationCode) {
+    this.networkCode = networkCode;
+    this.stationCode = stationCode;
+  }
+  /**
+   * Parses a QuakeML waveform ID xml element into a WaveformID object.
+   *
+   * @param waveformQML the waveform ID xml Element
+   * @returns WaveformID instance
+   */
+  static createFromXml(waveformQML) {
+    if (waveformQML.localName !== "waveformID") {
+      throw new Error(
+        `Cannot extract, not a QuakeML waveform ID: ${waveformQML.localName}`
+      );
+    }
+    const networkCode = _grabAttribute3(waveformQML, "networkCode");
+    if (!isNonEmptyStringArg(networkCode)) {
+      throw new Error("waveformID missing networkCode");
+    }
+    const stationCode = _grabAttribute3(waveformQML, "stationCode");
+    if (!isNonEmptyStringArg(stationCode)) {
+      throw new Error("waveformID missing stationCode");
+    }
+    const out = new _WaveformID(networkCode, stationCode);
+    out.channelCode = _grabAttribute3(waveformQML, "channelCode");
+    out.locationCode = _grabAttribute3(waveformQML, "locationCode");
+    return out;
+  }
+  toString() {
+    return `${this.networkCode}.${this.stationCode}.${this.locationCode || "--"}.${this.channelCode || "---"}`;
+  }
+};
+var Quantity = class _Quantity {
+  constructor(value) {
+    this.value = value;
+  }
+  /**
+   * Parses a QuakeML quantity xml element into a Quantity object.
+   *
+   * @param quantityQML the quantity xml Element
+   * @param grab a callback to obtain the value
+   * @param grabUncertainty a callback to obtain the uncertainties
+   * @returns Quantity instance
+   */
+  static _createFromXml(quantityQML, grab, grabUncertainty) {
+    const value = grab(quantityQML, "value");
+    if (value === void 0) {
+      throw new Error("missing value");
+    }
+    const out = new _Quantity(value);
+    out.uncertainty = grabUncertainty(quantityQML, "uncertainty");
+    out.lowerUncertainty = grabUncertainty(quantityQML, "lowerUncertainty");
+    out.upperUncertainty = grabUncertainty(quantityQML, "upperUncertainty");
+    out.confidenceLevel = _grabFirstElFloat3(quantityQML, "confidenceLevel");
+    return out;
+  }
+  /**
+   * Parses a QuakeML real quantity xml element into a RealQuantity object.
+   *
+   * @param realQuantityQML the real quantity xml Element
+   * @returns RealQuantity instance
+   */
+  static createRealQuantityFromXml(realQuantityQML) {
+    return _Quantity._createFromXml(
+      realQuantityQML,
+      _grabFirstElFloat3,
+      _grabFirstElFloat3
+    );
+  }
+  /**
+   * Parses a QuakeML integer quantity xml element into a RealQuantity object.
+   *
+   * @param integerQuantityQML the integer quantity xml Element
+   * @returns IntegerQuantity instance
+   */
+  static createIntegerQuantityFromXml(integerQuantityQML) {
+    return _Quantity._createFromXml(
+      integerQuantityQML,
+      _grabFirstElFloat3,
+      _grabFirstElInt3
+    );
+  }
+  /**
+   * Parses a QuakeML time quantity xml element into a TimeQuantity object.
+   *
+   * @param timeQuantityQML the time quantity xml Element
+   * @returns TimeQuantity instance
+   */
+  static createTimeQuantityFromXml(timeQuantityQML) {
+    return _Quantity._createFromXml(
+      timeQuantityQML,
+      _grabFirstElDateTime,
+      _grabFirstElFloat3
+    );
+  }
+};
+var Comment2 = class _Comment {
+  constructor(text) {
+    this.text = text;
+  }
+  /**
+   * Parses a QuakeML comment xml element into a Comment object.
+   *
+   * @param commentQML the comment xml Element
+   * @returns Comment instance
+   */
+  static createFromXml(commentQML) {
+    const text = _grabFirstElText3(commentQML, "text");
+    if (text === void 0) {
+      throw new Error("missing value");
+    }
+    const out = new _Comment(text);
+    out.creationInfo = _grabFirstElCreationInfo(commentQML, "creationInfo");
+    return out;
+  }
+};
+var CreationInfo = class _CreationInfo {
+  /**
+   * Parses a QuakeML creation info xml element into a CreationInfo object.
+   *
+   * @param creationInfoQML the creation info xml Element
+   * @returns CreationInfo instance
+   */
+  static createFromXml(creationInfoQML) {
+    const out = new _CreationInfo();
+    out.agencyID = _grabFirstElText3(creationInfoQML, "agencyID");
+    out.agencyURI = _grabFirstElText3(creationInfoQML, "agencyURI");
+    out.author = _grabFirstElText3(creationInfoQML, "author");
+    out.authorURI = _grabFirstElText3(creationInfoQML, "authorURI");
+    out.creationTime = _grabFirstElDateTime(creationInfoQML, "creationTime");
+    out.version = _grabFirstElText3(creationInfoQML, "version");
+    return out;
+  }
+};
+function parseQuakeML(rawXml, host) {
+  const top2 = rawXml.documentElement;
+  if (!top2) {
+    throw new Error("Can't get documentElement");
+  }
+  const eventParametersArray = Array.from(
+    top2.getElementsByTagName("eventParameters")
+  );
+  if (eventParametersArray.length !== 1) {
+    throw new Error(
+      `Document has ${eventParametersArray.length} eventParameters elements`
+    );
+  }
+  return EventParameters.createFromXml(eventParametersArray[0], host);
+}
+function createQuakeFromValues(publicId, time3, latitude, longitude, depth_meter) {
+  const origin = new Origin(
+    new Quantity(time3),
+    new Quantity(latitude),
+    new Quantity(longitude)
+  );
+  origin.depth = new Quantity(depth_meter);
+  const quake = new Quake();
+  quake.publicId = publicId;
+  quake.originList.push(origin);
+  quake.preferredOrigin = origin;
+  return quake;
+}
+function fetchQuakeML(url2, timeoutSec2 = 10, nodata = 204) {
+  const fetchInit = defaultFetchInitObj(XML_MIME);
+  const host = new URL(url2).hostname;
+  return doFetchWithTimeout(url2, fetchInit, timeoutSec2 * 1e3).then((response) => {
+    if (response.status === 200) {
+      return response.text();
+    } else if (response.status === 204 || isDef(nodata) && response.status === nodata) {
+      return FAKE_EMPTY_XML2;
+    } else {
+      throw new Error(`Status not successful: ${response.status}`);
+    }
+  }).then(function(rawXmlText) {
+    return new DOMParser().parseFromString(rawXmlText, XML_MIME);
+  }).then((rawXml) => {
+    return parseQuakeML(rawXml, host);
+  });
+}
+function mightBeQuakeML(buf) {
+  if (!mightBeXml(buf)) {
+    return false;
+  }
+  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
+  if (!initialChars.includes("quakeml")) {
+    return false;
+  }
+  return true;
+}
+function createUnknownId() {
+  const max = 1e6;
+  let s2 = `${Math.floor(Math.random() * max)}`;
+  s2 = s2.padStart(6, "0");
+  return `${UNKNOWN_PUBLIC_ID}_${s2}`;
+}
+var ZERO_MAGNITUDE = new Magnitude(new Quantity(0), "unk");
+var _grabAllElComment = function(xml, tagName) {
+  const out = [];
+  if (isObject(xml)) {
+    const elList = Array.from(xml.children).filter(
+      (e) => e.tagName === tagName
+    );
+    for (const el of elList) {
+      if (isObject(el)) {
+        out.push(Comment2.createFromXml(el));
+      }
+    }
+  }
+  return out;
+};
+var _grabFirstElNS = function(xml, namespace, tagName) {
+  let out = null;
+  if (isObject(xml)) {
+    const elList = xml.getElementsByTagNameNS(namespace, tagName);
+    for (let idx = 0; idx < elList.length; idx++) {
+      const e = elList.item(idx);
+      if (e != null && e.parentElement === xml) {
+        if (e) {
+          out = e;
+          break;
+        }
+      }
+    }
+  }
+  return out;
+};
+var _grabFirstEl2 = function(xml, tagName) {
+  if (isObject(xml)) {
+    const elList = Array.from(xml.children).filter(
+      (e) => e.tagName === tagName
+    );
+    if (elList.length > 0) {
+      const e = elList[0];
+      if (e) {
+        return e;
+      }
+    }
+  }
+  return void 0;
+};
+var _grabFirstElText3 = function(xml, tagName) {
+  let out = void 0;
+  const el = _grabFirstEl2(xml, tagName);
+  if (isObject(el)) {
+    out = el.textContent;
+    if (out === null) {
+      out = void 0;
+    }
+  }
+  return out;
+};
+var _grabFirstElBool = function(xml, tagName) {
+  const el = _grabFirstElText3(xml, tagName);
+  if (!isStringArg(el)) {
+    return void 0;
+  }
+  switch (el) {
+    case "true":
+    case "1":
+      return true;
+    case "false":
+    case "0":
+      return false;
+  }
+  throw new Error("Invalid boolean: " + el);
+};
+var _grabFirstElInt3 = function(xml, tagName) {
+  let out = void 0;
+  const el = _grabFirstElText3(xml, tagName);
+  if (isStringArg(el)) {
+    out = parseInt(el);
+  }
+  return out;
+};
+var _grabFirstElFloat3 = function(xml, tagName) {
+  let out = void 0;
+  const el = _grabFirstElText3(xml, tagName);
+  if (isStringArg(el)) {
+    out = parseFloat(el);
+  }
+  return out;
+};
+var _grabFirstElDateTime = function(xml, tagName) {
+  let out = void 0;
+  const el = _grabFirstElText3(xml, tagName);
+  if (isStringArg(el)) {
+    out = isoToDateTime(el);
+  }
+  return out;
+};
+var _grabFirstElType = function(createFromXml) {
+  return function(xml, tagName) {
+    let out = void 0;
+    const el = _grabFirstEl2(xml, tagName);
+    if (isObject(el)) {
+      out = createFromXml(el);
+    }
+    return out;
+  };
+};
+var _grabFirstElRealQuantity = _grabFirstElType(
+  Quantity.createRealQuantityFromXml.bind(Quantity)
+);
+var _grabFirstElIntegerQuantity = _grabFirstElType(
+  Quantity.createIntegerQuantityFromXml.bind(Quantity)
+);
+var _grabFirstElTimeQuantity = _grabFirstElType(
+  Quantity.createTimeQuantityFromXml.bind(Quantity)
+);
+var _grabFirstElCreationInfo = _grabFirstElType(
+  CreationInfo.createFromXml.bind(CreationInfo)
+);
+var _grabAttribute3 = function(xml, tagName) {
+  let out = void 0;
+  if (isObject(xml)) {
+    const a = xml.getAttribute(tagName);
+    if (isStringArg(a)) {
+      out = a;
+    }
+  }
+  return out;
+};
+var _requireAttribute3 = function _requireAttribute4(xml, tagName) {
+  const out = _grabAttribute3(xml, tagName);
+  if (typeof out !== "string") {
+    throw new Error(`Attribute ${tagName} not found.`);
+  }
+  return out;
+};
+var _grabAttributeNS2 = function(xml, namespace, tagName) {
+  let out = void 0;
+  if (isObject(xml)) {
+    const a = xml.getAttributeNS(namespace, tagName);
+    if (isStringArg(a)) {
+      out = a;
+    }
+  }
+  return out;
+};
+var parseUtil2 = {
+  _grabFirstEl: _grabFirstEl2,
+  _grabFirstElNS,
+  _grabFirstElText: _grabFirstElText3,
+  _grabFirstElFloat: _grabFirstElFloat3,
+  _grabFirstElInt: _grabFirstElInt3,
+  _grabAttribute: _grabAttribute3,
+  _requireAttribute: _requireAttribute3,
+  _grabAttributeNS: _grabAttributeNS2
+};
+
+// src/seismogram.mts
 var COUNT_UNIT2 = "count";
 var Seismogram = class _Seismogram {
   constructor(segmentArray) {
-    __publicField(this, "_segmentArray");
-    __publicField(this, "_interval");
-    __publicField(this, "_y");
     this._y = null;
     if (Array.isArray(segmentArray) && segmentArray[0] instanceof SeismogramSegment) {
       this._segmentArray = segmentArray;
@@ -47555,21 +49194,7 @@ function ensureIsSeismogram(seisSeismogram) {
 }
 var SeismogramDisplayData = class _SeismogramDisplayData {
   constructor(timeRange) {
-    /** @private */
-    __publicField(this, "_seismogram");
-    __publicField(this, "_id");
-    __publicField(this, "_sourceId");
-    __publicField(this, "label");
-    __publicField(this, "markerList");
-    __publicField(this, "traveltimeList");
-    __publicField(this, "channel");
-    __publicField(this, "_instrumentSensitivity");
-    __publicField(this, "quakeList");
-    __publicField(this, "quakeReferenceList", []);
-    __publicField(this, "timeRange");
-    __publicField(this, "alignmentTime");
-    __publicField(this, "doShow");
-    __publicField(this, "_statsCache");
+    this.quakeReferenceList = [];
     if (!timeRange) {
       throw new Error("timeRange must not be missing.");
     }
@@ -48120,10 +49745,6 @@ var SeismogramDisplayData = class _SeismogramDisplayData {
 };
 var SeismogramDisplayStats = class {
   constructor() {
-    __publicField(this, "min");
-    __publicField(this, "max");
-    __publicField(this, "mean");
-    __publicField(this, "trendSlope");
     this.min = 0;
     this.max = 0;
     this.mean = 0;
@@ -48375,7 +49996,7 @@ function uniqueQuakes(seisData) {
   return Array.from(out.values());
 }
 
-// src/miniseed.ts
+// src/miniseed.mts
 var MINISEED_MIME = "application/vnd.fdsn.mseed";
 var R_TYPECODE = "R".charCodeAt(0);
 var D_TYPECODE = "D".charCodeAt(0);
@@ -48497,8 +50118,6 @@ function parseBlockette(dataView, offset2, length, headerByteSwap) {
 }
 var DataRecord = class {
   constructor(header, data) {
-    __publicField(this, "header");
-    __publicField(this, "data");
     this.header = header;
     this.data = data;
   }
@@ -48534,31 +50153,6 @@ var DataRecord = class {
 };
 var DataHeader = class {
   constructor() {
-    __publicField(this, "seq");
-    __publicField(this, "typeCode");
-    __publicField(this, "continuationCode");
-    __publicField(this, "staCode");
-    __publicField(this, "locCode");
-    __publicField(this, "chanCode");
-    __publicField(this, "netCode");
-    __publicField(this, "startBTime");
-    __publicField(this, "numSamples");
-    __publicField(this, "encoding");
-    __publicField(this, "littleEndian");
-    __publicField(this, "sampRateFac");
-    __publicField(this, "sampRateMul");
-    __publicField(this, "sampleRate");
-    __publicField(this, "activityFlags");
-    __publicField(this, "ioClockFlags");
-    __publicField(this, "dataQualityFlags");
-    __publicField(this, "numBlockettes");
-    __publicField(this, "timeCorrection");
-    __publicField(this, "dataOffset");
-    __publicField(this, "blocketteOffset");
-    __publicField(this, "recordSize");
-    __publicField(this, "blocketteList");
-    __publicField(this, "startTime");
-    __publicField(this, "endTime");
     this.seq = "      ";
     this.typeCode = 68;
     this.continuationCode = 32;
@@ -48618,8 +50212,6 @@ var DataHeader = class {
 };
 var Blockette = class {
   constructor(type, body) {
-    __publicField(this, "type");
-    __publicField(this, "body");
     this.type = type;
     this.body = body;
   }
@@ -48627,9 +50219,6 @@ var Blockette = class {
 var Blockette1000 = class extends Blockette {
   constructor(type, body, encoding, dataRecordLengthByte, wordOrder) {
     super(type, body);
-    __publicField(this, "encoding");
-    __publicField(this, "dataRecordLengthByte");
-    __publicField(this, "wordOrder");
     if (type !== 1e3) {
       throw new Error("Not a blockette1000: " + this.type);
     }
@@ -48641,9 +50230,6 @@ var Blockette1000 = class extends Blockette {
 var Blockette1001 = class extends Blockette {
   constructor(type, body, timeQual, microsecond, frameCount) {
     super(type, body);
-    __publicField(this, "timeQual");
-    __publicField(this, "microsecond");
-    __publicField(this, "frameCount");
     if (type !== 1001) {
       throw new Error("Not a blockette1001: " + this.type);
     }
@@ -48655,8 +50241,6 @@ var Blockette1001 = class extends Blockette {
 var Blockette100 = class extends Blockette {
   constructor(type, body, sampleRate, flags) {
     super(type, body);
-    __publicField(this, "sampleRate");
-    __publicField(this, "flags");
     if (type !== 100) {
       throw new Error("Not a blockette100: " + this.type);
     }
@@ -48688,15 +50272,6 @@ function parseBTime(dataView, offset2, byteSwap) {
 }
 var BTime = class {
   constructor(year, jday, hour, min, sec, tenthMilli) {
-    __publicField(this, "year");
-    __publicField(this, "jday");
-    __publicField(this, "hour");
-    __publicField(this, "min");
-    __publicField(this, "sec");
-    __publicField(this, "tenthMilli");
-    __publicField(this, "microsecond");
-    // -50 to 49, not part of BTime proper, but added in case of B1001
-    __publicField(this, "length");
     this.length = 10;
     this.year = year;
     this.jday = jday;
@@ -48824,7 +50399,7 @@ function seismogramPerChannel(drList) {
   return out;
 }
 
-// src/mseed3.ts
+// src/mseed3.mts
 var mseed3_exports = {};
 __export(mseed3_exports, {
   BIG_ENDIAN: () => BIG_ENDIAN,
@@ -48856,7 +50431,7 @@ __export(mseed3_exports, {
   toMSeed3: () => toMSeed3
 });
 
-// src/mseed3eh.ts
+// src/mseed3eh.mts
 var mseed3eh_exports = {};
 __export(mseed3eh_exports, {
   STD_EH: () => STD_EH,
@@ -48878,2012 +50453,6 @@ __export(mseed3eh_exports, {
   markerTypeFromEH: () => markerTypeFromEH,
   quakeToEH: () => quakeToEH
 });
-
-// src/quakeml.ts
-var quakeml_exports = {};
-__export(quakeml_exports, {
-  ANSS_CATALOG_NS: () => ANSS_CATALOG_NS,
-  ANSS_NS: () => ANSS_NS,
-  Amplitude: () => Amplitude,
-  Arrival: () => Arrival,
-  Axis: () => Axis,
-  BED_NS: () => BED_NS,
-  Comment: () => Comment2,
-  CompositeTime: () => CompositeTime,
-  ConfidenceEllipsoid: () => ConfidenceEllipsoid,
-  CreationInfo: () => CreationInfo,
-  DataUsed: () => DataUsed,
-  EventDescription: () => EventDescription,
-  EventParameters: () => EventParameters,
-  FAKE_EMPTY_XML: () => FAKE_EMPTY_XML2,
-  FAKE_ORIGIN_TIME: () => FAKE_ORIGIN_TIME,
-  FocalMechanism: () => FocalMechanism,
-  IRIS_NS: () => IRIS_NS,
-  Magnitude: () => Magnitude,
-  MomentTensor: () => MomentTensor,
-  NodalPlane: () => NodalPlane,
-  NodalPlanes: () => NodalPlanes,
-  Origin: () => Origin,
-  OriginQuality: () => OriginQuality,
-  OriginUncertainty: () => OriginUncertainty,
-  Pick: () => Pick,
-  PrincipalAxes: () => PrincipalAxes,
-  QML_NS: () => QML_NS,
-  QUAKE_CLICK_EVENT: () => QUAKE_CLICK_EVENT,
-  Quake: () => Quake,
-  Quantity: () => Quantity,
-  SourceTimeFunction: () => SourceTimeFunction,
-  StationMagnitude: () => StationMagnitude,
-  StationMagnitudeContribution: () => StationMagnitudeContribution,
-  Tensor: () => Tensor,
-  TimeWindow: () => TimeWindow,
-  UNKNOWN_MAG_TYPE: () => UNKNOWN_MAG_TYPE,
-  UNKNOWN_PUBLIC_ID: () => UNKNOWN_PUBLIC_ID,
-  USGS_HOST: () => USGS_HOST,
-  WaveformID: () => WaveformID,
-  ZERO_MAGNITUDE: () => ZERO_MAGNITUDE,
-  createQuakeClickEvent: () => createQuakeClickEvent,
-  createQuakeFromValues: () => createQuakeFromValues,
-  createUnknownId: () => createUnknownId,
-  fetchQuakeML: () => fetchQuakeML,
-  isQuakeClickCustomEvent: () => isQuakeClickCustomEvent,
-  mightBeQuakeML: () => mightBeQuakeML,
-  parseQuakeML: () => parseQuakeML,
-  parseUtil: () => parseUtil2
-});
-
-// src/textformat.ts
-var lang = typeof navigator !== "undefined" && navigator?.language ? navigator?.language : "en-US";
-var latlonFormat = new Intl.NumberFormat(lang, {
-  style: "unit",
-  unit: "degree",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 2
-});
-var magFormat = new Intl.NumberFormat(lang, {
-  style: "decimal",
-  maximumFractionDigits: 2
-});
-var depthNoUnitFormat = new Intl.NumberFormat(lang, {
-  style: "decimal",
-  maximumFractionDigits: 2
-});
-var depthFormat = new Intl.NumberFormat(lang, {
-  style: "unit",
-  unit: "kilometer",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2
-});
-var depthMeterFormat = new Intl.NumberFormat(lang, {
-  style: "unit",
-  unit: "meter",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 1,
-  minimumFractionDigits: 1
-});
-
-// src/quakeml.ts
-var QML_NS = "http://quakeml.org/xmlns/quakeml/1.2";
-var BED_NS = "http://quakeml.org/xmlns/bed/1.2";
-var IRIS_NS = "http://service.iris.edu/fdsnws/event/1/";
-var ANSS_NS = "http://anss.org/xmlns/event/0.1";
-var ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1";
-var USGS_HOST = "earthquake.usgs.gov";
-var UNKNOWN_MAG_TYPE = "unknown";
-var UNKNOWN_PUBLIC_ID = "unknownId";
-var FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
-var FAKE_EMPTY_XML2 = '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
-var QUAKE_CLICK_EVENT = "quakeclick";
-function isQuakeClickCustomEvent(event) {
-  if ("detail" in event) {
-    const customEvent = event;
-    return "quake" in customEvent.detail;
-  }
-  return false;
-}
-function createQuakeClickEvent(q, mouseclick) {
-  const detail = {
-    mouseevent: mouseclick,
-    quake: q
-  };
-  return new CustomEvent(
-    QUAKE_CLICK_EVENT,
-    {
-      detail,
-      bubbles: true,
-      cancelable: false,
-      composed: true
-    }
-  );
-}
-var BaseElement = class {
-  constructor() {
-    __publicField(this, "publicId", UNKNOWN_PUBLIC_ID);
-    __publicField(this, "comments", []);
-    __publicField(this, "creationInfo");
-  }
-  populate(qml) {
-    let pid = _grabAttribute3(qml, "publicID");
-    if (!isNonEmptyStringArg(pid)) {
-      warn(`missing publicID on ${qml.localName}`);
-      pid = `${createUnknownId()}_${qml.localName}`;
-    }
-    this.publicId = pid;
-    this.comments = _grabAllElComment(qml, "comment");
-    this.creationInfo = _grabFirstElCreationInfo(qml, "creationInfo");
-  }
-};
-var EventParameters = class _EventParameters extends BaseElement {
-  constructor() {
-    super(...arguments);
-    __publicField(this, "eventList", []);
-    __publicField(this, "description");
-  }
-  /**
-   * Parses a QuakeML event parameters xml element into an EventParameters object.
-   *
-   * @param eventParametersQML the event parameters xml Element
-   * @param host optional source of the xml, helpful for parsing the eventid
-   * @returns EventParameters instance
-   */
-  static createFromXml(eventParametersQML, host) {
-    if (eventParametersQML.localName !== "eventParameters") {
-      throw new Error(
-        `Cannot extract, not a QuakeML event parameters: ${eventParametersQML.localName}`
-      );
-    }
-    const eventEls = Array.from(
-      eventParametersQML.getElementsByTagNameNS(BED_NS, "event")
-    );
-    const events = eventEls.map((e) => Quake.createFromXml(e, host));
-    const description = _grabFirstElText3(eventParametersQML, "description");
-    const out = new _EventParameters();
-    out.populate(eventParametersQML);
-    out.eventList = events;
-    out.description = description;
-    return out;
-  }
-};
-var Quake = class _Quake extends BaseElement {
-  constructor() {
-    super(...arguments);
-    __publicField(this, "eventId");
-    __publicField(this, "descriptionList", []);
-    __publicField(this, "amplitudeList", []);
-    __publicField(this, "stationMagnitudeList", []);
-    __publicField(this, "magnitudeList", []);
-    __publicField(this, "originList", []);
-    __publicField(this, "pickList", []);
-    __publicField(this, "focalMechanismList", []);
-    __publicField(this, "preferredOrigin");
-    __publicField(this, "preferredMagnitude");
-    __publicField(this, "preferredFocalMechanism");
-    __publicField(this, "type");
-    __publicField(this, "typeCertainty");
-  }
-  /**
-   * Parses a QuakeML event xml element into a Quake object. Pass in
-   * host=seisplotjs.fdsnevent.USGS_HOST for xml from the USGS service
-   * in order to parse the eventid, otherwise this can be left out
-   *
-   * @param qml the event xml Element
-   * @param host optional source of the xml, helpful for parsing the eventid
-   * @returns QuakeML Quake(Event) object
-   */
-  static createFromXml(qml, host) {
-    if (qml.localName !== "event") {
-      throw new Error(`Cannot extract, not a QuakeML Event: ${qml.localName}`);
-    }
-    const out = new _Quake();
-    out.populate(qml);
-    const descriptionEls = Array.from(qml.children).filter(
-      (e) => e.tagName === "description"
-    );
-    out.descriptionList = descriptionEls.map(
-      (d) => EventDescription.createFromXml(d)
-    );
-    const allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
-    const allPicks = [];
-    for (const pickEl of allPickEls) {
-      allPicks.push(Pick.createFromXml(pickEl));
-    }
-    const allAmplitudeEls = Array.from(
-      qml.getElementsByTagNameNS(BED_NS, "amplitude")
-    );
-    const allAmplitudes = [];
-    for (const amplitudeEl of allAmplitudeEls) {
-      allAmplitudes.push(Amplitude.createFromXml(amplitudeEl, allPicks));
-    }
-    const allOriginEls = Array.from(
-      qml.getElementsByTagNameNS(BED_NS, "origin")
-    );
-    const allOrigins = [];
-    for (const originEl of allOriginEls) {
-      allOrigins.push(Origin.createFromXml(originEl, allPicks));
-    }
-    const allStationMagEls = Array.from(
-      qml.getElementsByTagNameNS(BED_NS, "stationMagnitude")
-    );
-    const allStationMags = [];
-    for (const stationMagEl of allStationMagEls) {
-      allStationMags.push(
-        StationMagnitude.createFromXml(stationMagEl, allOrigins, allAmplitudes)
-      );
-    }
-    const allMagEls = Array.from(
-      qml.getElementsByTagNameNS(BED_NS, "magnitude")
-    );
-    const allMags = [];
-    for (const magEl of allMagEls) {
-      allMags.push(Magnitude.createFromXml(magEl, allOrigins, allStationMags));
-    }
-    const allFocalMechEls = Array.from(
-      qml.getElementsByTagNameNS(BED_NS, "focalMechanism")
-    );
-    const allFocalMechs = [];
-    for (const focalMechEl of allFocalMechEls) {
-      allFocalMechs.push(
-        FocalMechanism.createFromXml(focalMechEl, allOrigins, allMags)
-      );
-    }
-    out.originList = allOrigins;
-    out.magnitudeList = allMags;
-    out.pickList = allPicks;
-    out.amplitudeList = allAmplitudes;
-    out.stationMagnitudeList = allStationMags;
-    out.focalMechanismList = allFocalMechs;
-    out.eventId = _Quake.extractEventId(qml, host);
-    const preferredOriginId = _grabFirstElText3(qml, "preferredOriginID");
-    const preferredMagnitudeId = _grabFirstElText3(qml, "preferredMagnitudeID");
-    const preferredFocalMechId = _grabFirstElText3(
-      qml,
-      "preferredFocalMechanismID"
-    );
-    if (isNonEmptyStringArg(preferredOriginId)) {
-      out.preferredOrigin = allOrigins.find(
-        (o) => o.publicId === preferredOriginId
-      );
-      if (!out.preferredOrigin) {
-        throw new Error(`no preferredOriginId match: ${preferredOriginId}`);
-      }
-    }
-    if (isNonEmptyStringArg(preferredMagnitudeId)) {
-      out.preferredMagnitude = allMags.find(
-        (m) => m.publicId === preferredMagnitudeId
-      );
-      if (!out.preferredMagnitude) {
-        throw new Error(`no match: ${preferredMagnitudeId}`);
-      }
-    }
-    if (isNonEmptyStringArg(preferredFocalMechId)) {
-      out.preferredFocalMechanism = allFocalMechs.find(
-        (m) => m.publicId === preferredFocalMechId
-      );
-      if (!out.preferredFocalMechanism) {
-        throw new Error(`no match: ${preferredFocalMechId}`);
-      }
-    }
-    out.type = _grabFirstElText3(qml, "type");
-    out.typeCertainty = _grabFirstElText3(qml, "typeCertainty");
-    return out;
-  }
-  /**
-   * Extracts the EventId from a QuakeML element, guessing from one of several
-   * incompatible (grumble grumble) formats.
-   *
-   * @param   qml Quake(Event) to extract from
-   * @param   host optional source of the xml to help determine the event id style
-   * @returns     Extracted Id, or "unknownEventId" if we can't figure it out
-   */
-  static extractEventId(qml, _host) {
-    const dataId = _grabAttributeNS2(qml, ANSS_CATALOG_NS, "dataid");
-    if (isNonEmptyStringArg(dataId)) {
-      return dataId;
-    }
-    const eventId = _grabAttributeNS2(qml, ANSS_CATALOG_NS, "eventid");
-    const catalogEventSource = _grabAttributeNS2(
-      qml,
-      ANSS_CATALOG_NS,
-      "eventsource"
-    );
-    if (isNonEmptyStringArg(eventId)) {
-      if (isNonEmptyStringArg(catalogEventSource)) {
-        return catalogEventSource + eventId;
-      } else {
-        return eventId;
-      }
-    }
-    const publicid = _grabAttribute3(qml, "publicID");
-    if (isNonEmptyStringArg(publicid)) {
-      let re2 = /eventid=([\w\d]+)/;
-      let parsed = re2.exec(publicid);
-      if (parsed) {
-        return parsed[1];
-      }
-      re2 = /evid=([\w\d]+)/;
-      parsed = re2.exec(publicid);
-      if (parsed) {
-        return parsed[1];
-      }
-      re2 = /quakeml:se.anss.org\/Event\/([\w\d]+)\/([\w\d]+)/;
-      parsed = re2.exec(publicid);
-      if (parsed) {
-        return parsed[1] + parsed[2];
-      }
-      return publicid;
-    }
-    return createUnknownId();
-  }
-  hasPreferredOrigin() {
-    return isDef(this.preferredOrigin);
-  }
-  hasOrigin() {
-    return isDef(this.preferredOrigin) || this.originList.length > 1;
-  }
-  get origin() {
-    if (isDef(this.preferredOrigin)) {
-      return this.preferredOrigin;
-    } else if (this.originList.length > 0) {
-      return this.originList[0];
-    } else {
-      throw new Error("No origins in quake");
-    }
-  }
-  hasPreferredMagnitude() {
-    return isDef(this.preferredMagnitude);
-  }
-  hasMagnitude() {
-    return isDef(this.preferredMagnitude) || this.magnitudeList.length > 1;
-  }
-  get magnitude() {
-    if (isDef(this.preferredMagnitude)) {
-      return this.preferredMagnitude;
-    } else if (this.magnitudeList.length > 0) {
-      return this.magnitudeList[0];
-    } else {
-      return ZERO_MAGNITUDE;
-    }
-  }
-  get time() {
-    return this.origin.time;
-  }
-  get latitude() {
-    return this.origin.latitude;
-  }
-  get longitude() {
-    return this.origin.longitude;
-  }
-  get depth() {
-    return this.origin.depth;
-  }
-  get depthKm() {
-    return this.depth / 1e3;
-  }
-  get description() {
-    return this.descriptionList.length > 0 ? this.descriptionList[0].text : "";
-  }
-  get arrivals() {
-    return this.origin.arrivalList;
-  }
-  get picks() {
-    return this.pickList;
-  }
-  toString() {
-    if (this.hasOrigin()) {
-      const magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
-      const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
-      const depth = depthFormat.format(this.depth / 1e3);
-      return `${this.time.toISO()} ${latlon} ${depth} ${magStr}`;
-    } else if (this.eventId != null) {
-      return `Event: ${this.eventId}`;
-    } else {
-      return `Event: unknown`;
-    }
-  }
-};
-var EventDescription = class _EventDescription {
-  constructor(text) {
-    __publicField(this, "text");
-    __publicField(this, "type");
-    this.text = text;
-  }
-  /**
-   * Parses a QuakeML description xml element into a EventDescription object.
-   *
-   * @param descriptionQML the description xml Element
-   * @returns EventDescription instance
-   */
-  static createFromXml(descriptionQML) {
-    if (descriptionQML.localName !== "description") {
-      throw new Error(
-        `Cannot extract, not a QuakeML description ID: ${descriptionQML.localName}`
-      );
-    }
-    const text = _grabFirstElText3(descriptionQML, "text");
-    if (!isNonEmptyStringArg(text)) {
-      throw new Error("description missing text");
-    }
-    const out = new _EventDescription(text);
-    out.type = _grabFirstElText3(descriptionQML, "type");
-    return out;
-  }
-  toString() {
-    return this.text;
-  }
-};
-var Amplitude = class _Amplitude extends BaseElement {
-  constructor(genericAmplitude) {
-    super();
-    __publicField(this, "genericAmplitude");
-    __publicField(this, "type");
-    __publicField(this, "category");
-    __publicField(this, "unit");
-    __publicField(this, "methodID");
-    __publicField(this, "period");
-    __publicField(this, "snr");
-    __publicField(this, "timeWindow");
-    __publicField(this, "pick");
-    __publicField(this, "waveformID");
-    __publicField(this, "filterID");
-    __publicField(this, "scalingTime");
-    __publicField(this, "magnitudeHint");
-    __publicField(this, "evaluationMode");
-    __publicField(this, "evaluationStatus");
-    this.genericAmplitude = genericAmplitude;
-  }
-  /**
-   * Parses a QuakeML amplitude xml element into an Amplitude object.
-   *
-   * @param amplitudeQML the amplitude xml Element
-   * @param allPicks picks already extracted from the xml for linking arrivals with picks
-   * @returns Amplitude instance
-   */
-  static createFromXml(amplitudeQML, allPicks) {
-    if (amplitudeQML.localName !== "amplitude") {
-      throw new Error(
-        `Cannot extract, not a QuakeML amplitude: ${amplitudeQML.localName}`
-      );
-    }
-    const genericAmplitude = _grabFirstElRealQuantity(
-      amplitudeQML,
-      "genericAmplitude"
-    );
-    if (!isDef(genericAmplitude)) {
-      throw new Error("amplitude missing genericAmplitude");
-    }
-    const out = new _Amplitude(genericAmplitude);
-    out.populate(amplitudeQML);
-    out.type = _grabFirstElText3(amplitudeQML, "type");
-    out.category = _grabFirstElText3(amplitudeQML, "category");
-    out.unit = _grabFirstElText3(amplitudeQML, "unit");
-    out.methodID = _grabFirstElText3(amplitudeQML, "methodID");
-    out.period = _grabFirstElRealQuantity(amplitudeQML, "period");
-    out.snr = _grabFirstElFloat3(amplitudeQML, "snr");
-    out.timeWindow = _grabFirstElType(
-      TimeWindow.createFromXml.bind(TimeWindow)
-    )(amplitudeQML, "timeWindow");
-    const pickID = _grabFirstElText3(amplitudeQML, "pickID");
-    out.pick = allPicks.find((p) => p.publicId === pickID);
-    if (pickID && !out.pick) {
-      throw new Error("No pick with ID " + pickID);
-    }
-    out.waveformID = _grabFirstElType(
-      WaveformID.createFromXml.bind(WaveformID)
-    )(amplitudeQML, "waveformID");
-    out.filterID = _grabFirstElText3(amplitudeQML, "filterID");
-    out.scalingTime = _grabFirstElTimeQuantity(amplitudeQML, "scalingTime");
-    out.magnitudeHint = _grabFirstElText3(amplitudeQML, "magnitudeHint");
-    out.evaluationMode = _grabFirstElText3(amplitudeQML, "evaluationMode");
-    out.evaluationStatus = _grabFirstElText3(amplitudeQML, "evaluationStatus");
-    return out;
-  }
-};
-var StationMagnitude = class _StationMagnitude extends BaseElement {
-  constructor(origin, mag) {
-    super();
-    __publicField(this, "origin");
-    __publicField(this, "mag");
-    __publicField(this, "type");
-    __publicField(this, "amplitude");
-    __publicField(this, "methodID");
-    __publicField(this, "waveformID");
-    this.origin = origin;
-    this.mag = mag;
-  }
-  /**
-   * Parses a QuakeML station magnitude xml element into a StationMagnitude object.
-   *
-   * @param stationMagnitudeQML the station magnitude xml Element
-   * @param allOrigins origins already extracted from the xml for linking station magnitudes with origins
-   * @param allAmplitudes amplitudes already extracted from the xml for linking station magnitudes with amplitudes
-   * @returns StationMagnitude instance
-   */
-  static createFromXml(stationMagnitudeQML, allOrigins, allAmplitudes) {
-    if (stationMagnitudeQML.localName !== "stationMagnitude") {
-      throw new Error(
-        `Cannot extract, not a QuakeML station magnitude: ${stationMagnitudeQML.localName}`
-      );
-    }
-    const originID = _grabFirstElText3(stationMagnitudeQML, "originID");
-    if (!isNonEmptyStringArg(originID)) {
-      throw new Error("stationMagnitude missing origin ID");
-    }
-    const origin = allOrigins.find((o) => o.publicId === originID);
-    if (!isDef(origin)) {
-      throw new Error("No origin with ID " + originID);
-    }
-    const mag = _grabFirstElRealQuantity(stationMagnitudeQML, "mag");
-    if (!isDef(mag)) {
-      throw new Error("stationMagnitude missing mag");
-    }
-    const out = new _StationMagnitude(origin, mag);
-    out.populate(stationMagnitudeQML);
-    out.type = _grabFirstElText3(stationMagnitudeQML, "type");
-    const amplitudeID = _grabFirstElText3(stationMagnitudeQML, "amplitudeID");
-    out.amplitude = allAmplitudes.find((a) => a.publicId === amplitudeID);
-    if (amplitudeID && !out.amplitude) {
-      throw new Error("No amplitude with ID " + amplitudeID);
-    }
-    out.methodID = _grabFirstElText3(stationMagnitudeQML, "methodID");
-    out.waveformID = _grabFirstElType(
-      WaveformID.createFromXml.bind(WaveformID)
-    )(stationMagnitudeQML, "waveformID");
-    return out;
-  }
-};
-var TimeWindow = class _TimeWindow {
-  constructor(begin, end, reference) {
-    __publicField(this, "begin");
-    __publicField(this, "end");
-    __publicField(this, "reference");
-    this.begin = begin;
-    this.end = end;
-    this.reference = reference;
-  }
-  /**
-   * Parses a QuakeML time window xml element into a TimeWindow object.
-   *
-   * @param timeWindowQML the time window xml Element
-   * @returns TimeWindow instance
-   */
-  static createFromXml(timeWindowQML) {
-    if (timeWindowQML.localName !== "timeWindow") {
-      throw new Error(
-        `Cannot extract, not a QuakeML time window: ${timeWindowQML.localName}`
-      );
-    }
-    const begin = _grabFirstElFloat3(timeWindowQML, "begin");
-    if (!isDef(begin)) {
-      throw new Error("timeWindow missing begin");
-    }
-    const end = _grabFirstElFloat3(timeWindowQML, "end");
-    if (!isDef(end)) {
-      throw new Error("timeWindow missing end");
-    }
-    const reference = _grabFirstElDateTime(timeWindowQML, "reference");
-    if (!isDef(reference)) {
-      throw new Error("timeWindow missing reference");
-    }
-    const out = new _TimeWindow(begin, end, reference);
-    return out;
-  }
-};
-var Origin = class _Origin extends BaseElement {
-  constructor(time3, latitude, longitude) {
-    super();
-    __publicField(this, "compositeTimes");
-    __publicField(this, "originUncertainty");
-    __publicField(this, "arrivalList");
-    __publicField(this, "timeQuantity");
-    __publicField(this, "latitudeQuantity");
-    __publicField(this, "longitudeQuantity");
-    __publicField(this, "depthQuantity");
-    __publicField(this, "depthType");
-    __publicField(this, "timeFixed");
-    __publicField(this, "epicenterFixed");
-    __publicField(this, "referenceSystemID");
-    __publicField(this, "methodID");
-    __publicField(this, "earthModelID");
-    __publicField(this, "quality");
-    __publicField(this, "type");
-    __publicField(this, "region");
-    __publicField(this, "evaluationMode");
-    __publicField(this, "evaluationStatus");
-    this.compositeTimes = [];
-    this.arrivalList = [];
-    if (time3 instanceof DateTime) {
-      this.timeQuantity = new Quantity(time3);
-    } else {
-      this.timeQuantity = time3;
-    }
-    if (typeof latitude == "number") {
-      this.latitudeQuantity = new Quantity(latitude);
-    } else {
-      this.latitudeQuantity = latitude;
-    }
-    if (typeof longitude == "number") {
-      this.longitudeQuantity = new Quantity(longitude);
-    } else {
-      this.longitudeQuantity = longitude;
-    }
-  }
-  /**
-   * Parses a QuakeML origin xml element into a Origin object.
-   *
-   * @param qml the origin xml Element
-   * @param allPicks picks already extracted from the xml for linking arrivals with picks
-   * @returns Origin instance
-   */
-  static createFromXml(qml, allPicks) {
-    if (qml.localName !== "origin") {
-      throw new Error(`Cannot extract, not a QuakeML Origin: ${qml.localName}`);
-    }
-    const time3 = _grabFirstElTimeQuantity(qml, "time");
-    if (!isObject(time3)) {
-      throw new Error("origin missing time");
-    }
-    const lat = _grabFirstElRealQuantity(qml, "latitude");
-    if (!isObject(lat)) {
-      throw new Error("origin missing latitude");
-    }
-    const lon = _grabFirstElRealQuantity(qml, "longitude");
-    if (!isObject(lon)) {
-      throw new Error("origin missing longitude");
-    }
-    const out = new _Origin(time3, lat, lon);
-    out.populate(qml);
-    out.originUncertainty = _grabFirstElType(
-      OriginUncertainty.createFromXml.bind(OriginUncertainty)
-    )(qml, "originUncertainty");
-    const allArrivalEls = Array.from(
-      qml.getElementsByTagNameNS(BED_NS, "arrival")
-    );
-    out.arrivalList = allArrivalEls.map(
-      (arrivalEl) => Arrival.createFromXml(arrivalEl, allPicks)
-    );
-    out.depthQuantity = _grabFirstElRealQuantity(qml, "depth");
-    out.depthType = _grabFirstElText3(qml, "depthType");
-    out.timeFixed = _grabFirstElBool(qml, "timeFixed");
-    out.epicenterFixed = _grabFirstElBool(qml, "epicenterFixed");
-    out.referenceSystemID = _grabFirstElText3(qml, "referenceSystemID");
-    out.methodID = _grabFirstElText3(qml, "methodID");
-    out.earthModelID = _grabFirstElText3(qml, "earthModelID");
-    out.quality = _grabFirstElType(
-      OriginQuality.createFromXml.bind(OriginQuality)
-    )(qml, "quality");
-    out.type = _grabFirstElText3(qml, "type");
-    out.region = _grabFirstElText3(qml, "region");
-    out.evaluationMode = _grabFirstElText3(qml, "evaluationMode");
-    out.evaluationStatus = _grabFirstElText3(qml, "evaluationStatus");
-    return out;
-  }
-  toString() {
-    const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
-    const depth = depthFormat.format(this.depth / 1e3);
-    return `${this.time.toISO()} ${latlon} ${depth} km`;
-  }
-  get time() {
-    return this.timeQuantity.value;
-  }
-  set time(t) {
-    if (t instanceof DateTime) {
-      this.timeQuantity.value = t;
-    } else {
-      this.timeQuantity = t;
-    }
-  }
-  get latitude() {
-    return this.latitudeQuantity.value;
-  }
-  set latitude(lat) {
-    if (typeof lat == "number") {
-      this.latitudeQuantity.value = lat;
-    } else {
-      this.latitudeQuantity = lat;
-    }
-  }
-  get longitude() {
-    return this.longitudeQuantity.value;
-  }
-  set longitude(lon) {
-    if (typeof lon == "number") {
-      this.longitudeQuantity.value = lon;
-    } else {
-      this.longitudeQuantity = lon;
-    }
-  }
-  get depthKm() {
-    return this.depth / 1e3;
-  }
-  get depth() {
-    return this.depthQuantity?.value ?? NaN;
-  }
-  set depth(depth) {
-    if (typeof depth == "number") {
-      if (!this.depthQuantity) {
-        this.depthQuantity = new Quantity(depth);
-      } else {
-        this.depthQuantity.value = depth;
-      }
-    } else {
-      this.depthQuantity = depth;
-    }
-  }
-  get arrivals() {
-    return this.arrivalList;
-  }
-};
-var CompositeTime = class _CompositeTime {
-  constructor() {
-    __publicField(this, "year");
-    __publicField(this, "month");
-    __publicField(this, "day");
-    __publicField(this, "hour");
-    __publicField(this, "minute");
-    __publicField(this, "second");
-  }
-  /**
-   * Parses a QuakeML composite time xml element into an CompositeTime object.
-   *
-   * @param qml the composite time xml Element
-   * @returns CompositeTime instance
-   */
-  static createFromXml(qml) {
-    if (qml.localName !== "compositeTime") {
-      throw new Error(
-        `Cannot extract, not a QuakeML Composite Time: ${qml.localName}`
-      );
-    }
-    const out = new _CompositeTime();
-    out.year = _grabFirstElIntegerQuantity(qml, "year");
-    out.month = _grabFirstElIntegerQuantity(qml, "month");
-    out.day = _grabFirstElIntegerQuantity(qml, "day");
-    out.hour = _grabFirstElIntegerQuantity(qml, "hour");
-    out.minute = _grabFirstElIntegerQuantity(qml, "minute");
-    out.second = _grabFirstElIntegerQuantity(qml, "second");
-    return out;
-  }
-};
-var OriginUncertainty = class _OriginUncertainty {
-  constructor() {
-    __publicField(this, "horizontalUncertainty");
-    __publicField(this, "minHorizontalUncertainty");
-    __publicField(this, "maxHorizontalUncertainty");
-    __publicField(this, "azimuthMaxHorizontalUncertainty");
-    __publicField(this, "confidenceEllipsoid");
-    __publicField(this, "preferredDescription");
-    __publicField(this, "confidenceLevel");
-  }
-  /**
-   * Parses a QuakeML origin uncertainty xml element into an OriginUncertainty object.
-   *
-   * @param qml the origin uncertainty xml Element
-   * @returns OriginUncertainty instance
-   */
-  static createFromXml(qml) {
-    if (qml.localName !== "originUncertainty") {
-      throw new Error(
-        `Cannot extract, not a QuakeML Origin Uncertainty: ${qml.localName}`
-      );
-    }
-    const out = new _OriginUncertainty();
-    out.horizontalUncertainty = _grabFirstElFloat3(qml, "horizontalUncertainty");
-    out.minHorizontalUncertainty = _grabFirstElFloat3(
-      qml,
-      "minHorizontalUncertainty"
-    );
-    out.maxHorizontalUncertainty = _grabFirstElFloat3(
-      qml,
-      "maxHorizontalUncertainty"
-    );
-    out.azimuthMaxHorizontalUncertainty = _grabFirstElFloat3(
-      qml,
-      "azimuthMaxHorizontalUncertainty"
-    );
-    out.confidenceEllipsoid = _grabFirstElType(
-      ConfidenceEllipsoid.createFromXml.bind(ConfidenceEllipsoid)
-    )(qml, "confidenceEllipsoid");
-    out.preferredDescription = _grabFirstElText3(qml, "preferredDescription");
-    out.confidenceLevel = _grabFirstElFloat3(qml, "confidenceLevel");
-    return out;
-  }
-};
-var ConfidenceEllipsoid = class _ConfidenceEllipsoid {
-  constructor(semiMajorAxisLength, semiMinorAxisLength, semiIntermediateAxisLength, majorAxisPlunge, majorAxisAzimuth, majorAxisRotation) {
-    __publicField(this, "semiMajorAxisLength");
-    __publicField(this, "semiMinorAxisLength");
-    __publicField(this, "semiIntermediateAxisLength");
-    __publicField(this, "majorAxisPlunge");
-    __publicField(this, "majorAxisAzimuth");
-    __publicField(this, "majorAxisRotation");
-    this.semiMajorAxisLength = semiMajorAxisLength;
-    this.semiMinorAxisLength = semiMinorAxisLength;
-    this.semiIntermediateAxisLength = semiIntermediateAxisLength;
-    this.majorAxisPlunge = majorAxisPlunge;
-    this.majorAxisAzimuth = majorAxisAzimuth;
-    this.majorAxisRotation = majorAxisRotation;
-  }
-  /**
-   * Parses a QuakeML confidence ellipsoid xml element into an ConfidenceEllipsoid object.
-   *
-   * @param qml the confidence ellipsoid xml Element
-   * @returns ConfidenceEllipsoid instance
-   */
-  static createFromXml(qml) {
-    if (qml.localName !== "confidenceEllipsoid") {
-      throw new Error(
-        `Cannot extract, not a QuakeML Confidence Ellipsoid: ${qml.localName}`
-      );
-    }
-    const semiMajorAxisLength = _grabFirstElFloat3(qml, "semiMajorAxisLength");
-    if (semiMajorAxisLength === void 0) {
-      throw new Error("confidenceEllipsoid missing semiMajorAxisLength");
-    }
-    const semiMinorAxisLength = _grabFirstElFloat3(qml, "semiMinorAxisLength");
-    if (semiMinorAxisLength === void 0) {
-      throw new Error("confidenceEllipsoid missing semiMinorAxisLength");
-    }
-    const semiIntermediateAxisLength = _grabFirstElFloat3(
-      qml,
-      "semiIntermediateAxisLength"
-    );
-    if (semiIntermediateAxisLength === void 0) {
-      throw new Error("confidenceEllipsoid missing semiIntermediateAxisLength");
-    }
-    const majorAxisPlunge = _grabFirstElFloat3(qml, "majorAxisPlunge");
-    if (majorAxisPlunge === void 0) {
-      throw new Error("confidenceEllipsoid missing majorAxisPlunge");
-    }
-    const majorAxisAzimuth = _grabFirstElFloat3(qml, "majorAxisAzimuth");
-    if (majorAxisAzimuth === void 0) {
-      throw new Error("confidenceEllipsoid missing majorAxisAzimuth");
-    }
-    const majorAxisRotation = _grabFirstElFloat3(qml, "majorAxisRotation");
-    if (majorAxisRotation === void 0) {
-      throw new Error("confidenceEllipsoid missing majorAxisRotation");
-    }
-    const out = new _ConfidenceEllipsoid(
-      semiMajorAxisLength,
-      semiMinorAxisLength,
-      semiIntermediateAxisLength,
-      majorAxisPlunge,
-      majorAxisAzimuth,
-      majorAxisRotation
-    );
-    return out;
-  }
-};
-var OriginQuality = class _OriginQuality {
-  constructor() {
-    __publicField(this, "associatedPhaseCount");
-    __publicField(this, "usedPhaseCount");
-    __publicField(this, "associatedStationCount");
-    __publicField(this, "usedStationCount");
-    __publicField(this, "depthPhaseCount");
-    __publicField(this, "standardError");
-    __publicField(this, "azimuthalGap");
-    __publicField(this, "secondaryAzimuthalGap");
-    __publicField(this, "groundTruthLevel");
-    __publicField(this, "maximumDistance");
-    __publicField(this, "minimumDistance");
-    __publicField(this, "medianDistance");
-  }
-  /**
-   * Parses a QuakeML origin quality xml element into an OriginQuality object.
-   *
-   * @param qml the origin quality xml Element
-   * @returns OriginQuality instance
-   */
-  static createFromXml(qml) {
-    if (qml.localName !== "quality") {
-      throw new Error(
-        `Cannot extract, not a QuakeML Origin Quality: ${qml.localName}`
-      );
-    }
-    const out = new _OriginQuality();
-    out.associatedPhaseCount = _grabFirstElInt3(qml, "associatedPhaseCount");
-    out.usedPhaseCount = _grabFirstElInt3(qml, "usedPhaseCount");
-    out.associatedStationCount = _grabFirstElInt3(qml, "associatedStationCount");
-    out.usedStationCount = _grabFirstElInt3(qml, "usedStationCount");
-    out.standardError = _grabFirstElFloat3(qml, "standardError");
-    out.azimuthalGap = _grabFirstElFloat3(qml, "azimuthalGap");
-    out.secondaryAzimuthalGap = _grabFirstElFloat3(qml, "secondaryAzimuthalGap");
-    out.groundTruthLevel = _grabFirstElText3(qml, "groundTruthLevel");
-    out.maximumDistance = _grabFirstElFloat3(qml, "maximumDistance");
-    out.minimumDistance = _grabFirstElFloat3(qml, "minimumDistance");
-    out.medianDistance = _grabFirstElFloat3(qml, "medianDistance");
-    return out;
-  }
-};
-var Magnitude = class _Magnitude extends BaseElement {
-  constructor(mag, type) {
-    super();
-    __publicField(this, "stationMagnitudeContributions", []);
-    __publicField(this, "magQuantity");
-    __publicField(this, "type");
-    __publicField(this, "origin");
-    __publicField(this, "methodID");
-    __publicField(this, "stationCount");
-    __publicField(this, "azimuthalGap");
-    __publicField(this, "evaluationMode");
-    __publicField(this, "evaluationStatus");
-    if (typeof mag === "number") {
-      this.magQuantity = new Quantity(mag);
-    } else {
-      this.magQuantity = mag;
-    }
-    if (type) {
-      this.type = type;
-    }
-  }
-  /**
-   * Parses a QuakeML magnitude xml element into a Magnitude object.
-   *
-   * @param qml the magnitude xml Element
-   * @param allOrigins origins already extracted from the xml for linking magnitudes with origins
-   * @param allStationMagnitudes station magnitudes already extracted from the xml
-   * @returns Magnitude instance
-   */
-  static createFromXml(qml, allOrigins, allStationMagnitudes) {
-    if (qml.localName !== "magnitude") {
-      throw new Error(
-        `Cannot extract, not a QuakeML Magnitude: ${qml.localName}`
-      );
-    }
-    const mag = _grabFirstElRealQuantity(qml, "mag");
-    if (!mag) {
-      throw new Error("magnitude missing mag");
-    }
-    const out = new _Magnitude(mag);
-    out.populate(qml);
-    const stationMagnitudeContributionEls = Array.from(
-      qml.getElementsByTagNameNS(BED_NS, "stationMagnitudeContribution")
-    );
-    out.stationMagnitudeContributions = stationMagnitudeContributionEls.map(
-      (smc) => StationMagnitudeContribution.createFromXml(smc, allStationMagnitudes)
-    );
-    out.type = _grabFirstElText3(qml, "type");
-    const originID = _grabFirstElText3(qml, "originID");
-    out.origin = allOrigins.find((o) => o.publicId === originID);
-    if (originID && !out.origin) {
-      throw new Error("No origin with ID " + originID);
-    }
-    out.methodID = _grabFirstElText3(qml, "methodID");
-    out.stationCount = _grabFirstElInt3(qml, "stationCount");
-    out.azimuthalGap = _grabFirstElFloat3(qml, "azimuthalGap");
-    out.evaluationMode = _grabFirstElText3(qml, "evaluationMode");
-    out.evaluationStatus = _grabFirstElText3(qml, "evaluationStatus");
-    return out;
-  }
-  toString() {
-    return `${magFormat.format(this.mag)} ${this.type ? this.type : ""}`;
-  }
-  get mag() {
-    return this.magQuantity.value;
-  }
-  set mag(value) {
-    if (typeof value === "number") {
-      this.magQuantity.value = value;
-    } else {
-      this.magQuantity = value;
-    }
-  }
-};
-var StationMagnitudeContribution = class _StationMagnitudeContribution {
-  constructor(stationMagnitude) {
-    __publicField(this, "stationMagnitude");
-    __publicField(this, "residual");
-    __publicField(this, "weight");
-    this.stationMagnitude = stationMagnitude;
-  }
-  /**
-   * Parses a QuakeML station magnitude contribution xml element into a StationMagnitudeContribution object.
-   *
-   * @param qml the station magnitude contribution xml Element
-   * @param allStationMagnitudes station magnitudes already extracted from the xml for linking station magnitudes with station magnitude contributions
-   * @returns StationMagnitudeContribution instance
-   */
-  static createFromXml(qml, allStationMagnitudes) {
-    if (qml.localName !== "stationMagnitudeContribution") {
-      throw new Error(
-        `Cannot extract, not a QuakeML StationMagnitudeContribution: ${qml.localName}`
-      );
-    }
-    const stationMagnitudeID = _grabFirstElText3(qml, "stationMagnitudeID");
-    if (!isNonEmptyStringArg(stationMagnitudeID)) {
-      throw new Error("stationMagnitudeContribution missing stationMagnitude");
-    }
-    const stationMagnitude = allStationMagnitudes.find(
-      (sm) => sm.publicId === stationMagnitudeID
-    );
-    if (!isDef(stationMagnitude)) {
-      throw new Error("No stationMagnitude with ID " + stationMagnitudeID);
-    }
-    const out = new _StationMagnitudeContribution(stationMagnitude);
-    out.residual = _grabFirstElFloat3(qml, "residual");
-    out.weight = _grabFirstElFloat3(qml, "weight");
-    return out;
-  }
-};
-var Arrival = class _Arrival extends BaseElement {
-  constructor(phase, pick3) {
-    super();
-    __publicField(this, "phase");
-    __publicField(this, "pick");
-    __publicField(this, "timeCorrection");
-    __publicField(this, "azimuth");
-    __publicField(this, "distance");
-    __publicField(this, "takeoffAngle");
-    __publicField(this, "timeResidual");
-    __publicField(this, "horizontalSlownessResidual");
-    __publicField(this, "backazimuthResidual");
-    __publicField(this, "timeWeight");
-    __publicField(this, "horizontalSlownessWeight");
-    __publicField(this, "backazimuthWeight");
-    __publicField(this, "earthModelID");
-    this.phase = phase;
-    this.pick = pick3;
-  }
-  /**
-   * Parses a QuakeML arrival xml element into a Arrival object.
-   *
-   * @param arrivalQML the arrival xml Element
-   * @param allPicks picks already extracted from the xml for linking arrivals with picks
-   * @returns Arrival instance
-   */
-  static createFromXml(arrivalQML, allPicks) {
-    if (arrivalQML.localName !== "arrival") {
-      throw new Error(
-        `Cannot extract, not a QuakeML Arrival: ${arrivalQML.localName}`
-      );
-    }
-    const pickId = _grabFirstElText3(arrivalQML, "pickID");
-    const phase = _grabFirstElText3(arrivalQML, "phase");
-    if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
-      const myPick = allPicks.find(function(p) {
-        return p.publicId === pickId;
-      });
-      if (!myPick) {
-        throw new Error("Can't find pick with Id=" + pickId + " for Arrival");
-      }
-      const out = new _Arrival(phase, myPick);
-      out.populate(arrivalQML);
-      out.timeCorrection = _grabFirstElFloat3(arrivalQML, "timeCorrection");
-      out.azimuth = _grabFirstElFloat3(arrivalQML, "azimuth");
-      out.distance = _grabFirstElFloat3(arrivalQML, "distance");
-      out.takeoffAngle = _grabFirstElRealQuantity(arrivalQML, "takeoffAngle");
-      out.timeResidual = _grabFirstElFloat3(arrivalQML, "timeResidual");
-      out.horizontalSlownessResidual = _grabFirstElFloat3(
-        arrivalQML,
-        "horizontalSlownessResidual"
-      );
-      out.backazimuthResidual = _grabFirstElFloat3(
-        arrivalQML,
-        "backazimuthResidual"
-      );
-      out.timeWeight = _grabFirstElFloat3(arrivalQML, "timeWeight");
-      out.horizontalSlownessWeight = _grabFirstElFloat3(
-        arrivalQML,
-        "horizontalSlownessWeight"
-      );
-      out.backazimuthWeight = _grabFirstElFloat3(
-        arrivalQML,
-        "backazimuthWeight"
-      );
-      out.earthModelID = _grabFirstElText3(arrivalQML, "earthModelID");
-      return out;
-    } else {
-      throw new Error(
-        "Arrival does not have phase or pickId: " + stringify(phase) + " " + stringify(pickId)
-      );
-    }
-  }
-};
-var Pick = class _Pick extends BaseElement {
-  constructor(time3, waveformID) {
-    super();
-    __publicField(this, "timeQuantity");
-    __publicField(this, "waveformID");
-    __publicField(this, "filterID");
-    __publicField(this, "methodID");
-    __publicField(this, "horizontalSlowness");
-    __publicField(this, "backazimuth");
-    __publicField(this, "slownessMethodID");
-    __publicField(this, "onset");
-    __publicField(this, "phaseHint");
-    __publicField(this, "polarity");
-    __publicField(this, "evaluationMode");
-    __publicField(this, "evaluationStatus");
-    if (time3 instanceof DateTime) {
-      this.timeQuantity = new Quantity(time3);
-    } else {
-      this.timeQuantity = time3;
-    }
-    this.waveformID = waveformID;
-  }
-  get time() {
-    return this.timeQuantity.value;
-  }
-  set time(t) {
-    if (t instanceof DateTime) {
-      this.timeQuantity.value = t;
-    } else {
-      this.timeQuantity = t;
-    }
-  }
-  /**
-   * Parses a QuakeML pick xml element into a Pick object.
-   *
-   * @param pickQML the pick xml Element
-   * @returns Pick instance
-   */
-  static createFromXml(pickQML) {
-    if (pickQML.localName !== "pick") {
-      throw new Error(
-        `Cannot extract, not a QuakeML Pick: ${pickQML.localName}`
-      );
-    }
-    const time3 = _grabFirstElTimeQuantity(pickQML, "time");
-    if (!isDef(time3)) {
-      throw new Error("Missing time");
-    }
-    const waveformId = _grabFirstElType(
-      WaveformID.createFromXml.bind(WaveformID)
-    )(pickQML, "waveformID");
-    if (!isObject(waveformId)) {
-      throw new Error("pick missing waveformID");
-    }
-    const out = new _Pick(time3, waveformId);
-    out.populate(pickQML);
-    out.filterID = _grabFirstElText3(pickQML, "filterID");
-    out.methodID = _grabFirstElText3(pickQML, "methodID");
-    out.horizontalSlowness = _grabFirstElRealQuantity(
-      pickQML,
-      "horizontalSlowness"
-    );
-    out.backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
-    out.slownessMethodID = _grabFirstElText3(pickQML, "slownessMethodID");
-    out.onset = _grabFirstElText3(pickQML, "onset");
-    out.phaseHint = _grabFirstElText3(pickQML, "phaseHint");
-    out.polarity = _grabFirstElText3(pickQML, "polarity");
-    out.evaluationMode = _grabFirstElText3(pickQML, "evaluationMode");
-    out.evaluationStatus = _grabFirstElText3(pickQML, "evaluationStatus");
-    return out;
-  }
-  get networkCode() {
-    return this.waveformID.networkCode;
-  }
-  get stationCode() {
-    return this.waveformID.stationCode;
-  }
-  get locationCode() {
-    return this.waveformID.locationCode || "--";
-  }
-  get channelCode() {
-    return this.waveformID.channelCode || "---";
-  }
-  isAtStation(station) {
-    return this.networkCode === station.networkCode && this.stationCode === station.stationCode;
-  }
-  isOnChannel(channel) {
-    return this.networkCode === channel.station.networkCode && this.stationCode === channel.station.stationCode && this.locationCode === channel.locationCode && this.channelCode === channel.channelCode;
-  }
-  toString() {
-    return stringify(this.time) + ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`;
-  }
-};
-var FocalMechanism = class _FocalMechanism extends BaseElement {
-  constructor() {
-    super(...arguments);
-    __publicField(this, "waveformIDList", []);
-    __publicField(this, "momentTensorList", []);
-    __publicField(this, "triggeringOrigin");
-    __publicField(this, "nodalPlanes");
-    __publicField(this, "principalAxes");
-    __publicField(this, "azimuthalGap");
-    __publicField(this, "stationPolarityCount");
-    __publicField(this, "misfit");
-    __publicField(this, "stationDistributionRatio");
-    __publicField(this, "methodID");
-    __publicField(this, "evaluationMode");
-    __publicField(this, "evaluationStatus");
-  }
-  /**
-   * Parses a QuakeML focal mechanism xml element into a FocalMechanism object.
-   *
-   * @param focalMechQML the focal mechanism xml Element
-   * @param allOrigins origins already extracted from the xml for linking focal mechanisms with origins
-   * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
-   * @returns FocalMechanism instance
-   */
-  static createFromXml(focalMechQML, allOrigins, allMagnitudes) {
-    if (focalMechQML.localName !== "focalMechanism") {
-      throw new Error(
-        `Cannot extract, not a QuakeML focalMechanism: ${focalMechQML.localName}`
-      );
-    }
-    const out = new _FocalMechanism();
-    out.populate(focalMechQML);
-    const waveformIDEls = Array.from(
-      focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID")
-    );
-    out.waveformIDList = waveformIDEls.map(
-      (wid) => WaveformID.createFromXml(wid)
-    );
-    const momentTensorEls = Array.from(
-      focalMechQML.getElementsByTagNameNS(BED_NS, "momentTensor")
-    );
-    out.momentTensorList = momentTensorEls.map(
-      (mt) => MomentTensor.createFromXml(mt, allOrigins, allMagnitudes)
-    );
-    const triggeringOriginID = _grabFirstElText3(
-      focalMechQML,
-      "triggeringOriginID"
-    );
-    out.triggeringOrigin = allOrigins.find(
-      (o) => o.publicId === triggeringOriginID
-    );
-    if (triggeringOriginID && !out.triggeringOrigin) {
-      throw new Error("No origin with ID " + triggeringOriginID);
-    }
-    out.nodalPlanes = _grabFirstElType(
-      NodalPlanes.createFromXml.bind(NodalPlanes)
-    )(focalMechQML, "nodalPlanes");
-    out.principalAxes = _grabFirstElType(
-      PrincipalAxes.createFromXml.bind(PrincipalAxes)
-    )(focalMechQML, "principalAxes");
-    out.azimuthalGap = _grabFirstElFloat3(focalMechQML, "azimuthalGap");
-    out.stationPolarityCount = _grabFirstElInt3(
-      focalMechQML,
-      "stationPolarityCount"
-    );
-    out.misfit = _grabFirstElFloat3(focalMechQML, "misfit");
-    out.stationDistributionRatio = _grabFirstElFloat3(
-      focalMechQML,
-      "stationDistributionRatio"
-    );
-    out.methodID = _grabFirstElText3(focalMechQML, "methodID");
-    out.evaluationMode = _grabFirstElText3(focalMechQML, "evaluationMode");
-    out.evaluationStatus = _grabFirstElText3(focalMechQML, "evaluationStatus");
-    return out;
-  }
-};
-var NodalPlanes = class _NodalPlanes {
-  constructor() {
-    __publicField(this, "nodalPlane1");
-    __publicField(this, "nodalPlane2");
-    __publicField(this, "preferredPlane");
-  }
-  /**
-   * Parses a QuakeML nodal planes xml element into a NodalPlanes object.
-   *
-   * @param nodalPlanesQML the nodal planes xml Element
-   * @returns NodalPlanes instance
-   */
-  static createFromXml(nodalPlanesQML) {
-    const out = new _NodalPlanes();
-    out.nodalPlane1 = _grabFirstElType(
-      NodalPlane.createFromXml.bind(NodalPlane)
-    )(nodalPlanesQML, "nodalPlane1");
-    out.nodalPlane2 = _grabFirstElType(
-      NodalPlane.createFromXml.bind(NodalPlane)
-    )(nodalPlanesQML, "nodalPlane2");
-    const preferredPlaneString = _grabAttribute3(
-      nodalPlanesQML,
-      "preferredPlane"
-    );
-    out.preferredPlane = isNonEmptyStringArg(preferredPlaneString) ? parseInt(preferredPlaneString) : void 0;
-    return out;
-  }
-};
-var NodalPlane = class _NodalPlane {
-  constructor(strike, dip, rake) {
-    __publicField(this, "strike");
-    __publicField(this, "dip");
-    __publicField(this, "rake");
-    this.strike = strike;
-    this.dip = dip;
-    this.rake = rake;
-  }
-  /**
-   * Parses a QuakeML nodal plane xml element into a NodalPlane object.
-   *
-   * @param nodalPlaneQML the nodal plane xml Element
-   * @returns NodalPlane instance
-   */
-  static createFromXml(nodalPlaneQML) {
-    const strike = _grabFirstElRealQuantity(nodalPlaneQML, "strike");
-    if (!isObject(strike)) {
-      throw new Error("nodal plane missing strike");
-    }
-    const dip = _grabFirstElRealQuantity(nodalPlaneQML, "dip");
-    if (!isObject(dip)) {
-      throw new Error("nodal plane missing dip");
-    }
-    const rake = _grabFirstElRealQuantity(nodalPlaneQML, "rake");
-    if (!isObject(rake)) {
-      throw new Error("nodal plane missing rake");
-    }
-    const out = new _NodalPlane(strike, dip, rake);
-    return out;
-  }
-};
-var PrincipalAxes = class _PrincipalAxes {
-  constructor(tAxis, pAxis) {
-    __publicField(this, "tAxis");
-    __publicField(this, "pAxis");
-    __publicField(this, "nAxis");
-    this.tAxis = tAxis;
-    this.pAxis = pAxis;
-  }
-  /**
-   * Parses a QuakeML princpalAxes element into a PrincipalAxes object.
-   *
-   * @param princpalAxesQML the princpalAxes xml Element
-   * @returns PrincipalAxes instance
-   */
-  static createFromXml(princpalAxesQML) {
-    if (princpalAxesQML.localName !== "principalAxes") {
-      throw new Error(
-        `Cannot extract, not a QuakeML princpalAxes: ${princpalAxesQML.localName}`
-      );
-    }
-    const tAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
-      princpalAxesQML,
-      "tAxis"
-    );
-    if (!isObject(tAxis)) {
-      throw new Error("nodal plane missing tAxis");
-    }
-    const pAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
-      princpalAxesQML,
-      "pAxis"
-    );
-    if (!isObject(pAxis)) {
-      throw new Error("nodal plane missing pAxis");
-    }
-    const out = new _PrincipalAxes(tAxis, pAxis);
-    out.nAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
-      princpalAxesQML,
-      "nAxis"
-    );
-    return out;
-  }
-};
-var Axis = class _Axis {
-  constructor(azimuth, plunge, length) {
-    __publicField(this, "azimuth");
-    __publicField(this, "plunge");
-    __publicField(this, "length");
-    this.azimuth = azimuth;
-    this.plunge = plunge;
-    this.length = length;
-  }
-  /**
-   * Parses a QuakeML axis xml element into a Axis object.
-   *
-   * @param axisQML the axis xml Element
-   * @returns Axis instance
-   */
-  static createFromXml(axisQML) {
-    const azimuth = _grabFirstElRealQuantity(axisQML, "azimuth");
-    if (!isObject(azimuth)) {
-      throw new Error("nodal plane missing azimuth");
-    }
-    const plunge = _grabFirstElRealQuantity(axisQML, "plunge");
-    if (!isObject(plunge)) {
-      throw new Error("nodal plane missing plunge");
-    }
-    const length = _grabFirstElRealQuantity(axisQML, "length");
-    if (!isObject(length)) {
-      throw new Error("nodal plane missing length");
-    }
-    const out = new _Axis(azimuth, plunge, length);
-    return out;
-  }
-};
-var MomentTensor = class _MomentTensor extends BaseElement {
-  constructor(derivedOrigin) {
-    super();
-    __publicField(this, "dataUsedList", []);
-    __publicField(this, "derivedOrigin");
-    __publicField(this, "momentMagnitude");
-    __publicField(this, "scalarMoment");
-    __publicField(this, "tensor");
-    __publicField(this, "variance");
-    __publicField(this, "varianceReduction");
-    __publicField(this, "doubleCouple");
-    __publicField(this, "clvd");
-    __publicField(this, "iso");
-    __publicField(this, "greensFunctionID");
-    __publicField(this, "filterID");
-    __publicField(this, "sourceTimeFunction");
-    __publicField(this, "methodID");
-    __publicField(this, "category");
-    __publicField(this, "inversionType");
-    this.derivedOrigin = derivedOrigin;
-  }
-  /**
-   * Parses a QuakeML momentTensor xml element into a MomentTensor object.
-   *
-   * @param momentTensorQML the momentTensor xml Element
-   * @param allOrigins origins already extracted from the xml for linking moment tensors with origins
-   * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
-   * @returns MomentTensor instance
-   */
-  static createFromXml(momentTensorQML, allOrigins, allMagnitudes) {
-    if (momentTensorQML.localName !== "momentTensor") {
-      throw new Error(
-        `Cannot extract, not a QuakeML momentTensor: ${momentTensorQML.localName}`
-      );
-    }
-    const derivedOriginID = _grabFirstElText3(
-      momentTensorQML,
-      "derivedOriginID"
-    );
-    let derivedOrigin;
-    if (!isNonEmptyStringArg(derivedOriginID)) {
-      console.log("momentTensor missing derivedOriginID");
-    } else {
-      derivedOrigin = allOrigins.find(
-        (o) => o.publicId === derivedOriginID
-      );
-      if (!isDef(derivedOrigin)) {
-        throw new Error("No origin with ID " + derivedOriginID);
-      }
-    }
-    const out = new _MomentTensor(derivedOrigin);
-    out.populate(momentTensorQML);
-    const dataUsedEls = Array.from(
-      momentTensorQML.getElementsByTagNameNS(BED_NS, "dataUsed")
-    );
-    out.dataUsedList = dataUsedEls.map(DataUsed.createFromXml.bind(DataUsed));
-    const momentMagnitudeID = _grabFirstElText3(
-      momentTensorQML,
-      "momentMagnitudeID"
-    );
-    out.momentMagnitude = allMagnitudes.find(
-      (o) => o.publicId === momentMagnitudeID
-    );
-    if (momentMagnitudeID && !out.momentMagnitude) {
-      throw new Error("No magnitude with ID " + momentMagnitudeID);
-    }
-    try {
-      out.scalarMoment = _grabFirstElRealQuantity(
-        momentTensorQML,
-        "scalarMoment"
-      );
-    } catch {
-      const scalMom = _grabFirstElFloat3(momentTensorQML, "scalarMoment");
-      if (scalMom != null) {
-        out.scalarMoment = new Quantity(scalMom);
-      } else {
-        warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl2(momentTensorQML, "scalarMoment")}`);
-      }
-      warn(`scalarMoment in momentTensor is invalid: ${_grabFirstEl2(momentTensorQML, "scalarMoment")}`);
-    }
-    out.tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(
-      momentTensorQML,
-      "tensor"
-    );
-    out.variance = _grabFirstElFloat3(momentTensorQML, "variance");
-    out.varianceReduction = _grabFirstElFloat3(
-      momentTensorQML,
-      "varianceReduction"
-    );
-    out.doubleCouple = _grabFirstElFloat3(momentTensorQML, "doubleCouple");
-    out.clvd = _grabFirstElFloat3(momentTensorQML, "clvd");
-    out.iso = _grabFirstElFloat3(momentTensorQML, "iso");
-    out.greensFunctionID = _grabFirstElText3(
-      momentTensorQML,
-      "greensFunctionID"
-    );
-    out.filterID = _grabFirstElText3(momentTensorQML, "filterID");
-    out.sourceTimeFunction = _grabFirstElType(
-      SourceTimeFunction.createFromXml.bind(SourceTimeFunction)
-    )(momentTensorQML, "sourceTimeFunction");
-    out.methodID = _grabFirstElText3(momentTensorQML, "methodID");
-    out.category = _grabFirstElText3(momentTensorQML, "category");
-    out.inversionType = _grabFirstElText3(momentTensorQML, "inversionType");
-    return out;
-  }
-};
-var Tensor = class _Tensor {
-  constructor(Mrr, Mtt, Mpp, Mrt, Mrp, Mtp) {
-    __publicField(this, "Mrr");
-    __publicField(this, "Mtt");
-    __publicField(this, "Mpp");
-    __publicField(this, "Mrt");
-    __publicField(this, "Mrp");
-    __publicField(this, "Mtp");
-    this.Mrr = Mrr;
-    this.Mtt = Mtt;
-    this.Mpp = Mpp;
-    this.Mrt = Mrt;
-    this.Mrp = Mrp;
-    this.Mtp = Mtp;
-  }
-  /**
-   * Parses a QuakeML tensor xml element into a Tensor object.
-   *
-   * @param tensorQML the tensor xml Element
-   * @returns Tensor instance
-   */
-  static createFromXml(tensorQML) {
-    if (tensorQML.localName !== "tensor") {
-      throw new Error(
-        `Cannot extract, not a QuakeML tensor: ${tensorQML.localName}`
-      );
-    }
-    const Mrr = _grabFirstElRealQuantity(tensorQML, "Mrr");
-    if (!isObject(Mrr)) {
-      throw new Error("tensor missing Mrr");
-    }
-    const Mtt = _grabFirstElRealQuantity(tensorQML, "Mtt");
-    if (!isObject(Mtt)) {
-      throw new Error("tensor missing Mtt");
-    }
-    const Mpp = _grabFirstElRealQuantity(tensorQML, "Mpp");
-    if (!isObject(Mpp)) {
-      throw new Error("tensor missing Mpp");
-    }
-    const Mrt = _grabFirstElRealQuantity(tensorQML, "Mrt");
-    if (!isObject(Mrt)) {
-      throw new Error("tensor missing Mrt");
-    }
-    const Mrp = _grabFirstElRealQuantity(tensorQML, "Mrp");
-    if (!isObject(Mrp)) {
-      throw new Error("tensor missing Mrp");
-    }
-    const Mtp = _grabFirstElRealQuantity(tensorQML, "Mtp");
-    if (!isObject(Mtp)) {
-      throw new Error("tensor missing Mtp");
-    }
-    const out = new _Tensor(Mrr, Mtt, Mpp, Mrt, Mrp, Mtp);
-    return out;
-  }
-};
-var SourceTimeFunction = class _SourceTimeFunction {
-  constructor(type, duration3) {
-    __publicField(this, "type");
-    __publicField(this, "duration");
-    __publicField(this, "riseTime");
-    __publicField(this, "decayTime");
-    this.type = type;
-    this.duration = duration3;
-  }
-  /**
-   * Parses a QuakeML sourceTimeFunction xml element into a SourceTimeFunction object.
-   *
-   * @param sourceTimeFunctionQML the sourceTimeFunction xml Element
-   * @returns SourceTimeFunction instance
-   */
-  static createFromXml(sourceTimeFunctionQML) {
-    if (sourceTimeFunctionQML.localName !== "sourceTimeFunction") {
-      throw new Error(
-        `Cannot extract, not a QuakeML sourceTimeFunction: ${sourceTimeFunctionQML.localName}`
-      );
-    }
-    const type = _grabFirstElText3(sourceTimeFunctionQML, "type");
-    if (!isNonEmptyStringArg(type)) {
-      throw new Error("sourceTimeFunction missing type");
-    }
-    const duration3 = _grabFirstElFloat3(sourceTimeFunctionQML, "duration");
-    if (!isDef(duration3)) {
-      throw new Error("sourceTimeFunction missing duration");
-    }
-    const out = new _SourceTimeFunction(type, duration3);
-    out.riseTime = _grabFirstElFloat3(sourceTimeFunctionQML, "riseTime");
-    out.decayTime = _grabFirstElFloat3(sourceTimeFunctionQML, "decayTime");
-    return out;
-  }
-};
-var DataUsed = class _DataUsed {
-  constructor(waveType) {
-    __publicField(this, "waveType");
-    __publicField(this, "stationCount");
-    __publicField(this, "componentCount");
-    __publicField(this, "shortestPeriod");
-    __publicField(this, "longestPeriod");
-    this.waveType = waveType;
-  }
-  /**
-   * Parses a QuakeML dataUsed xml element into a DataUsed object.
-   *
-   * @param dataUsedQML the dataUsed xml Element
-   * @returns SourceTimeFunction instance
-   */
-  static createFromXml(dataUsedQML) {
-    if (dataUsedQML.localName !== "dataUsed") {
-      throw new Error(
-        `Cannot extract, not a QuakeML dataUsed: ${dataUsedQML.localName}`
-      );
-    }
-    const waveType = _grabFirstElText3(dataUsedQML, "waveType");
-    if (!isNonEmptyStringArg(waveType)) {
-      throw new Error("dataUsed missing waveType");
-    }
-    const out = new _DataUsed(waveType);
-    out.stationCount = _grabFirstElInt3(dataUsedQML, "stationCount");
-    out.componentCount = _grabFirstElInt3(dataUsedQML, "componentCount");
-    out.shortestPeriod = _grabFirstElFloat3(dataUsedQML, "shortestPeriod");
-    out.longestPeriod = _grabFirstElFloat3(dataUsedQML, "longestPeriod");
-    return out;
-  }
-};
-var WaveformID = class _WaveformID {
-  constructor(networkCode, stationCode) {
-    __publicField(this, "networkCode");
-    __publicField(this, "stationCode");
-    __publicField(this, "channelCode");
-    __publicField(this, "locationCode");
-    this.networkCode = networkCode;
-    this.stationCode = stationCode;
-  }
-  /**
-   * Parses a QuakeML waveform ID xml element into a WaveformID object.
-   *
-   * @param waveformQML the waveform ID xml Element
-   * @returns WaveformID instance
-   */
-  static createFromXml(waveformQML) {
-    if (waveformQML.localName !== "waveformID") {
-      throw new Error(
-        `Cannot extract, not a QuakeML waveform ID: ${waveformQML.localName}`
-      );
-    }
-    const networkCode = _grabAttribute3(waveformQML, "networkCode");
-    if (!isNonEmptyStringArg(networkCode)) {
-      throw new Error("waveformID missing networkCode");
-    }
-    const stationCode = _grabAttribute3(waveformQML, "stationCode");
-    if (!isNonEmptyStringArg(stationCode)) {
-      throw new Error("waveformID missing stationCode");
-    }
-    const out = new _WaveformID(networkCode, stationCode);
-    out.channelCode = _grabAttribute3(waveformQML, "channelCode");
-    out.locationCode = _grabAttribute3(waveformQML, "locationCode");
-    return out;
-  }
-  toString() {
-    return `${this.networkCode}.${this.stationCode}.${this.locationCode || "--"}.${this.channelCode || "---"}`;
-  }
-};
-var Quantity = class _Quantity {
-  constructor(value) {
-    __publicField(this, "value");
-    __publicField(this, "uncertainty");
-    __publicField(this, "lowerUncertainty");
-    __publicField(this, "upperUncertainty");
-    __publicField(this, "confidenceLevel");
-    this.value = value;
-  }
-  /**
-   * Parses a QuakeML quantity xml element into a Quantity object.
-   *
-   * @param quantityQML the quantity xml Element
-   * @param grab a callback to obtain the value
-   * @param grabUncertainty a callback to obtain the uncertainties
-   * @returns Quantity instance
-   */
-  static _createFromXml(quantityQML, grab, grabUncertainty) {
-    const value = grab(quantityQML, "value");
-    if (value === void 0) {
-      throw new Error("missing value");
-    }
-    const out = new _Quantity(value);
-    out.uncertainty = grabUncertainty(quantityQML, "uncertainty");
-    out.lowerUncertainty = grabUncertainty(quantityQML, "lowerUncertainty");
-    out.upperUncertainty = grabUncertainty(quantityQML, "upperUncertainty");
-    out.confidenceLevel = _grabFirstElFloat3(quantityQML, "confidenceLevel");
-    return out;
-  }
-  /**
-   * Parses a QuakeML real quantity xml element into a RealQuantity object.
-   *
-   * @param realQuantityQML the real quantity xml Element
-   * @returns RealQuantity instance
-   */
-  static createRealQuantityFromXml(realQuantityQML) {
-    return _Quantity._createFromXml(
-      realQuantityQML,
-      _grabFirstElFloat3,
-      _grabFirstElFloat3
-    );
-  }
-  /**
-   * Parses a QuakeML integer quantity xml element into a RealQuantity object.
-   *
-   * @param integerQuantityQML the integer quantity xml Element
-   * @returns IntegerQuantity instance
-   */
-  static createIntegerQuantityFromXml(integerQuantityQML) {
-    return _Quantity._createFromXml(
-      integerQuantityQML,
-      _grabFirstElFloat3,
-      _grabFirstElInt3
-    );
-  }
-  /**
-   * Parses a QuakeML time quantity xml element into a TimeQuantity object.
-   *
-   * @param timeQuantityQML the time quantity xml Element
-   * @returns TimeQuantity instance
-   */
-  static createTimeQuantityFromXml(timeQuantityQML) {
-    return _Quantity._createFromXml(
-      timeQuantityQML,
-      _grabFirstElDateTime,
-      _grabFirstElFloat3
-    );
-  }
-};
-var Comment2 = class _Comment {
-  constructor(text) {
-    __publicField(this, "text");
-    __publicField(this, "creationInfo");
-    this.text = text;
-  }
-  /**
-   * Parses a QuakeML comment xml element into a Comment object.
-   *
-   * @param commentQML the comment xml Element
-   * @returns Comment instance
-   */
-  static createFromXml(commentQML) {
-    const text = _grabFirstElText3(commentQML, "text");
-    if (text === void 0) {
-      throw new Error("missing value");
-    }
-    const out = new _Comment(text);
-    out.creationInfo = _grabFirstElCreationInfo(commentQML, "creationInfo");
-    return out;
-  }
-};
-var CreationInfo = class _CreationInfo {
-  constructor() {
-    __publicField(this, "agencyID");
-    __publicField(this, "agencyURI");
-    __publicField(this, "author");
-    __publicField(this, "authorURI");
-    __publicField(this, "creationTime");
-    __publicField(this, "version");
-  }
-  /**
-   * Parses a QuakeML creation info xml element into a CreationInfo object.
-   *
-   * @param creationInfoQML the creation info xml Element
-   * @returns CreationInfo instance
-   */
-  static createFromXml(creationInfoQML) {
-    const out = new _CreationInfo();
-    out.agencyID = _grabFirstElText3(creationInfoQML, "agencyID");
-    out.agencyURI = _grabFirstElText3(creationInfoQML, "agencyURI");
-    out.author = _grabFirstElText3(creationInfoQML, "author");
-    out.authorURI = _grabFirstElText3(creationInfoQML, "authorURI");
-    out.creationTime = _grabFirstElDateTime(creationInfoQML, "creationTime");
-    out.version = _grabFirstElText3(creationInfoQML, "version");
-    return out;
-  }
-};
-function parseQuakeML(rawXml, host) {
-  const top2 = rawXml.documentElement;
-  if (!top2) {
-    throw new Error("Can't get documentElement");
-  }
-  const eventParametersArray = Array.from(
-    top2.getElementsByTagName("eventParameters")
-  );
-  if (eventParametersArray.length !== 1) {
-    throw new Error(
-      `Document has ${eventParametersArray.length} eventParameters elements`
-    );
-  }
-  return EventParameters.createFromXml(eventParametersArray[0], host);
-}
-function createQuakeFromValues(publicId, time3, latitude, longitude, depth_meter) {
-  const origin = new Origin(
-    new Quantity(time3),
-    new Quantity(latitude),
-    new Quantity(longitude)
-  );
-  origin.depth = new Quantity(depth_meter);
-  const quake = new Quake();
-  quake.publicId = publicId;
-  quake.originList.push(origin);
-  quake.preferredOrigin = origin;
-  return quake;
-}
-function fetchQuakeML(url2, timeoutSec2 = 10, nodata = 204) {
-  const fetchInit = defaultFetchInitObj(XML_MIME);
-  const host = new URL(url2).hostname;
-  return doFetchWithTimeout(url2, fetchInit, timeoutSec2 * 1e3).then((response) => {
-    if (response.status === 200) {
-      return response.text();
-    } else if (response.status === 204 || isDef(nodata) && response.status === nodata) {
-      return FAKE_EMPTY_XML2;
-    } else {
-      throw new Error(`Status not successful: ${response.status}`);
-    }
-  }).then(function(rawXmlText) {
-    return new DOMParser().parseFromString(rawXmlText, XML_MIME);
-  }).then((rawXml) => {
-    return parseQuakeML(rawXml, host);
-  });
-}
-function mightBeQuakeML(buf) {
-  if (!mightBeXml(buf)) {
-    return false;
-  }
-  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
-  if (!initialChars.includes("quakeml")) {
-    return false;
-  }
-  return true;
-}
-function createUnknownId() {
-  const max = 1e6;
-  let s2 = `${Math.floor(Math.random() * max)}`;
-  s2 = s2.padStart(6, "0");
-  return `${UNKNOWN_PUBLIC_ID}_${s2}`;
-}
-var ZERO_MAGNITUDE = new Magnitude(new Quantity(0), "unk");
-var _grabAllElComment = function(xml, tagName) {
-  const out = [];
-  if (isObject(xml)) {
-    const elList = Array.from(xml.children).filter(
-      (e) => e.tagName === tagName
-    );
-    for (const el of elList) {
-      if (isObject(el)) {
-        out.push(Comment2.createFromXml(el));
-      }
-    }
-  }
-  return out;
-};
-var _grabFirstElNS = function(xml, namespace, tagName) {
-  let out = null;
-  if (isObject(xml)) {
-    const elList = xml.getElementsByTagNameNS(namespace, tagName);
-    for (let idx = 0; idx < elList.length; idx++) {
-      const e = elList.item(idx);
-      if (e != null && e.parentElement === xml) {
-        if (e) {
-          out = e;
-          break;
-        }
-      }
-    }
-  }
-  return out;
-};
-var _grabFirstEl2 = function(xml, tagName) {
-  if (isObject(xml)) {
-    const elList = Array.from(xml.children).filter(
-      (e) => e.tagName === tagName
-    );
-    if (elList.length > 0) {
-      const e = elList[0];
-      if (e) {
-        return e;
-      }
-    }
-  }
-  return void 0;
-};
-var _grabFirstElText3 = function(xml, tagName) {
-  let out = void 0;
-  const el = _grabFirstEl2(xml, tagName);
-  if (isObject(el)) {
-    out = el.textContent;
-    if (out === null) {
-      out = void 0;
-    }
-  }
-  return out;
-};
-var _grabFirstElBool = function(xml, tagName) {
-  const el = _grabFirstElText3(xml, tagName);
-  if (!isStringArg(el)) {
-    return void 0;
-  }
-  switch (el) {
-    case "true":
-    case "1":
-      return true;
-    case "false":
-    case "0":
-      return false;
-  }
-  throw new Error("Invalid boolean: " + el);
-};
-var _grabFirstElInt3 = function(xml, tagName) {
-  let out = void 0;
-  const el = _grabFirstElText3(xml, tagName);
-  if (isStringArg(el)) {
-    out = parseInt(el);
-  }
-  return out;
-};
-var _grabFirstElFloat3 = function(xml, tagName) {
-  let out = void 0;
-  const el = _grabFirstElText3(xml, tagName);
-  if (isStringArg(el)) {
-    out = parseFloat(el);
-  }
-  return out;
-};
-var _grabFirstElDateTime = function(xml, tagName) {
-  let out = void 0;
-  const el = _grabFirstElText3(xml, tagName);
-  if (isStringArg(el)) {
-    out = isoToDateTime(el);
-  }
-  return out;
-};
-var _grabFirstElType = function(createFromXml) {
-  return function(xml, tagName) {
-    let out = void 0;
-    const el = _grabFirstEl2(xml, tagName);
-    if (isObject(el)) {
-      out = createFromXml(el);
-    }
-    return out;
-  };
-};
-var _grabFirstElRealQuantity = _grabFirstElType(
-  Quantity.createRealQuantityFromXml.bind(Quantity)
-);
-var _grabFirstElIntegerQuantity = _grabFirstElType(
-  Quantity.createIntegerQuantityFromXml.bind(Quantity)
-);
-var _grabFirstElTimeQuantity = _grabFirstElType(
-  Quantity.createTimeQuantityFromXml.bind(Quantity)
-);
-var _grabFirstElCreationInfo = _grabFirstElType(
-  CreationInfo.createFromXml.bind(CreationInfo)
-);
-var _grabAttribute3 = function(xml, tagName) {
-  let out = void 0;
-  if (isObject(xml)) {
-    const a = xml.getAttribute(tagName);
-    if (isStringArg(a)) {
-      out = a;
-    }
-  }
-  return out;
-};
-var _requireAttribute3 = function _requireAttribute4(xml, tagName) {
-  const out = _grabAttribute3(xml, tagName);
-  if (typeof out !== "string") {
-    throw new Error(`Attribute ${tagName} not found.`);
-  }
-  return out;
-};
-var _grabAttributeNS2 = function(xml, namespace, tagName) {
-  let out = void 0;
-  if (isObject(xml)) {
-    const a = xml.getAttributeNS(namespace, tagName);
-    if (isStringArg(a)) {
-      out = a;
-    }
-  }
-  return out;
-};
-var parseUtil2 = {
-  _grabFirstEl: _grabFirstEl2,
-  _grabFirstElNS,
-  _grabFirstElText: _grabFirstElText3,
-  _grabFirstElFloat: _grabFirstElFloat3,
-  _grabFirstElInt: _grabFirstElInt3,
-  _grabAttribute: _grabAttribute3,
-  _requireAttribute: _requireAttribute3,
-  _grabAttributeNS: _grabAttributeNS2
-};
-
-// src/mseed3eh.ts
 var STD_EH = "bag";
 function ehToQuake(exHead) {
   const bag = extractBagEH(exHead);
@@ -51097,7 +50666,7 @@ function isValidBagJsonEHType(v) {
   return true;
 }
 
-// src/mseed3.ts
+// src/mseed3.mts
 var MINISEED_THREE_MIME = "application/vnd.fdsn.mseed3";
 var UNKNOWN_DATA_VERSION = 0;
 var CRC_OFFSET = 28;
@@ -51245,9 +50814,6 @@ function mightBeMSeed3Records(arrayBuffer) {
 }
 var MSeed3Record = class _MSeed3Record {
   constructor(header, extraHeaders, rawData) {
-    __publicField(this, "header");
-    __publicField(this, "extraHeaders");
-    __publicField(this, "rawData");
     this.header = header;
     this.rawData = rawData;
     this.extraHeaders = extraHeaders;
@@ -51407,25 +50973,6 @@ var MSeed3Record = class _MSeed3Record {
 };
 var MSeed3Header = class _MSeed3Header {
   constructor() {
-    __publicField(this, "recordIndicator");
-    __publicField(this, "formatVersion");
-    __publicField(this, "flags");
-    __publicField(this, "nanosecond");
-    __publicField(this, "year");
-    __publicField(this, "dayOfYear");
-    __publicField(this, "hour");
-    __publicField(this, "minute");
-    __publicField(this, "second");
-    __publicField(this, "encoding");
-    __publicField(this, "sampleRateOrPeriod");
-    __publicField(this, "numSamples");
-    __publicField(this, "crc");
-    __publicField(this, "publicationVersion");
-    __publicField(this, "identifierLength");
-    __publicField(this, "extraHeadersLength");
-    __publicField(this, "identifier");
-    __publicField(this, "extraHeaders");
-    __publicField(this, "dataLength");
     this.recordIndicator = "MS";
     this.formatVersion = 3;
     this.flags = 0;
@@ -52215,7 +51762,7 @@ function crcToHexString(crc) {
   return "0x" + s2;
 }
 
-// src/datalink.ts
+// src/datalink.mts
 var WS_DATALINK_SUBPROTOCOL = "DataLink1.1";
 var MODE = /* @__PURE__ */ ((MODE2) => {
   MODE2["Query"] = "QUERY";
@@ -52257,25 +51804,6 @@ var defaultHandleResponse = function(dlResponse) {
 };
 var DataLinkConnection = class _DataLinkConnection {
   constructor(url2, packetHandler, errorHandler) {
-    __publicField(this, "url");
-    /** @private */
-    __publicField(this, "_mode");
-    __publicField(this, "packetHandler");
-    __publicField(this, "errorHandler");
-    __publicField(this, "logCommandFn");
-    __publicField(this, "closeHandler");
-    __publicField(this, "serverId");
-    __publicField(this, "clientIdNum");
-    __publicField(this, "programname");
-    __publicField(this, "username");
-    __publicField(this, "architecture");
-    /** @private */
-    __publicField(this, "_responseResolve");
-    /** @private */
-    __publicField(this, "_responseReject");
-    __publicField(this, "webSocket");
-    __publicField(this, "subprotocol");
-    __publicField(this, "dlproto");
     this.dlproto = "1.0";
     this.webSocket = null;
     this.subprotocol = WS_DATALINK_SUBPROTOCOL;
@@ -52782,9 +52310,6 @@ var DataLinkConnection = class _DataLinkConnection {
 };
 var DataLinkResponse = class _DataLinkResponse {
   constructor(type, value, message) {
-    __publicField(this, "type");
-    __publicField(this, "value");
-    __publicField(this, "message");
     this.type = type;
     this.value = value;
     this.message = message;
@@ -52818,17 +52343,6 @@ var DataLinkResponse = class _DataLinkResponse {
 };
 var DataLinkPacket = class {
   constructor(header, dataview) {
-    __publicField(this, "header");
-    __publicField(this, "data");
-    __publicField(this, "streamId");
-    __publicField(this, "pktid");
-    __publicField(this, "hppackettime");
-    __publicField(this, "hppacketstart");
-    __publicField(this, "hppacketend");
-    __publicField(this, "dataSize");
-    __publicField(this, "_miniseed");
-    __publicField(this, "_mseed3");
-    __publicField(this, "_json");
     this._miniseed = null;
     this._mseed3 = null;
     this._json = null;
@@ -52949,9 +52463,6 @@ var DataLinkPacket = class {
 };
 var DataLinkIdStats = class _DataLinkIdStats {
   constructor(version3, serverId, capabilities) {
-    __publicField(this, "version");
-    __publicField(this, "serverId");
-    __publicField(this, "capabilities");
     this.version = version3;
     this.serverId = serverId;
     this.capabilities = capabilities;
@@ -52980,28 +52491,6 @@ Capabilities="${this.capabilities.join(" ")}"`;
 };
 var DataLinkStats = class _DataLinkStats {
   constructor(startTime, ringVersion, ringSize, packetSize, maximumPacketID, maximumPackets, memoryMappedRing, volatileRing, totalConnections, totalStreams, txPacketRate, txByteRate, rxPacketRate, rxByteRate, earliestPacketID, earliestPacketCreationTime, earliestPacketDataStartTime, earliestPacketDataEndTime, latestPacketID, latestPacketCreationTime, latestPacketDataStartTime, latestPacketDataEndTime) {
-    __publicField(this, "startTime");
-    __publicField(this, "ringVersion");
-    __publicField(this, "ringSize");
-    __publicField(this, "packetSize");
-    __publicField(this, "maximumPacketID");
-    __publicField(this, "maximumPackets");
-    __publicField(this, "memoryMappedRing");
-    __publicField(this, "volatileRing");
-    __publicField(this, "totalConnections");
-    __publicField(this, "totalStreams");
-    __publicField(this, "txPacketRate");
-    __publicField(this, "txByteRate");
-    __publicField(this, "rxPacketRate");
-    __publicField(this, "rxByteRate");
-    __publicField(this, "earliestPacketID");
-    __publicField(this, "earliestPacketCreationTime");
-    __publicField(this, "earliestPacketDataStartTime");
-    __publicField(this, "earliestPacketDataEndTime");
-    __publicField(this, "latestPacketID");
-    __publicField(this, "latestPacketCreationTime");
-    __publicField(this, "latestPacketDataStartTime");
-    __publicField(this, "latestPacketDataEndTime");
     this.startTime = startTime;
     this.ringVersion = ringVersion;
     this.ringSize = ringSize;
@@ -53105,9 +52594,6 @@ LatestPacketDataEndTime="${this.latestPacketDataEndTime.toISO()}"
 };
 var ThreadStat = class _ThreadStat {
   constructor(flags, type, port) {
-    __publicField(this, "flags");
-    __publicField(this, "type");
-    __publicField(this, "port");
     this.flags = flags;
     this.type = type;
     this.port = port;
@@ -53132,10 +52618,7 @@ var ThreadStat = class _ThreadStat {
 };
 var StatusResponse = class _StatusResponse {
   constructor(idStats, datalinkStats, threadStats) {
-    __publicField(this, "idStats");
-    __publicField(this, "datalinkStats");
-    __publicField(this, "threadStats");
-    __publicField(this, "rawXml", "");
+    this.rawXml = "";
     this.idStats = idStats;
     this.datalinkStats = datalinkStats;
     this.threadStats = threadStats;
@@ -53176,14 +52659,6 @@ ${this.threadStats.join("\n")}`;
 };
 var StreamStat = class _StreamStat {
   constructor(name, earliestPacketID, earliestPacketDataStartTime, earliestPacketDataEndTime, latestPacketID, latestPacketDataStartTime, latestPacketDataEndTime, dataLatency) {
-    __publicField(this, "name");
-    __publicField(this, "earliestPacketID");
-    __publicField(this, "earliestPacketDataStartTime");
-    __publicField(this, "earliestPacketDataEndTime");
-    __publicField(this, "latestPacketID");
-    __publicField(this, "latestPacketDataStartTime");
-    __publicField(this, "latestPacketDataEndTime");
-    __publicField(this, "dataLatency");
     this.name = name;
     this.earliestPacketID = earliestPacketID;
     this.earliestPacketDataStartTime = earliestPacketDataStartTime;
@@ -53234,8 +52709,6 @@ var StreamStat = class _StreamStat {
 };
 var StreamsResponse = class _StreamsResponse {
   constructor(datalinkStats, streams) {
-    __publicField(this, "datalinkStats");
-    __publicField(this, "streams");
     this.datalinkStats = datalinkStats;
     this.streams = streams;
   }
@@ -53303,7 +52776,6 @@ var StreamsResponse = class _StreamsResponse {
 };
 var ConnectionsResponse = class _ConnectionsResponse {
   constructor(daliXML) {
-    __publicField(this, "daliXML");
     this.daliXML = daliXML;
   }
   static fromDatalinkResponse(daliResp) {
@@ -53344,7 +52816,7 @@ function stringToUint8Array(dataString) {
   return binaryData;
 }
 
-// src/seedlink4.ts
+// src/seedlink4.mts
 var seedlink4_exports = {};
 __export(seedlink4_exports, {
   AUTH_COMMAND: () => AUTH_COMMAND,
@@ -53390,15 +52862,6 @@ var SL_OK = "OK";
 var useLittleEndian = true;
 var SEPacket = class _SEPacket {
   constructor(dataFormat, dataSubformat, payloadLength, sequence, stationId) {
-    __publicField(this, "dataFormat");
-    __publicField(this, "dataSubformat");
-    __publicField(this, "payloadLength");
-    __publicField(this, "sequence");
-    __publicField(this, "stationId");
-    __publicField(this, "_miniseed");
-    __publicField(this, "_mseed3");
-    __publicField(this, "_json");
-    __publicField(this, "_rawPayload");
     this.dataFormat = dataFormat;
     this.dataSubformat = dataSubformat;
     this.payloadLength = payloadLength;
@@ -53525,17 +52988,6 @@ function createDataTimeCommand(startTime, endTime) {
 }
 var SeedlinkConnection = class {
   constructor(url2, requestConfig, receivePacketFn, errorHandler) {
-    __publicField(this, "url");
-    __publicField(this, "requestConfig");
-    __publicField(this, "receivePacketFn");
-    __publicField(this, "errorHandler");
-    __publicField(this, "logCommandFn");
-    __publicField(this, "closeFn");
-    __publicField(this, "webSocket");
-    __publicField(this, "subprotocol");
-    __publicField(this, "endCommand");
-    __publicField(this, "agent");
-    __publicField(this, "agentVersion");
     this.webSocket = null;
     this.url = url2;
     this.requestConfig = requestConfig;
@@ -53801,7 +53253,7 @@ var SeedlinkConnection = class {
   }
 };
 
-// src/filter.ts
+// src/filter.mts
 var filter_exports = {};
 __export(filter_exports, {
   BAND_PASS: () => BAND_PASS,
@@ -54130,7 +53582,7 @@ function integrate(seis, integrationConst = 0) {
   }
 }
 
-// src/organizeddisplay.ts
+// src/organizeddisplay.mts
 var organizeddisplay_exports = {};
 __export(organizeddisplay_exports, {
   DEFAULT_WITH_INFO: () => DEFAULT_WITH_INFO,
@@ -54169,7 +53621,7 @@ __export(organizeddisplay_exports, {
   overlayByStationComponent: () => overlayByStationComponent
 });
 
-// src/infotable.ts
+// src/infotable.mts
 var infotable_exports = {};
 __export(infotable_exports, {
   CHANNEL_COLUMN: () => CHANNEL_COLUMN,
@@ -54195,7 +53647,7 @@ __export(infotable_exports, {
   magFormat: () => magFormat2
 });
 
-// src/spelement.ts
+// src/spelement.mts
 var spelement_exports = {};
 __export(spelement_exports, {
   SORT_BY: () => SORT_BY,
@@ -54203,7 +53655,7 @@ __export(spelement_exports, {
   addStyleToElement: () => addStyleToElement
 });
 
-// src/seismographconfig.ts
+// src/seismographconfig.mts
 var seismographconfig_exports = {};
 __export(seismographconfig_exports, {
   DEFAULT_TITLE: () => DEFAULT_TITLE,
@@ -54216,7 +53668,7 @@ __export(seismographconfig_exports, {
   numberFormatWrapper: () => numberFormatWrapper
 });
 
-// src/cssutil.ts
+// src/cssutil.mts
 var cssutil_exports = {};
 __export(cssutil_exports, {
   AUTO_CLASSED: () => AUTO_CLASSED,
@@ -54266,7 +53718,7 @@ function isIdStyleElement(c, id2) {
   return c.localName === "style" && c.id === id2;
 }
 
-// src/seismographutil.ts
+// src/seismographutil.mts
 var seismographutil_exports = {};
 __export(seismographutil_exports, {
   DEFAULT_GRID_LINE_COLOR: () => DEFAULT_GRID_LINE_COLOR,
@@ -54281,7 +53733,7 @@ __export(seismographutil_exports, {
   seismogramSegmentAsLine: () => seismogramSegmentAsLine
 });
 
-// src/axisutil.ts
+// src/axisutil.mts
 var axisutil_exports = {};
 __export(axisutil_exports, {
   LuxonTimeScale: () => LuxonTimeScale,
@@ -58252,11 +57704,9 @@ function transition_default2(name) {
 selection_default.prototype.interrupt = interrupt_default2;
 selection_default.prototype.transition = transition_default2;
 
-// src/axisutil.ts
+// src/axisutil.mts
 var LuxonTimeScale = class {
   constructor(interval2, range) {
-    __publicField(this, "interval");
-    __publicField(this, "range");
     checkLuxonValid(interval2);
     this.interval = interval2;
     this.range = range.slice();
@@ -58462,7 +57912,7 @@ function drawAxisLabels(svgEl, seismographConfig, height, width, handlebarsInput
   );
 }
 
-// src/seismographutil.ts
+// src/seismographutil.mts
 var DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
 var DEFAULT_GRID_LINE_COLOR = "gainsboro";
 function clearCanvas(canvas) {
@@ -58724,7 +58174,7 @@ function rgbaForColorName(name) {
   return out;
 }
 
-// src/handlebarshelpers.ts
+// src/handlebarshelpers.mts
 var handlebarshelpers_exports = {};
 __export(handlebarshelpers_exports, {
   Handlebars: () => import_handlebars.default,
@@ -58815,17 +58265,11 @@ function registerHelpers() {
   );
 }
 
-// src/seismographconfig.ts
+// src/seismographconfig.mts
 registerHelpers();
 var DEFAULT_TITLE = "{{#each seisDataList}}<tspan>{{onlyChangesChannel ../seisDataList @index}}</tspan> {{else}}No Data{{/each}}";
 var SeismographConfigCache = class {
   constructor() {
-    __publicField(this, "titleHandlebarsCompiled");
-    __publicField(this, "xLabelHandlebarsCompiled");
-    __publicField(this, "xSublabelHandlebarsCompiled");
-    __publicField(this, "yLabelHandlebarsCompiled");
-    __publicField(this, "yLabelRightHandlebarsCompiled");
-    __publicField(this, "ySublabelHandlebarsCompiled");
     this.titleHandlebarsCompiled = null;
     this.xLabelHandlebarsCompiled = null;
     this.xSublabelHandlebarsCompiled = null;
@@ -58834,82 +58278,8 @@ var SeismographConfigCache = class {
     this.ySublabelHandlebarsCompiled = null;
   }
 };
-var _SeismographConfig = class _SeismographConfig {
+var SeismographConfig = class _SeismographConfig {
   constructor() {
-    __publicField(this, "configId");
-    /** @private */
-    __publicField(this, "__cache__");
-    __publicField(this, "_timeFormat");
-    __publicField(this, "relativeTimeFormat");
-    __publicField(this, "amplitudeFormat");
-    __publicField(this, "showTitle");
-    /** @private */
-    __publicField(this, "_title");
-    /** @private */
-    __publicField(this, "isXAxis");
-    __publicField(this, "xAxisTimeZone");
-    __publicField(this, "isXAxisTop");
-    /** @private */
-    __publicField(this, "_xLabel");
-    __publicField(this, "xLabelOrientation");
-    /** @private */
-    __publicField(this, "_xSublabel");
-    __publicField(this, "xSublabelIsUnits");
-    /**
-     * Should grid lines be drawn for each tick on the x axis.
-     */
-    __publicField(this, "xGridLines");
-    __publicField(this, "isYAxis");
-    __publicField(this, "isYAxisRight");
-    __publicField(this, "isYAxisNice");
-    /**
-     * hint for number of ticks to show on y axis. Note this is not exact as
-     * trying to put ticks on "even" numbers may result in slightly more or less.
-     */
-    __publicField(this, "yAxisNumTickHint");
-    /** @private */
-    __publicField(this, "_yLabel");
-    /** @private */
-    __publicField(this, "_yLabelRight");
-    __publicField(this, "yLabelOrientation");
-    /** @private */
-    __publicField(this, "_ySublabel");
-    __publicField(this, "ySublabelTrans");
-    __publicField(this, "ySublabelIsUnits");
-    __publicField(this, "yGridLines");
-    __publicField(this, "doMarkers");
-    __publicField(this, "markerTextOffset");
-    __publicField(this, "markerTextAngle");
-    __publicField(this, "markerFlagpoleBase");
-    __publicField(this, "minHeight");
-    __publicField(this, "maxHeight");
-    __publicField(this, "minWidth");
-    __publicField(this, "maxWidth");
-    __publicField(this, "margin");
-    __publicField(this, "segmentDrawCompressedCutoff");
-    //below this draw all points, above draw minmax
-    __publicField(this, "maxZoomPixelPerSample");
-    // no zoom in past point of sample
-    // separated by pixels
-    __publicField(this, "connectSegments");
-    __publicField(this, "lineColors");
-    __publicField(this, "lineWidth");
-    __publicField(this, "gridLineColor");
-    __publicField(this, "allowZoom");
-    __publicField(this, "wheelZoom");
-    __publicField(this, "amplitudeMode");
-    __publicField(this, "doGain");
-    __publicField(this, "windowAmp");
-    __publicField(this, "resolutionScale");
-    /** @private */
-    __publicField(this, "_fixedAmplitudeScale");
-    /** @private */
-    __publicField(this, "_fixedTimeScale");
-    /** @private */
-    __publicField(this, "_linkedAmplitudeScale");
-    /** @private */
-    __publicField(this, "_linkedTimeScale");
-    __publicField(this, "isRelativeTime");
     this.configId = ++_SeismographConfig._lastID;
     this.__cache__ = new SeismographConfigCache();
     this.isXAxis = true;
@@ -59542,9 +58912,6 @@ var _SeismographConfig = class _SeismographConfig {
     return outS;
   }
 };
-/** @private */
-__publicField(_SeismographConfig, "_lastID");
-var SeismographConfig = _SeismographConfig;
 function numberFormatWrapper(formater) {
   return function(domainValue) {
     if (typeof domainValue === "number") {
@@ -59584,7 +58951,7 @@ function createTimeFormatterForZone(timezone) {
 }
 SeismographConfig._lastID = 0;
 
-// src/sorting.ts
+// src/sorting.mts
 var sorting_exports = {};
 __export(sorting_exports, {
   SORT_ALPHABETICAL: () => SORT_ALPHABETICAL,
@@ -59721,16 +59088,11 @@ function reorderXYZ(sddList) {
   return sddList.slice().sort(xyzCompareFun);
 }
 
-// src/spelement.ts
+// src/spelement.mts
 var SORT_BY = "sort";
 var SeisPlotElement = class extends HTMLElement {
   constructor(seisData, seisConfig) {
     super();
-    __publicField(this, "_seisDataList");
-    __publicField(this, "_seismographConfig");
-    __publicField(this, "onRedraw");
-    __publicField(this, "_throttleRedraw");
-    __publicField(this, "_sorting");
     this.onRedraw = (_el) => {
     };
     this._throttleRedraw = null;
@@ -60060,7 +59422,7 @@ var csvFormatRows = csv.formatRows;
 var csvFormatRow = csv.formatRow;
 var csvFormatValue = csv.formatValue;
 
-// src/infotable.ts
+// src/infotable.mts
 var INFO_ELEMENT = "sp-station-quake-table";
 var QUAKE_INFO_ELEMENT = "sp-quake-table";
 var QUAKE_COLUMN = /* @__PURE__ */ ((QUAKE_COLUMN2) => {
@@ -60228,7 +59590,6 @@ caption {
 var QuakeStationTable = class extends SeisPlotElement {
   constructor(seisData, seisConfig) {
     super(seisData, seisConfig);
-    __publicField(this, "_template");
     this._template = DEFAULT_TEMPLATE;
     this.addStyle(TABLE_CSS);
     const wrapper = document.createElement("div");
@@ -60269,15 +59630,7 @@ customElements.define(INFO_ELEMENT, QuakeStationTable);
 var QuakeTable = class _QuakeTable extends HTMLElement {
   constructor(quakeList, columnLabels, columnValues) {
     super();
-    __publicField(this, "_columnLabels");
-    __publicField(this, "_quakeList");
-    __publicField(this, "_rowToQuake");
-    __publicField(this, "_timezone");
-    __publicField(this, "_timeFormat");
-    __publicField(this, "lastSortAsc", true);
-    __publicField(this, "lastSortCol");
-    __publicField(this, "_columnValues");
-    __publicField(this, "_caption");
+    this.lastSortAsc = true;
     if (!quakeList) {
       quakeList = [];
     }
@@ -60576,13 +59929,7 @@ customElements.define(QUAKE_INFO_ELEMENT, QuakeTable);
 var ChannelTable = class _ChannelTable extends HTMLElement {
   constructor(channelList, columnLabels, columnValues) {
     super();
-    __publicField(this, "_columnLabels");
-    __publicField(this, "_columnValues");
-    __publicField(this, "_channelList");
-    __publicField(this, "_rowToChannel");
-    __publicField(this, "lastSortAsc", true);
-    __publicField(this, "lastSortCol");
-    __publicField(this, "_caption");
+    this.lastSortAsc = true;
     if (!channelList) {
       channelList = [];
     }
@@ -60878,13 +60225,8 @@ customElements.define(CHANNEL_INFO_ELEMENT, ChannelTable);
 var StationTable = class _StationTable extends HTMLElement {
   constructor(stationList, columnLabels, columnValues) {
     super();
-    __publicField(this, "_columnLabels", /* @__PURE__ */ new Map());
-    __publicField(this, "_stationList");
-    __publicField(this, "_rowToStation");
-    __publicField(this, "lastSortAsc", true);
-    __publicField(this, "lastSortCol");
-    __publicField(this, "_columnValues");
-    __publicField(this, "_caption");
+    this._columnLabels = /* @__PURE__ */ new Map();
+    this.lastSortAsc = true;
     if (!stationList) {
       stationList = [];
     }
@@ -61160,13 +60502,7 @@ customElements.define(STATION_INFO_ELEMENT, StationTable);
 var SeismogramTable = class _SeismogramTable extends HTMLElement {
   constructor(sddList, columnLabels, columnValues) {
     super();
-    __publicField(this, "_columnLabels");
-    __publicField(this, "_columnValues");
-    __publicField(this, "_sddList");
-    __publicField(this, "_rowToSDD");
-    __publicField(this, "lastSortAsc", true);
-    __publicField(this, "lastSortCol");
-    __publicField(this, "_caption");
+    this.lastSortAsc = true;
     if (!sddList) {
       sddList = [];
     }
@@ -61443,7 +60779,7 @@ var depthFormat2 = depthFormat;
 var depthNoUnitFormat2 = depthNoUnitFormat;
 var depthMeterFormat2 = depthMeterFormat;
 
-// src/leafletutil.ts
+// src/leafletutil.mts
 var leafletutil_exports = {};
 __export(leafletutil_exports, {
   CENTER_LAT: () => CENTER_LAT,
@@ -61494,7 +60830,7 @@ __export(leafletutil_exports, {
   stationMarker_css: () => stationMarker_css
 });
 
-// src/leaflet_css.ts
+// src/leaflet_css.mts
 var leaflet_css = `
 /* required styles */
 
@@ -62160,7 +61496,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 `;
 
-// src/fdsncommon.ts
+// src/fdsncommon.mts
 var fdsncommon_exports = {};
 __export(fdsncommon_exports, {
   EARTHSCOPE_HOST: () => EARTHSCOPE_HOST,
@@ -62182,22 +61518,6 @@ var IRISWS_PATH_BASE = "irisws";
 var LOCALWS_PATH_BASE = "localws";
 var FDSNCommon = class {
   constructor(service, host) {
-    /** @private */
-    __publicField(this, "_specVersion");
-    /** @private */
-    __publicField(this, "_protocol");
-    /** @private */
-    __publicField(this, "_host");
-    /** @private */
-    __publicField(this, "_path_base");
-    /** @private */
-    __publicField(this, "_service");
-    /** @private */
-    __publicField(this, "_port");
-    /** @private */
-    __publicField(this, "_nodata");
-    /** @private */
-    __publicField(this, "_timeoutSec");
     this._specVersion = "1";
     this._host = EARTHSCOPE_HOST;
     this._protocol = checkProtocol();
@@ -62230,10 +61550,6 @@ var LatLonRegion = class {
 var LatLonBox = class extends LatLonRegion {
   constructor(west, east, south, north) {
     super();
-    __publicField(this, "west");
-    __publicField(this, "east");
-    __publicField(this, "south");
-    __publicField(this, "north");
     this.west = west;
     this.east = east;
     this.south = south;
@@ -62249,10 +61565,6 @@ var LatLonBox = class extends LatLonRegion {
 var LatLonRadius = class extends LatLonRegion {
   constructor(latitude, longitude, minRadius, maxRadius) {
     super();
-    __publicField(this, "latitude");
-    __publicField(this, "longitude");
-    __publicField(this, "minRadius");
-    __publicField(this, "maxRadius");
     this.latitude = latitude;
     this.longitude = longitude;
     this.minRadius = minRadius;
@@ -62260,7 +61572,7 @@ var LatLonRadius = class extends LatLonRegion {
   }
 };
 
-// src/leafletutil.ts
+// src/leafletutil.mts
 var L2 = __toESM(require_leaflet_src(), 1);
 var HIGHLIGHT = "highlight";
 var UNSELECTED = "unselected";
@@ -62436,20 +61748,16 @@ var MARKER_CSS_ID = "defaultmarkercss";
 var QuakeStationMap = class extends SeisPlotElement {
   constructor(seisData, seisConfig) {
     super(seisData, seisConfig);
-    __publicField(this, "quakeList", []);
-    __publicField(this, "stationList", []);
-    __publicField(this, "geoRegionList", []);
-    __publicField(this, "map");
-    __publicField(this, "classToColor");
-    __publicField(this, "mapItems", []);
-    __publicField(this, "stationClassMap");
-    __publicField(this, "quakeClassMap");
-    __publicField(this, "quakeLayer", L2.layerGroup());
-    __publicField(this, "quakeLayerName", "Quakes");
-    __publicField(this, "stationLayer", L2.layerGroup());
-    __publicField(this, "stationLayerName", "Stations");
-    __publicField(this, "stationIconSize", STATION_ICON_SIZE);
-    __publicField(this, "stationIconSymbol", TRIANGLE);
+    this.quakeList = [];
+    this.stationList = [];
+    this.geoRegionList = [];
+    this.mapItems = [];
+    this.quakeLayer = L2.layerGroup();
+    this.quakeLayerName = "Quakes";
+    this.stationLayer = L2.layerGroup();
+    this.stationLayerName = "Stations";
+    this.stationIconSize = STATION_ICON_SIZE;
+    this.stationIconSymbol = TRIANGLE;
     this.map = null;
     this.classToColor = /* @__PURE__ */ new Map();
     this.stationClassMap = /* @__PURE__ */ new Map();
@@ -62924,7 +62232,7 @@ function cssClassForQuake(q) {
   return "qid_" + out.replaceAll(badCSSChars, "_");
 }
 
-// src/organizeddisplayselect.ts
+// src/organizeddisplayselect.mts
 function createStationFilterId(sdd) {
   return `station_${sdd.networkCode}_${sdd.stationCode}`;
 }
@@ -62967,7 +62275,7 @@ function defaultPlotSelect(sdd, container) {
   return stationFilter(sdd, container) && bandFilter(sdd, container) && gainFilter(sdd, container) && orientFilter(sdd, container) && quakeFilter(sdd, container);
 }
 
-// src/organizeddisplaytools.ts
+// src/organizeddisplaytools.mts
 var UNDERSCORE = "_";
 var TOOLS_HTML = `
 <details>
@@ -63026,7 +62334,6 @@ var TOOLS_HTML = `
 var OrganizedDisplayTools = class extends SeisPlotElement {
   constructor(seisData, seisConfig) {
     super(seisData, seisConfig);
-    __publicField(this, "_organizedDisplay");
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
     wrapper.innerHTML = TOOLS_HTML;
@@ -63298,7 +62605,7 @@ var OrganizedDisplayTools = class extends SeisPlotElement {
 var ORG_DISP_TOOLS_ELEMENT = "sp-orgdisp-tools";
 customElements.define(ORG_DISP_TOOLS_ELEMENT, OrganizedDisplayTools);
 
-// src/fft.ts
+// src/fft.mts
 var fft_exports = {};
 __export(fft_exports, {
   FFTResult: () => FFTResult,
@@ -63377,20 +62684,6 @@ function findPowerTwo(fftlength) {
 }
 var FFTResult = class _FFTResult {
   constructor(origLength, sampleRate) {
-    /** number of points in the original timeseries, may be less than fft size. */
-    __publicField(this, "origLength");
-    __publicField(this, "packedFreq");
-    /** number of points in the fft, usually power of 2 larger than origLength. */
-    __publicField(this, "numPoints");
-    /** sample rate of the original time series, maybe be null. */
-    __publicField(this, "sampleRate");
-    /** optional units of the original data for display purposes. */
-    __publicField(this, "inputUnits");
-    /**
-     * optional reference to SeismogramDisplayData when calculated from a seismogram.
-     *  Useful for creating title, etc.
-     */
-    __publicField(this, "seismogramDisplayData");
     this.origLength = origLength;
     this.sampleRate = sampleRate;
     this.packedFreq = new Float32Array(0);
@@ -63541,7 +62834,7 @@ var FFTResult = class _FFTResult {
   }
 };
 
-// src/spectraplot.ts
+// src/spectraplot.mts
 var spectraplot_exports = {};
 __export(spectraplot_exports, {
   AMPLITUDE: () => AMPLITUDE,
@@ -63554,7 +62847,7 @@ __export(spectraplot_exports, {
   spectra_plot_css: () => spectra_plot_css
 });
 
-// src/seismograph.ts
+// src/seismograph.mts
 var seismograph_exports = {};
 __export(seismograph_exports, {
   COLOR_CSS_ID: () => COLOR_CSS_ID,
@@ -63682,7 +62975,7 @@ function axisLeft(scale) {
   return axis(left, scale);
 }
 
-// src/seismographmarker.ts
+// src/seismographmarker.mts
 var seismographmarker_exports = {};
 __export(seismographmarker_exports, {
   MARKERTYPE_PICK: () => MARKERTYPE_PICK,
@@ -63794,7 +63087,7 @@ function createMarkerForPicks(origin, channel) {
   return markers;
 }
 
-// src/seismograph.ts
+// src/seismograph.mts
 registerHelpers();
 var CLIP_PREFIX = "seismographclip";
 var SEIS_CLICK_EVENT = "seisclick";
@@ -63923,28 +63216,10 @@ svg.seismograph text a {
 
 `;
 var COLOR_CSS_ID = "seismographcolors";
-var _Seismograph = class _Seismograph extends SeisPlotElement {
+var Seismograph = class _Seismograph extends SeisPlotElement {
   constructor(seisData, seisConfig) {
     super(seisData, seisConfig);
-    __publicField(this, "plotId");
-    __publicField(this, "beforeFirstDraw");
-    /** @private */
-    __publicField(this, "_debugAlignmentSeisData");
-    __publicField(this, "width");
-    __publicField(this, "height");
-    __publicField(this, "outerWidth");
-    __publicField(this, "outerHeight");
-    __publicField(this, "svg");
-    __publicField(this, "canvasHolder");
-    __publicField(this, "canvas");
-    __publicField(this, "g");
-    __publicField(this, "throttleRescale");
-    __publicField(this, "throttleRedraw");
-    __publicField(this, "time_scalable");
-    __publicField(this, "amp_scalable");
-    __publicField(this, "panZoomer");
-    __publicField(this, "_resizeObserver");
-    __publicField(this, "minmax_sample_pixels", DEFAULT_MAX_SAMPLE_PER_PIXEL);
+    this.minmax_sample_pixels = DEFAULT_MAX_SAMPLE_PER_PIXEL;
     this.outerWidth = -1;
     this.outerHeight = -1;
     this.throttleRescale = null;
@@ -64972,16 +64247,10 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     }
   }
 };
-/** @private */
-__publicField(_Seismograph, "_lastID");
-var Seismograph = _Seismograph;
 var SeismographAmplitudeScalable = class extends AmplitudeScalable {
   constructor(graph) {
     const calcMidHW = graph.calcAmpScaleDomain();
     super(calcMidHW);
-    __publicField(this, "graph");
-    __publicField(this, "drawHalfWidth");
-    __publicField(this, "drawMiddle");
     this.graph = graph;
     this.drawHalfWidth = super.halfWidth;
     this.drawMiddle = super.middle;
@@ -65001,9 +64270,6 @@ var ZERO_DURATION = Duration.fromMillis(0);
 var SeismographTimeScalable = class extends TimeScalable {
   constructor(graph, alignmentTimeOffset, duration3) {
     super(alignmentTimeOffset, duration3);
-    __publicField(this, "graph");
-    __publicField(this, "drawAlignmentTimeOffset");
-    __publicField(this, "drawDuration");
     this.graph = graph;
     this.drawAlignmentTimeOffset = ZERO_DURATION;
     this.drawDuration = ZERO_DURATION;
@@ -65248,15 +64514,10 @@ function line_default(x2, y2) {
   return line;
 }
 
-// src/spectraplot.ts
+// src/spectraplot.mts
 var SPECTRA_ELEMENT = "sp-spectra";
 var FreqAmp = class {
   constructor(freq, values) {
-    __publicField(this, "freq");
-    __publicField(this, "values");
-    /** optional units of the original data for display purposes. */
-    __publicField(this, "inputUnits");
-    __publicField(this, "seismogramDisplayData");
     this.freq = freq;
     this.values = values;
     this.inputUnits = "";
@@ -65340,8 +64601,6 @@ var KIND = "kind";
 var SpectraPlot = class extends HTMLElement {
   constructor(fftResults, seismographConfig) {
     super();
-    __publicField(this, "_seismographConfig");
-    __publicField(this, "_fftResults");
     if (seismographConfig) {
       this._seismographConfig = seismographConfig;
     } else {
@@ -65589,7 +64848,7 @@ var SpectraPlot = class extends HTMLElement {
 };
 customElements.define(SPECTRA_ELEMENT, SpectraPlot);
 
-// src/particlemotion.ts
+// src/particlemotion.mts
 var particlemotion_exports = {};
 __export(particlemotion_exports, {
   DEFAULT_TITLE: () => DEFAULT_TITLE2,
@@ -65660,7 +64919,7 @@ function createParticleMotionConfig(timeRange, defaultSeisConfig) {
   seisConfig.margin.left = 40;
   return seisConfig;
 }
-var _ParticleMotion = class _ParticleMotion extends SeisPlotElement {
+var ParticleMotion = class _ParticleMotion extends SeisPlotElement {
   constructor(xSeisData, ySeisData, seisConfig) {
     if (!xSeisData) {
       xSeisData = [];
@@ -65682,20 +64941,8 @@ var _ParticleMotion = class _ParticleMotion extends SeisPlotElement {
       seisConfig = createParticleMotionConfig();
     }
     super(seisData, seisConfig);
-    __publicField(this, "plotId");
-    __publicField(this, "_xSeisData");
-    __publicField(this, "_ySeisData");
-    __publicField(this, "width");
-    __publicField(this, "height");
-    __publicField(this, "outerWidth", -1);
-    __publicField(this, "outerHeight", -1);
-    __publicField(this, "xScale");
-    __publicField(this, "xScaleRmean");
-    __publicField(this, "xAxis");
-    __publicField(this, "yScale");
-    __publicField(this, "yScaleRmean");
-    __publicField(this, "yAxis");
-    __publicField(this, "g");
+    this.outerWidth = -1;
+    this.outerHeight = -1;
     this._xSeisData = xSeisData;
     this._ySeisData = ySeisData;
     this.addStyle(particleMotion_css);
@@ -65953,12 +65200,10 @@ var _ParticleMotion = class _ParticleMotion extends SeisPlotElement {
     };
   }
 };
-__publicField(_ParticleMotion, "_lastID");
-var ParticleMotion = _ParticleMotion;
 ParticleMotion._lastID = 0;
 customElements.define(PARTICLE_MOTION_ELEMENT, ParticleMotion);
 
-// src/organizeddisplayitem.ts
+// src/organizeddisplayitem.mts
 var querystringify = __toESM(require_querystringify(), 1);
 var ORG_DISP_ITEM = "sp-organized-display-item";
 var PLOT_TYPE = "plottype";
@@ -65970,7 +65215,6 @@ var INFO2 = "info";
 var OrganizedDisplayItem = class extends SeisPlotElement {
   constructor(seisData, seisConfig) {
     super(seisData, seisConfig);
-    __publicField(this, "extras");
     if (this.plottype.startsWith(PARTICLE_MOTION)) {
       this._seismographConfig = createParticleMotionConfig(null, seisConfig);
     }
@@ -66131,7 +65375,7 @@ function getFromQueryParams(qParams, name, defaultValue = "") {
   return defaultValue;
 }
 
-// src/organizeddisplay.ts
+// src/organizeddisplay.mts
 var ORG_DISPLAY = "sp-organized-display";
 var ORG_TYPE = "orgtype";
 var WITH_INFO = "info";
@@ -66152,8 +65396,6 @@ var OVERLAY_FUNCTION = "function";
 var OrganizedDisplay = class extends SeisPlotElement {
   constructor(seisData, seisConfig) {
     super(seisData, seisConfig);
-    __publicField(this, "bottomSeismographConfig");
-    __publicField(this, "topSeismographConfig");
     this.bottomSeismographConfig = null;
     this.topSeismographConfig = null;
     const wrapper = document.createElement("div");
@@ -66571,16 +65813,12 @@ function createPlots(organized, divElement) {
   });
 }
 
-// src/animatedseismograph.ts
+// src/animatedseismograph.mts
 var AnimatedTimeScaler = class {
   constructor(timeScale, alignmentTime, minRedrawMillis) {
-    __publicField(this, "alignmentTime");
-    __publicField(this, "timeScale");
-    __publicField(this, "minRedrawMillis");
-    __publicField(this, "_calcRedrawMillis");
-    __publicField(this, "goAnimation", true);
-    __publicField(this, "previousStep", Number.NEGATIVE_INFINITY);
-    __publicField(this, "_animationId", 0);
+    this.goAnimation = true;
+    this.previousStep = Number.NEGATIVE_INFINITY;
+    this._animationId = 0;
     this.timeScale = timeScale;
     this.alignmentTime = alignmentTime ? alignmentTime : DateTime.utc();
     if (minRedrawMillis) {
@@ -66632,12 +65870,6 @@ var AnimatedTimeScaler = class {
 };
 var RTDisplayContainer = class {
   constructor(rawSeisData, organizedDisplay, animationScaler, packetHandler, config2) {
-    __publicField(this, "rawSeisData");
-    __publicField(this, "organizedDisplay");
-    __publicField(this, "animationScaler");
-    __publicField(this, "packetHandler");
-    __publicField(this, "config");
-    __publicField(this, "resizeObserver");
     this.rawSeisData = rawSeisData;
     this.organizedDisplay = organizedDisplay;
     this.animationScaler = animationScaler;
@@ -66853,7 +66085,7 @@ function calcOnePixelDuration(seismograph) {
   return Duration.fromMillis(timerInterval);
 }
 
-// src/components.ts
+// src/components.mts
 var components_exports = {};
 __export(components_exports, {
   CHANNEL_CODE_ELEMENT: () => CHANNEL_CODE_ELEMENT,
@@ -67024,8 +66256,7 @@ customElements.define(CHANNEL_CODE_ELEMENT, ChannelCodeInput);
 var ChannelListChooser = class extends HTMLElement {
   constructor() {
     super();
-    __publicField(this, "channels");
-    __publicField(this, "selected_channels", /* @__PURE__ */ new Set());
+    this.selected_channels = /* @__PURE__ */ new Set();
     this.channels = [];
     this.draw_element();
   }
@@ -67101,8 +66332,7 @@ customElements.define(CHANNEL_LIST_ELEMENT, ChannelListChooser);
 var SourceIdListChooser = class extends HTMLElement {
   constructor() {
     super();
-    __publicField(this, "sourceIdList");
-    __publicField(this, "selected_sourceIds", /* @__PURE__ */ new Set());
+    this.selected_sourceIds = /* @__PURE__ */ new Set();
     this.sourceIdList = [];
     this.draw_element();
   }
@@ -67178,8 +66408,8 @@ customElements.define(SOURCEID_LIST_ELEMENT, SourceIdListChooser);
 var LabeledMinMax = class extends HTMLElement {
   constructor() {
     super();
-    __publicField(this, "default_min", 0);
-    __publicField(this, "default_max", 10);
+    this.default_min = 0;
+    this.default_max = 10;
     this.attachShadow({ mode: "open" });
     this.draw_element();
   }
@@ -67884,7 +67114,7 @@ var LatLonChoice = class extends HTMLElement {
 };
 customElements.define(LATLON_CHOICE_ELEMENT, LatLonChoice);
 
-// src/dataset.ts
+// src/dataset.mts
 var dataset_exports = {};
 __export(dataset_exports, {
   CATALOG_FILE: () => CATALOG_FILE,
@@ -67904,7 +67134,7 @@ __export(dataset_exports, {
   sddFromMSeed3: () => sddFromMSeed3
 });
 
-// src/traveltime.ts
+// src/traveltime.mts
 var traveltime_exports = {};
 __export(traveltime_exports, {
   FAKE_EMPTY_SVG: () => FAKE_EMPTY_SVG,
@@ -67987,28 +67217,6 @@ var TraveltimeQuery = class extends FDSNCommon {
       host = IRIS_HOST;
     }
     super(TRAVELTIME_SERVICE, host);
-    /** @private */
-    __publicField(this, "_evdepth");
-    /** @private */
-    __publicField(this, "_distdeg");
-    /** @private */
-    __publicField(this, "_model");
-    /** @private */
-    __publicField(this, "_phases");
-    /** @private */
-    __publicField(this, "_stalat");
-    /** @private */
-    __publicField(this, "_stalon");
-    /** @private */
-    __publicField(this, "_receiverdepth");
-    /** @private */
-    __publicField(this, "_evlat");
-    /** @private */
-    __publicField(this, "_evlon");
-    /** @private */
-    __publicField(this, "_format");
-    /** @private */
-    __publicField(this, "_noheader");
     this._path_base = IRISWS_PATH_BASE;
     this._evdepth = 0;
     this._format = JSON_FORMAT;
@@ -68415,7 +67623,7 @@ var FAKE_EMPTY_SVG = `
 </svg>
 `;
 
-// src/dataset.ts
+// src/dataset.mts
 var import_jszip = __toESM(require_jszip_min(), 1);
 var DATASET_DIR = "dataset";
 var DOT_ZIP_EXT = ".zip";
@@ -68425,12 +67633,7 @@ var CATALOG_FILE = "catalog.quakeml";
 var INVENTORY_FILE = "inventory.staxml";
 var Dataset = class _Dataset {
   constructor() {
-    __publicField(this, "name", "dataset");
-    __publicField(this, "catalog");
-    __publicField(this, "inventory");
-    __publicField(this, "waveforms");
-    __publicField(this, "processedWaveforms");
-    __publicField(this, "extra");
+    this.name = "dataset";
     this.catalog = new Array(0);
     this.inventory = new Array(0);
     this.waveforms = new Array(0);
@@ -68719,7 +67922,7 @@ function mightBeZipFile(buf) {
   return true;
 }
 
-// src/datechooser.ts
+// src/datechooser.mts
 var datechooser_exports = {};
 __export(datechooser_exports, {
   CLOCK_ELEMENT: () => CLOCK_ELEMENT,
@@ -68760,10 +67963,8 @@ var PREV_NEXT = "prev-next";
 var Clock = class extends HTMLElement {
   constructor() {
     super();
-    __publicField(this, "_time");
-    __publicField(this, "dateFormat", "yyyy-MM-dd HH:mm:ss");
-    __publicField(this, "updateMillis", 500);
-    __publicField(this, "_updater");
+    this.dateFormat = "yyyy-MM-dd HH:mm:ss";
+    this.updateMillis = 500;
     this._time = DateTime.utc().set({ millisecond: 0 });
     const shadow = this.attachShadow({ mode: "open" });
     const wrapper = document.createElement("span");
@@ -68788,9 +67989,6 @@ customElements.define(CLOCK_ELEMENT, Clock);
 var HourMinChooser = class extends HTMLElement {
   constructor() {
     super();
-    __publicField(this, "_time");
-    __publicField(this, "updateCallback");
-    __publicField(this, "popupDiv");
     this._time = DateTime.utc().set({ second: 0, millisecond: 0 });
     const attr_date_time = this.getAttribute("date-time");
     if (attr_date_time) {
@@ -68999,9 +68197,6 @@ customElements.define(HOURMIN_ELEMENT, HourMinChooser);
 var DateTimeChooser = class extends HTMLElement {
   constructor(time3) {
     super();
-    __publicField(this, "_time");
-    __publicField(this, "updateCallback");
-    __publicField(this, "hourMin");
     const attr_date_time = this.getAttribute("date-time");
     if (time3) {
       this._time = time3;
@@ -69101,11 +68296,6 @@ var DURATION_CHANGED = "duration";
 var TimeRangeChooser = class extends HTMLElement {
   constructor() {
     super();
-    __publicField(this, "updateCallback");
-    __publicField(this, "_duration");
-    __publicField(this, "startChooser");
-    __publicField(this, "endChooser");
-    __publicField(this, "_mostRecentChanged");
     this._mostRecentChanged = "end";
     this.updateCallback = (_timerange) => {
     };
@@ -69409,7 +68599,7 @@ function extractDuration(value) {
   return dur;
 }
 
-// src/fdsnavailability.ts
+// src/fdsnavailability.mts
 var fdsnavailability_exports = {};
 __export(fdsnavailability_exports, {
   AVAILABILITY_SERVICE: () => AVAILABILITY_SERVICE,
@@ -69443,34 +68633,6 @@ var AvailabilityQuery = class extends FDSNCommon {
       host = EARTHSCOPE_HOST;
     }
     super(AVAILABILITY_SERVICE, host);
-    /** @private */
-    __publicField(this, "_networkCode");
-    /** @private */
-    __publicField(this, "_stationCode");
-    /** @private */
-    __publicField(this, "_locationCode");
-    /** @private */
-    __publicField(this, "_channelCode");
-    /** @private */
-    __publicField(this, "_startTime");
-    /** @private */
-    __publicField(this, "_endTime");
-    /** @private */
-    __publicField(this, "_quality");
-    /** @private */
-    __publicField(this, "_merge");
-    /** @private */
-    __publicField(this, "_show");
-    /** @private */
-    __publicField(this, "_mergeGaps");
-    /** @private */
-    __publicField(this, "_limit");
-    /** @private */
-    __publicField(this, "_orderby");
-    /** @private */
-    __publicField(this, "_includerestricted");
-    /** @private */
-    __publicField(this, "_format");
   }
   /**
    * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
@@ -70104,7 +69266,7 @@ function isValidDatasource(jsonValue) {
   }
 }
 
-// src/fdsndatacenters.ts
+// src/fdsndatacenters.mts
 var fdsndatacenters_exports = {};
 __export(fdsndatacenters_exports, {
   DATACENTERS_PATH_BASE: () => DATACENTERS_PATH_BASE,
@@ -70114,7 +69276,7 @@ __export(fdsndatacenters_exports, {
   isValidRootType: () => isValidRootType2
 });
 
-// src/fdsndataselect.ts
+// src/fdsndataselect.mts
 var fdsndataselect_exports = {};
 __export(fdsndataselect_exports, {
   DATASELECT_SERVICE: () => DATASELECT_SERVICE,
@@ -70138,28 +69300,6 @@ var DataSelectQuery = class _DataSelectQuery extends FDSNCommon {
       host = EARTHSCOPE_HOST;
     }
     super(DATASELECT_SERVICE, host);
-    /** @private */
-    __publicField(this, "_networkCode");
-    /** @private */
-    __publicField(this, "_stationCode");
-    /** @private */
-    __publicField(this, "_locationCode");
-    /** @private */
-    __publicField(this, "_channelCode");
-    /** @private */
-    __publicField(this, "_startTime");
-    /** @private */
-    __publicField(this, "_endTime");
-    /** @private */
-    __publicField(this, "_quality");
-    /** @private */
-    __publicField(this, "_minimumLength");
-    /** @private */
-    __publicField(this, "_longestOnly");
-    /** @private */
-    __publicField(this, "_repository");
-    /** @private */
-    __publicField(this, "_format");
     if (host === EARTHSCOPE_HOST) {
       this.protocol("https:");
     }
@@ -70734,7 +69874,7 @@ function createDataSelectQuery(params) {
   return out;
 }
 
-// src/fdsnevent.ts
+// src/fdsnevent.mts
 var fdsnevent_exports = {};
 __export(fdsnevent_exports, {
   EVENT_SERVICE: () => EVENT_SERVICE,
@@ -70752,58 +69892,6 @@ var EventQuery = class extends FDSNCommon {
       host = USGS_HOST;
     }
     super(EVENT_SERVICE, host);
-    /** @private */
-    __publicField(this, "_eventId");
-    /** @private */
-    __publicField(this, "_startTime");
-    /** @private */
-    __publicField(this, "_endTime");
-    /** @private */
-    __publicField(this, "_updatedAfter");
-    /** @private */
-    __publicField(this, "_minMag");
-    /** @private */
-    __publicField(this, "_maxMag");
-    /** @private */
-    __publicField(this, "_magnitudeType");
-    /** @private */
-    __publicField(this, "_minDepth");
-    /** @private */
-    __publicField(this, "_maxDepth");
-    /** @private */
-    __publicField(this, "_minLat");
-    /** @private */
-    __publicField(this, "_maxLat");
-    /** @private */
-    __publicField(this, "_minLon");
-    /** @private */
-    __publicField(this, "_maxLon");
-    /** @private */
-    __publicField(this, "_latitude");
-    /** @private */
-    __publicField(this, "_longitude");
-    /** @private */
-    __publicField(this, "_minRadius");
-    /** @private */
-    __publicField(this, "_maxRadius");
-    /** @private */
-    __publicField(this, "_includeArrivals");
-    /** @private */
-    __publicField(this, "_includeAllOrigins");
-    /** @private */
-    __publicField(this, "_includeAllMagnitudes");
-    /** @private */
-    __publicField(this, "_limit");
-    /** @private */
-    __publicField(this, "_offset");
-    /** @private */
-    __publicField(this, "_orderBy");
-    /** @private */
-    __publicField(this, "_contributor");
-    /** @private */
-    __publicField(this, "_catalog");
-    /** @private */
-    __publicField(this, "_format");
   }
   /**
    * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
@@ -71566,7 +70654,7 @@ var EventQuery = class extends FDSNCommon {
   }
 };
 
-// src/fdsnstation.ts
+// src/fdsnstation.mts
 var fdsnstation_exports = {};
 __export(fdsnstation_exports, {
   EARTHSCOPE_HOST: () => EARTHSCOPE_HOST,
@@ -71602,52 +70690,6 @@ var StationQuery = class extends FDSNCommon {
    */
   constructor(host) {
     super(STATION_SERVICE, host);
-    /** @private */
-    __publicField(this, "_networkCode");
-    /** @private */
-    __publicField(this, "_stationCode");
-    /** @private */
-    __publicField(this, "_locationCode");
-    /** @private */
-    __publicField(this, "_channelCode");
-    /** @private */
-    __publicField(this, "_startTime");
-    /** @private */
-    __publicField(this, "_endTime");
-    /** @private */
-    __publicField(this, "_startBefore");
-    /** @private */
-    __publicField(this, "_endBefore");
-    /** @private */
-    __publicField(this, "_startAfter");
-    /** @private */
-    __publicField(this, "_endAfter");
-    /** @private */
-    __publicField(this, "_minLat");
-    /** @private */
-    __publicField(this, "_maxLat");
-    /** @private */
-    __publicField(this, "_minLon");
-    /** @private */
-    __publicField(this, "_maxLon");
-    /** @private */
-    __publicField(this, "_latitude");
-    /** @private */
-    __publicField(this, "_longitude");
-    /** @private */
-    __publicField(this, "_minRadius");
-    /** @private */
-    __publicField(this, "_maxRadius");
-    /** @private */
-    __publicField(this, "_includeRestricted");
-    /** @private */
-    __publicField(this, "_includeAvailability");
-    /** @private */
-    __publicField(this, "_format");
-    /** @private */
-    __publicField(this, "_updatedAfter");
-    /** @private */
-    __publicField(this, "_matchTimeseries");
   }
   /**
    * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
@@ -72536,7 +71578,7 @@ var StationQuery = class extends FDSNCommon {
   }
 };
 
-// src/fdsndatacenters.ts
+// src/fdsndatacenters.mts
 var FDSN_HOST = "www.fdsn.org";
 var DATACENTERS_SERVICE = "datacenters";
 var DATACENTERS_PATH_BASE = "ws";
@@ -72546,12 +71588,6 @@ var DataCentersQuery = class extends FDSNCommon {
       host = FDSN_HOST;
     }
     super(DATACENTERS_SERVICE, host);
-    /** @private */
-    __publicField(this, "_name");
-    /** @private */
-    __publicField(this, "_services");
-    /** @private */
-    __publicField(this, "_includedatasets");
     this._path_base = DATACENTERS_PATH_BASE;
   }
   /**
@@ -72932,7 +71968,7 @@ function isValidRootType2(jsonValue) {
   }
 }
 
-// src/fdsneventcomponent.ts
+// src/fdsneventcomponent.mts
 var fdsneventcomponent_exports = {};
 __export(fdsneventcomponent_exports, {
   EarthquakeSearch: () => EarthquakeSearch
@@ -73152,7 +72188,7 @@ var EarthquakeSearch = class extends HTMLElement {
 };
 customElements.define("sp-earthquake-search", EarthquakeSearch);
 
-// src/fdsnstationcomponent.ts
+// src/fdsnstationcomponent.mts
 var fdsnstationcomponent_exports = {};
 __export(fdsnstationcomponent_exports, {
   CHANNEL_SEARCH_ELEMENT: () => CHANNEL_SEARCH_ELEMENT,
@@ -73356,7 +72392,7 @@ var ChannelSearch = class extends HTMLElement {
 var CHANNEL_SEARCH_ELEMENT = "sp-channel-search";
 customElements.define(CHANNEL_SEARCH_ELEMENT, ChannelSearch);
 
-// src/helicorder.ts
+// src/helicorder.mts
 var helicorder_exports = {};
 __export(helicorder_exports, {
   DEFAULT_MAX_HEIGHT: () => DEFAULT_MAX_HEIGHT,
@@ -73797,14 +72833,9 @@ var DEFAULT_MAX_HEIGHT = 600;
 var HelicorderConfig = class _HelicorderConfig extends SeismographConfig {
   constructor(timeRange, lineSeisConfig) {
     super();
-    __publicField(this, "lineSeisConfig");
-    __publicField(this, "overlap");
-    __publicField(this, "numLines");
-    __publicField(this, "maxVariation");
-    __publicField(this, "detrendLines", false);
-    __publicField(this, "yLabelTimeZone", FixedOffsetZone.utcInstance);
-    __publicField(this, "yLabelRightTimeZone", FixedOffsetZone.utcInstance);
-    __publicField(this, "timeLabelSpacing");
+    this.detrendLines = false;
+    this.yLabelTimeZone = FixedOffsetZone.utcInstance;
+    this.yLabelRightTimeZone = FixedOffsetZone.utcInstance;
     if (!isDef(timeRange)) {
       throw new Error("Helicorder config must have fixedTimeScale set");
     }
@@ -73859,8 +72890,6 @@ var HelicorderConfig = class _HelicorderConfig extends SeismographConfig {
 };
 var HeliTimeRange = class {
   constructor(startTime, duration3, lineNumber) {
-    __publicField(this, "lineNumber");
-    __publicField(this, "interval");
     this.interval = startDuration(startTime, duration3);
     this.lineNumber = lineNumber;
   }
@@ -73877,7 +72906,7 @@ var HELICORDER_SELECTOR = "helicorder";
 var HELI_COLOR_CSS_ID = "helicordercolors";
 customElements.define(HELICORDER_ELEMENT, Helicorder);
 
-// src/mseedarchive.ts
+// src/mseedarchive.mts
 var mseedarchive_exports = {};
 __export(mseedarchive_exports, {
   Allowed_Flags: () => Allowed_Flags,
@@ -73890,10 +72919,6 @@ __export(mseedarchive_exports, {
 var Allowed_Flags = ["n", "s", "l", "c", "Y", "j", "H"];
 var MSeedArchive = class {
   constructor(rootUrl, pattern) {
-    __publicField(this, "_rootUrl");
-    __publicField(this, "_pattern");
-    __publicField(this, "_recordSize");
-    __publicField(this, "_timeoutSec");
     this._rootUrl = fixProtocolInUrl(rootUrl);
     this._pattern = pattern;
     this._recordSize = 512;
@@ -74192,7 +73217,7 @@ function maxTimeForRecord(recordSize, sampleRate) {
   return Duration.fromMillis(1e3 * ((recordSize - 40) * 2) / sampleRate);
 }
 
-// src/nws.ts
+// src/nws.mts
 var nws_exports = {};
 __export(nws_exports, {
   NWSBaseObj: () => NWSBaseObj,
@@ -88723,7 +87748,7 @@ function date5(params) {
 // node_modules/zod/v4/classic/external.js
 config(en_default());
 
-// src/nws.ts
+// src/nws.mts
 function loadNWSPointInfo(lat, lon) {
   const fetchInit = defaultFetchInitObj();
   fetchInit["headers"] = {
@@ -88902,7 +87927,7 @@ var NWSObservation = NWSBaseObj.extend({
   })
 });
 
-// src/ringserverweb.ts
+// src/ringserverweb.mts
 var ringserverweb_exports = {};
 __export(ringserverweb_exports, {
   DATALINK_PATH: () => DATALINK_PATH2,
@@ -88916,7 +87941,7 @@ __export(ringserverweb_exports, {
   typeForId: () => typeForId2
 });
 
-// src/ringserverweb4.ts
+// src/ringserverweb4.mts
 var ringserverweb4_exports = {};
 __export(ringserverweb4_exports, {
   DATALINK_PATH: () => DATALINK_PATH,
@@ -88957,18 +87982,8 @@ var IRIS_HOST2 = "rtserve.iris.washington.edu";
 var EARTHSCOPE_HOST2 = "rtserve.earthscope.org";
 var RingserverConnection = class {
   constructor(host, port) {
-    /** @private */
-    __publicField(this, "_protocol");
-    /** @private */
-    __publicField(this, "_host");
-    /** @private */
-    __publicField(this, "_port");
-    /** @private */
-    __publicField(this, "_prefix");
-    /** @private */
-    __publicField(this, "_timeoutSec");
-    __publicField(this, "isFDSNSourceId", false);
-    __publicField(this, "dlproto", "1.0");
+    this.isFDSNSourceId = false;
+    this.dlproto = "1.0";
     const hostStr = isNonEmptyStringArg(host) ? host : EARTHSCOPE_HOST2;
     if (hostStr.startsWith("http")) {
       const rs_url = new URL(hostStr);
@@ -89278,25 +88293,15 @@ function sidForId(id2) {
   return null;
 }
 
-// src/ringserverweb.ts
+// src/ringserverweb.mts
 var SEEDLINK_PATH2 = "seedlink";
 var DATALINK_PATH2 = "datalink";
 var IRIS_HOST3 = "rtserve.iris.washington.edu";
 var ORG = "Organization: ";
 var RingserverConnection2 = class {
   constructor(host, port) {
-    /** @private */
-    __publicField(this, "_protocol");
-    /** @private */
-    __publicField(this, "_host");
-    /** @private */
-    __publicField(this, "_port");
-    /** @private */
-    __publicField(this, "_prefix");
-    /** @private */
-    __publicField(this, "_timeoutSec");
-    __publicField(this, "isFDSNSourceId", false);
-    __publicField(this, "dlproto", "1.0");
+    this.isFDSNSourceId = false;
+    this.dlproto = "1.0";
     const hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST3;
     if (hostStr.startsWith("http")) {
       const rs_url = new URL(hostStr);
@@ -89558,8 +88563,6 @@ function stationsFromStreams2(streams) {
 }
 var NslcWithType = class {
   constructor(type, nslc) {
-    __publicField(this, "type");
-    __publicField(this, "nslc");
     this.type = type;
     this.nslc = nslc;
   }
@@ -89596,11 +88599,6 @@ function nslcSplit(id2) {
 }
 var StreamStat3 = class {
   constructor(key, start2, end) {
-    __publicField(this, "key");
-    __publicField(this, "startRaw");
-    __publicField(this, "endRaw");
-    __publicField(this, "start");
-    __publicField(this, "end");
     this.key = key;
     this.startRaw = start2;
     this.endRaw = end;
@@ -89636,7 +88634,7 @@ var StreamStat3 = class {
   }
 };
 
-// src/sacpolezero.ts
+// src/sacpolezero.mts
 var sacpolezero_exports = {};
 __export(sacpolezero_exports, {
   SacPoleZero: () => SacPoleZero,
@@ -89646,26 +88644,6 @@ __export(sacpolezero_exports, {
 });
 var SacPoleZero = class _SacPoleZero {
   constructor(poles, zeros, constant) {
-    /**
-     * Complex poles
-     */
-    __publicField(this, "poles");
-    /**
-     * Complex zeros
-     */
-    __publicField(this, "zeros");
-    /**
-     * Scalar overall gain
-     */
-    __publicField(this, "constant");
-    /** number of zeros added to convert to displacement, for debugging */
-    __publicField(this, "gamma");
-    /** hertz/radian factor, for debugging */
-    __publicField(this, "mulFactor");
-    /** sensitivity accounting for gamma, for debugging */
-    __publicField(this, "sd");
-    /** normalization factor for poles and zeros accounting for gamma, for debugging */
-    __publicField(this, "A0");
     this.poles = poles;
     this.zeros = zeros;
     this.constant = constant;
@@ -89840,7 +88818,7 @@ function linspace(start2, stop, num) {
   return out;
 }
 
-// src/seedlink.ts
+// src/seedlink.mts
 var seedlink_exports = {};
 __export(seedlink_exports, {
   SeedlinkConnection: () => SeedlinkConnection2,
@@ -89849,16 +88827,7 @@ __export(seedlink_exports, {
 var WS_SEEDLINK3_SUBPROTOCOL = "SeedLink3.1";
 var SeedlinkConnection2 = class {
   constructor(url2, requestConfig, receiveMiniseedFn, errorHandler) {
-    __publicField(this, "url");
-    __publicField(this, "requestConfig");
-    __publicField(this, "receiveMiniseedFn");
-    __publicField(this, "errorHandler");
-    __publicField(this, "logCommandFn");
-    __publicField(this, "closeFn");
-    __publicField(this, "webSocket");
-    __publicField(this, "subprotocol");
-    __publicField(this, "command");
-    __publicField(this, "helloLines", []);
+    this.helloLines = [];
     this.url = url2;
     this.requestConfig = requestConfig;
     this.receiveMiniseedFn = receiveMiniseedFn;
@@ -90111,13 +89080,13 @@ var SeedlinkConnection2 = class {
   }
 };
 
-// src/seismogramloader.ts
+// src/seismogramloader.mts
 var seismogramloader_exports = {};
 __export(seismogramloader_exports, {
   SeismogramLoader: () => SeismogramLoader
 });
 
-// src/irisfedcatalog.ts
+// src/irisfedcatalog.mts
 var IRISFEDCAT_SERVICE = "fedcatalog";
 var SERVICE_VERSION5 = 1;
 var SERVICE_NAME5 = `irisws-${IRISFEDCAT_SERVICE}-${SERVICE_VERSION5}`;
@@ -90125,14 +89094,6 @@ var TARGET_DATASELECT = "dataselect";
 var FAKE_EMPTY_TEXT = "\n";
 var FedCatalogDataCenter = class {
   constructor() {
-    __publicField(this, "dataCenter");
-    __publicField(this, "services");
-    __publicField(this, "stationService");
-    __publicField(this, "dataSelectService");
-    __publicField(this, "postLines");
-    __publicField(this, "stationQuery");
-    __publicField(this, "dataSelectQuery");
-    __publicField(this, "level");
     this.dataCenter = "";
     this.stationService = "";
     this.dataSelectService = "";
@@ -90186,8 +89147,6 @@ var FedCatalogDataCenter = class {
 };
 var FedCatalogResult = class {
   constructor() {
-    __publicField(this, "params");
-    __publicField(this, "queries");
     this.params = /* @__PURE__ */ new Map();
     this.queries = [];
   }
@@ -90203,57 +89162,6 @@ var FedCatalogQuery = class _FedCatalogQuery extends FDSNCommon {
       host = IRIS_HOST;
     }
     super(IRISFEDCAT_SERVICE, host);
-    /** @private */
-    __publicField(this, "_targetService");
-    /** @private */
-    __publicField(this, "_level");
-    /** @private */
-    __publicField(this, "_networkCode");
-    /** @private */
-    __publicField(this, "_stationCode");
-    /** @private */
-    __publicField(this, "_locationCode");
-    /** @private */
-    __publicField(this, "_channelCode");
-    /** @private */
-    __publicField(this, "_startTime");
-    /** @private */
-    __publicField(this, "_endTime");
-    /** @private */
-    __publicField(this, "_startBefore");
-    /** @private */
-    __publicField(this, "_endBefore");
-    /** @private */
-    __publicField(this, "_startAfter");
-    /** @private */
-    __publicField(this, "_endAfter");
-    /** @private */
-    __publicField(this, "_minLat");
-    /** @private */
-    __publicField(this, "_maxLat");
-    /** @private */
-    __publicField(this, "_minLon");
-    /** @private */
-    __publicField(this, "_maxLon");
-    /** @private */
-    __publicField(this, "_latitude");
-    /** @private */
-    __publicField(this, "_longitude");
-    /** @private */
-    __publicField(this, "_minRadius");
-    /** @private */
-    __publicField(this, "_maxRadius");
-    /** @private */
-    __publicField(this, "_includeRestricted");
-    /** @private */
-    __publicField(this, "_includeAvailability");
-    /** @private */
-    __publicField(this, "_format");
-    /** @private */
-    __publicField(this, "_updatedAfter");
-    /** @private */
-    __publicField(this, "_matchTimeseries");
-    __publicField(this, "fedCatResult");
     this._path_base = IRISWS_PATH_BASE;
     this.fedCatResult = null;
   }
@@ -91205,20 +90113,9 @@ var FedCatalogQuery = class _FedCatalogQuery extends FDSNCommon {
   }
 };
 
-// src/seismogramloader.ts
+// src/seismogramloader.mts
 var SeismogramLoader = class {
   constructor(stationQuery, eventQuery, dataselectQuery) {
-    __publicField(this, "stationQuery");
-    __publicField(this, "withFedCatalog");
-    __publicField(this, "withResponse");
-    __publicField(this, "markOrigin");
-    __publicField(this, "eventQuery");
-    __publicField(this, "dataselectQuery");
-    __publicField(this, "_startPhaseList");
-    __publicField(this, "_endPhaseList");
-    __publicField(this, "_markedPhaseList");
-    __publicField(this, "_startOffset");
-    __publicField(this, "_endOffset");
     if (stationQuery instanceof StationQuery) {
       this.stationQuery = stationQuery;
     } else if (Array.isArray(stationQuery)) {
@@ -91530,7 +90427,7 @@ var SeismogramLoader = class {
   }
 };
 
-// src/seismographconfigeditor.ts
+// src/seismographconfigeditor.mts
 var seismographconfigeditor_exports = {};
 __export(seismographconfigeditor_exports, {
   configEditor_css: () => configEditor_css,
@@ -91784,7 +90681,7 @@ if (document) {
   insertCSS(configEditor_css, "configeditor");
 }
 
-// src/syngine.ts
+// src/syngine.mts
 var syngine_exports = {};
 __export(syngine_exports, {
   SERVICE_NAME: () => SERVICE_NAME6,
@@ -91805,70 +90702,6 @@ var SyngineQuery = class extends FDSNCommon {
       host = IRIS_HOST;
     }
     super(SYNGINE_SERVICE, host);
-    /** @private */
-    __publicField(this, "_model");
-    /** @private */
-    __publicField(this, "_label");
-    /** @private */
-    __publicField(this, "_components");
-    /** @private */
-    __publicField(this, "_units");
-    /** @private */
-    __publicField(this, "_dt");
-    /** @private */
-    __publicField(this, "_scale");
-    /** @private */
-    __publicField(this, "_kernelwidth");
-    /** @private */
-    __publicField(this, "_sourcewidth");
-    /** @private */
-    __publicField(this, "_originTime");
-    /** @private */
-    __publicField(this, "_startTime");
-    /** @private */
-    __publicField(this, "_endTime");
-    /** @private */
-    __publicField(this, "_receiverlatitude");
-    /** @private */
-    __publicField(this, "_receiverlongitude");
-    /** @private */
-    __publicField(this, "_network");
-    /** @private */
-    __publicField(this, "_station");
-    /** @private */
-    __publicField(this, "_networkCode");
-    /** @private */
-    __publicField(this, "_stationCode");
-    /** @private */
-    __publicField(this, "_locationCode");
-    __publicField(this, "_channel");
-    // source-options
-    /** @private */
-    __publicField(this, "_eventid");
-    /** @private */
-    __publicField(this, "_quake");
-    /** @private */
-    __publicField(this, "_sourcelatitude");
-    /** @private */
-    __publicField(this, "_sourcelongitude");
-    /** @private */
-    __publicField(this, "_sourcedepthinmeters");
-    /** @private */
-    __publicField(this, "_sourcedistanceindegrees");
-    /** @private */
-    __publicField(this, "_greensfunction");
-    /** @private */
-    __publicField(this, "_sourcemomenttensor");
-    /** @private */
-    __publicField(this, "_sourcedoublecouple");
-    /** @private */
-    __publicField(this, "_sourceforce");
-    // USGS Finite Fault Model
-    // Todo
-    // Custom Source Time Function
-    // Todo
-    /** @private */
-    __publicField(this, "_format");
     this._path_base = IRISWS_PATH_BASE;
   }
   /**
@@ -92533,7 +91366,7 @@ var SyngineQuery = class extends FDSNCommon {
   }
 };
 
-// src/taper.ts
+// src/taper.mts
 var taper_exports = {};
 __export(taper_exports, {
   COSINE: () => COSINE,
@@ -92587,7 +91420,7 @@ var HANNING = "HANNING";
 var HAMMING = "HAMMING";
 var COSINE = "COSINE";
 
-// src/taup3.ts
+// src/taup3.mts
 var taup3_exports = {};
 __export(taup3_exports, {
   FAKE_EMPTY_SVG: () => FAKE_EMPTY_SVG2,
@@ -92669,28 +91502,6 @@ var TauPQuery = class extends FDSNCommon {
       host = USC_HOST;
     }
     super(TAUP_SERVICE, host);
-    /** @private */
-    __publicField(this, "_evdepth");
-    /** @private */
-    __publicField(this, "_distdeg");
-    /** @private */
-    __publicField(this, "_model");
-    /** @private */
-    __publicField(this, "_phases");
-    /** @private */
-    __publicField(this, "_stalat");
-    /** @private */
-    __publicField(this, "_stalon");
-    /** @private */
-    __publicField(this, "_receiverdepth");
-    /** @private */
-    __publicField(this, "_evlat");
-    /** @private */
-    __publicField(this, "_evlon");
-    /** @private */
-    __publicField(this, "_format");
-    /** @private */
-    __publicField(this, "_noheader");
     this.specVersion("3");
     this._path_base = LOCALWS_PATH_BASE;
     this._evdepth = [0];
@@ -93077,7 +91888,7 @@ var FAKE_EMPTY_SVG2 = `
 </svg>
 `;
 
-// src/transfer.ts
+// src/transfer.mts
 var transfer_exports = {};
 __export(transfer_exports, {
   METER: () => METER,
@@ -96216,7 +95027,7 @@ var allMeasures = {
 };
 var all_default = allMeasures;
 
-// src/transfer.ts
+// src/transfer.mts
 var convert = configureMeasurements(all_default);
 function transfer(seis, response, lowCut, lowPass, highPass, highCut) {
   if (!response) {
@@ -96495,7 +95306,7 @@ function calc_A0(poles, zeros, ref_freq) {
   return a0;
 }
 
-// src/usgsgeojson.ts
+// src/usgsgeojson.mts
 var usgsgeojson_exports = {};
 __export(usgsgeojson_exports, {
   USGS_TECTONIC_SUMMARY_URL: () => USGS_TECTONIC_SUMMARY_URL,
@@ -96841,7 +95652,7 @@ function isValidUSGSTectonic(jsonValue) {
   return true;
 }
 
-// src/vector.ts
+// src/vector.mts
 var vector_exports = {};
 __export(vector_exports, {
   DtoR: () => DtoR,
@@ -96852,11 +95663,6 @@ __export(vector_exports, {
 var DtoR = Math.PI / 180;
 var RotatedSeismograms = class {
   constructor(radial, azimuthRadial, transverse, azimuthTransverse, rotation) {
-    __publicField(this, "radial");
-    __publicField(this, "transverse");
-    __publicField(this, "azimuthRadial");
-    __publicField(this, "azimuthTransverse");
-    __publicField(this, "rotation");
     this.radial = radial;
     this.azimuthRadial = azimuthRadial;
     this.transverse = transverse;
@@ -96988,79 +95794,11 @@ function vectorMagnitudeSegment(seisA, seisB, seisC, orientCode) {
   return outSeis;
 }
 
-// src/index.ts
+// src/index.mts
 var OregonDSP2 = __toESM(require_oregondsp(), 1);
 var leaflet = __toESM(require_leaflet_src(), 1);
-var OregonDSP3 = __toESM(require_oregondsp(), 1);
-var leaflet2 = __toESM(require_leaflet_src(), 1);
-var index_default = {
-  animatedseismograph: animatedseismograph_exports,
-  axisutil: axisutil_exports,
-  components: components_exports,
-  cssutil: cssutil_exports,
-  datalink: datalink_exports,
-  dataset: dataset_exports,
-  datechooser: datechooser_exports,
-  distaz: distaz_exports,
-  infotable: infotable_exports,
-  fdsnavailability: fdsnavailability_exports,
-  fdsncommon: fdsncommon_exports,
-  fdsndatacenters: fdsndatacenters_exports,
-  fdsnevent: fdsnevent_exports,
-  fdsneventcomponent: fdsneventcomponent_exports,
-  fdsnstation: fdsnstation_exports,
-  fdsnstationcomponent: fdsnstationcomponent_exports,
-  fdsndataselect: fdsndataselect_exports,
-  fdsnsourceid: fdsnsourceid_exports,
-  fft: fft_exports,
-  handlebarshelpers: handlebarshelpers_exports,
-  helicorder: helicorder_exports,
-  filter: filter_exports,
-  leafletutil: leafletutil_exports,
-  miniseed: miniseed_exports,
-  mseed3: mseed3_exports,
-  mseed3eh: mseed3eh_exports,
-  mseedarchive: mseedarchive_exports,
-  nws: nws_exports,
-  oregondsputil: oregondsputil_exports,
-  organizeddisplay: organizeddisplay_exports,
-  particlemotion: particlemotion_exports,
-  quakeml: quakeml_exports,
-  ringserverweb: ringserverweb_exports,
-  ringserverweb4: ringserverweb4_exports,
-  sacPoleZero: sacpolezero_exports,
-  scale: scale_exports,
-  seedcodec: seedcodec_exports,
-  seedlink: seedlink_exports,
-  seedlink4: seedlink4_exports,
-  seismogram: seismogram_exports,
-  seismogramloader: seismogramloader_exports,
-  seismogramsegment: seismogramsegment_exports,
-  seismograph: seismograph_exports,
-  seismographmarker: seismographmarker_exports,
-  seismographutil: seismographutil_exports,
-  seismographconfig: seismographconfig_exports,
-  seismographconfigeditor: seismographconfigeditor_exports,
-  sorting: sorting_exports,
-  spelement: spelement_exports,
-  spectraplot: spectraplot_exports,
-  stationxml: stationxml_exports,
-  syngine: syngine_exports,
-  taper: taper_exports,
-  taup3: taup3_exports,
-  transfer: transfer_exports,
-  transition: transition_exports,
-  traveltime: traveltime_exports,
-  usgsgeojson: usgsgeojson_exports,
-  util: util_exports,
-  vector: vector_exports,
-  version,
-  OregonDSP: OregonDSP2,
-  leaflet,
-  luxon: luxon_exports
-};
 export {
-  OregonDSP3 as OregonDSP,
+  OregonDSP2 as OregonDSP,
   animatedseismograph_exports as animatedseismograph,
   axisutil_exports as axisutil,
   components_exports as components,
@@ -97068,7 +95806,6 @@ export {
   datalink_exports as datalink,
   dataset_exports as dataset,
   datechooser_exports as datechooser,
-  index_default as default,
   distaz_exports as distaz,
   fdsnavailability_exports as fdsnavailability,
   fdsncommon_exports as fdsncommon,
@@ -97084,7 +95821,7 @@ export {
   handlebarshelpers_exports as handlebarshelpers,
   helicorder_exports as helicorder,
   infotable_exports as infotable,
-  leaflet2 as leaflet,
+  leaflet,
   leafletutil_exports as leafletutil,
   luxon_exports as luxon,
   miniseed_exports as miniseed,

@@ -1,5 +1,5 @@
 // snip start createseis
-import sp from "../seisplotjs_3.2.5-snapshot_standalone.mjs";
+import * as sp from "../seisplotjs_3.2.5-snapshot_standalone.mjs";
 sp.util.updateVersionText(".sp_version");
 
 let sampleRate = 20;

@@ -65,7 +65,7 @@
     "zod": "^4.4.3"
   },
   "scripts": {
-    "esstandalone": "npx esbuild src/index.ts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2020 --format=esm",
+    "esstandalone": "npx esbuild src/index.mts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2022 --format=esm",
     "esmb": "node build.mjs",
     "srclint": "eslint src/* ",
     "testlint": "eslint -c eslint_test.config.mjs test/** testremotes/**",
