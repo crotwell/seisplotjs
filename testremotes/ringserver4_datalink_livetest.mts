@@ -9,6 +9,10 @@ import {setDefaultFetch} from "../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
 test("do id test", () => {
   // def is IRIS
   const ring = new RingserverConnection();

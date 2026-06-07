@@ -7,6 +7,10 @@ setDefaultFetch(fetch);
 
 import * as taup3 from "../src/taup3.mjs";
 
+/**
+ * @module-tag remotes
+ */
+
 test("formURL", () => {
   const query = new taup3.TauPQuery(taup3.USC_HOST);
   query.pathBase("uscws");

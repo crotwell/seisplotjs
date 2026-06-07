@@ -7,6 +7,10 @@ setDefaultFetch(fetch);
 
 import * as syngine from "../src/syngine.mjs";
 
+/**
+ * @module-tag remotes
+ */
+
 test("version", () => {
   const query = new syngine.SyngineQuery();
   return query.queryVersion().then( res => {

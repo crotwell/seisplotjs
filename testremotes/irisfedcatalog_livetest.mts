@@ -11,6 +11,10 @@ import {setDefaultFetch} from "../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
 test("version", () => {
   const fcQuery = new FedCatalogQuery();
   return fcQuery.queryVersion().then( res => {

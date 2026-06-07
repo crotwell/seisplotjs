@@ -7,6 +7,11 @@ import {setDefaultFetch} from "../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
+
 test("version", () => {
   const avail = new AvailabilityQuery();
   return avail.queryVersion().then( res => {

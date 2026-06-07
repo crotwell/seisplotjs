@@ -7,6 +7,10 @@ setDefaultFetch(fetch);
 
 import * as traveltime from "../src/traveltime.mjs";
 
+/**
+ * @module-tag remotes
+ */
+
 test("version", () => {
   const ttQuery = new traveltime.TraveltimeQuery();
   return ttQuery.queryVersion().then( res => {

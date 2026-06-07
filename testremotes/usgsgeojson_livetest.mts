@@ -8,6 +8,10 @@ setDefaultFetch(fetch);
 import * as usgsgeosjon from "../src/usgsgeojson.mjs";
 import type {Quake} from "../src/quakeml.mjs";
 
+/**
+ * @module-tag remotes
+ */
+
 test("grab", () => {
   return usgsgeosjon.loadHourSummaryAll().then((quakeList: Array<Quake>) => {
     expect(quakeList).toBeDefined();

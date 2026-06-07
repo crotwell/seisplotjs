@@ -7,6 +7,10 @@ import {setDefaultFetch} from "../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
 
 test("do id test", () => {
   // def is IRIS, but is only ringserver 3

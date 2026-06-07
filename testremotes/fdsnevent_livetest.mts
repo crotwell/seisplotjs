@@ -9,6 +9,10 @@ import { Interval} from "luxon";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
 test("version", () => {
   const avail = new EventQuery();
   return avail.queryVersion().then( res => {

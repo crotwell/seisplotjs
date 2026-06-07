@@ -6,6 +6,10 @@ import {setDefaultFetch} from "../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
 test("version", () => {
   const avail = new fdsnstation.StationQuery();
   return avail.queryVersion().then( res => {

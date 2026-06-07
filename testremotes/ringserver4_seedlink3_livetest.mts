@@ -9,6 +9,10 @@ import {setDefaultFetch} from "../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
 test("do id test", () => {
   // def is IRIS
   const ring = new RingserverConnection();
@@ -23,7 +27,7 @@ test("do id test", () => {
 
 let sl3Conn: Seedlink3Connection;
 
-test("do seedlink3 test", done => {
+test("do seedlink3 test", () => new Promise(done => {
   // def is IRIS
   const ring = new RingserverConnection();
   const USC_HOST = "eeyore.seis.sc.edu";
@@ -57,7 +61,7 @@ test("do seedlink3 test", done => {
     done(err);
   });
 
-});
+}));
 
 afterEach(() => {
   if (sl3Conn) { sl3Conn.close();}

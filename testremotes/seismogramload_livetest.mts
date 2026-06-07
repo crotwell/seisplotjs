@@ -11,6 +11,10 @@ import {setDefaultFetch} from "../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
+/**
+ * @module-tag remotes
+ */
+
 test( "load HODGE for local eq test", () => {
   const localQueryTimeWindow = Interval.fromDateTimes(isoToDateTime('2020-08-21'), isoToDateTime('2020-08-22'));
   const localEventQuery = new EventQuery()
