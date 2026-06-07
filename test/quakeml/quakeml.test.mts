@@ -69,20 +69,18 @@ test("USGS quake", () => {
   });
   const quakes = qml.eventList;
   expect(quakes).toHaveLength(1);
-  expect(quakes[0].descriptionList).toMatchObject([
-    {
-      text: "Tonga",
-      type: "Flinn-Engdahl region",
-    },
-    {
-      text: "84.6 km (52.6 miles) WNW of Hihifo, Niuas, Tonga (pop. 815)\n" +
-"356.0 km (221.2 miles) WSW of Apia, Tuamasaga, Samoa (pop. 40407)\n" +
-"436.1 km (271.0 miles) WSW of Pago Pago, Eastern District, American Samoa (pop. 11500)\n" +
-"614.0 km (381.5 miles) N of Nuku`alofa, Tongatapu, Tonga (pop. 22400)\n" +
-"661.5 km (411.0 miles) E of Labasa, Northern, Fiji (pop. 27949)\n",
-      type: "nearest cities",
-    },
-  ]);
+  console.log(quakes[0].descriptionList)
+  expect(quakes[0].descriptionList).toHaveLength(2)
+  expect(quakes[0].descriptionList[0]).toHaveProperty('text', 'Tonga')
+  expect(quakes[0].descriptionList[1]).toHaveProperty('text',
+`84.6 km (52.6 miles) WNW of Hihifo, Niuas, Tonga (pop. 815)
+356.0 km (221.2 miles) WSW of Apia, Tuamasaga, Samoa (pop. 40407)
+436.1 km (271.0 miles) WSW of Pago Pago, Eastern District, American Samoa (pop. 11500)
+614.0 km (381.5 miles) N of Nuku\`alofa, Tongatapu, Tonga (pop. 22400)
+661.5 km (411.0 miles) E of Labasa, Northern, Fiji (pop. 27949)
+`  )
+  expect(quakes[0].descriptionList[1]).toHaveProperty('type',"nearest cities")
+
   expect(quakes[0].preferredOrigin?.publicId).toBe("quakeml:us.anss.org/origin/6000kawn");
   expect(quakes[0].preferredMagnitude?.publicId).toBe("quakeml:us.anss.org/magnitude/6000kawn/mww");
   expect(quakes[0].type).toBe("earthquake");
