@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 // reference data is included in mseed3 repo:
 // git clone https://github.com/iris-edu/miniSEED3.git
 // cp -r miniSEED3/reference-data test/mseed3/.

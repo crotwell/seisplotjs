@@ -1,7 +1,5 @@
+import {describe, expect, test} from 'vitest';
 
-/*
- * @jest-environment jsdom
- */
 
 import fs from "fs";
 

@@ -1,8 +1,9 @@
+import {describe, expect, test} from 'vitest';
 import "../jestRatioMatchers.mjs";
 
 import * as fft from "../../src/fft.mjs";
 import {Seismogram } from "../../src/seismogram.mjs";
-import {readSac, parseSac, readDataView, writeSac, replaceYData, asSeismogram} from "./sacfile";
+import {readSac, parseSac, readDataView, writeSac, replaceYData, asSeismogram} from "./sacfile.mjs";
 import {DateTime} from "luxon";
 
 const OVERWRITE_OUTPUT = false;

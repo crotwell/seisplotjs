@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {IRIS_HOST} from "../src/fdsncommon.mjs";
 import {setDefaultFetch} from "../src/util.mjs";

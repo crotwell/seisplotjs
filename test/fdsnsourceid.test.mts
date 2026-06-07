@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {FDSNSourceId, NetworkSourceId, StationSourceId} from "../src/fdsnsourceid.mjs";
 

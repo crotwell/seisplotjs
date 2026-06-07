@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 
 import {kmtodeg, degtokm, distaz } from "../src/distaz.mjs";

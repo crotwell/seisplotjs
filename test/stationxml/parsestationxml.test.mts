@@ -1,7 +1,4 @@
-
-/*
- * @jest-environment jsdom
- */
+import {describe, expect, test} from 'vitest';
 
 import fs from "fs";
 
@@ -12,12 +9,10 @@ import { createComplex} from "../../src/oregondsputil.mjs";
 
 let networks: Array<Network> = [];
 
-beforeAll(() => {
-  const filename = "./test/stationxml/data/co_jsc.staxml";
-  const rawData = fs.readFileSync(filename, 'utf8');
-  const xml = new DOMParser().parseFromString(rawData, "text/xml");
-  networks = stationxml.parseStationXml(xml);
-});
+const filename = "./test/stationxml/data/co_jsc.staxml";
+const rawData = fs.readFileSync(filename, 'utf8');
+const xml = new DOMParser().parseFromString(rawData, "text/xml");
+networks = stationxml.parseStationXml(xml);
 
 test( "stationxml parse test", () => {
   expect(networks).not.toBeNull();

@@ -41,7 +41,7 @@
     "./dist/index.d.ts",
     "./dist/index_node.mjs",
     "./dist/index_node.d.ts",
-    "src/*.ts"
+    "src/*.mts"
   ],
   "dependencies": {
     "convert-units": "^3.0.0-beta.6",
@@ -72,8 +72,8 @@
     "lint": "npm run srclint && npm run testlint",
     "examplelint": "eslint -c .eslintrc.js'docs/examples/*/[a-r]*.js'  'docs/examples/*/s[t-z]*.js'",
     "publint": "npx publint",
-    "test": "jest",
-    "testremotes": "jest --config=jest_remote.config.js",
+    "test": "vitest",
+    "testremotes": "vitest --config=jest_remote.config.js",
     "build:clean": "rimraf dist docs/seisplotjs_${npm_package_version}_standalone.mjs",
     "apidoc:clean": "rimraf docs/api",
     "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && ((npm run dts ) || npm run tsc)",
@@ -83,7 +83,7 @@
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
     "prepare": "npm run compile && npm run dts_node ",
     "version": "npm run compile && npm run bumpversion && npm run doc",
-    "version_to_src": "genversion --semi --es6 src/version.ts",
+    "version_to_src": "genversion --semi --es6 src/version.mts",
     "postversion": "echo remember: git push && echo remember: git push --tags",
     "bumpversion": "python3 replaceVersion.py && echo ${npm_package_version} > VERSION",
     "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
@@ -139,6 +139,7 @@
     "eslint-plugin-jsdoc": "^63.0.1",
     "eslint-plugin-node": "^11.1.0",
     "genversion": "^3.2.0",
+    "happy-dom": "^20.10.2",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "jest-extended": "^7.0.0",
@@ -150,6 +151,7 @@
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.60.1"
+    "typescript-eslint": "^8.60.1",
+    "vitest": "^4.1.8"
   }
 }

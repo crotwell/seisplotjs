@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 import "../jestRatioMatchers.mjs";
 
 import * as fft from "../../src/fft.mjs";
@@ -7,7 +8,7 @@ import * as taper from "../../src/taper.mjs";
 import * as transfer from "../../src/transfer.mjs";
 import { Seismogram} from "../../src/seismogram.mjs";
 import {SacPoleZero} from "../../src/sacpolezero.mjs";
-import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from "./sacfile";
+import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from "./sacfile.mjs";
 import {DateTime} from "luxon";
 
 const ONE_COMPLEX = createComplex(1, 0);

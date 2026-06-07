@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 import { parseGeoJSON, isValidUSGSGeoJsonSummary }  from "../src/usgsgeojson.mjs";
 import {EventParameters} from "../src/quakeml.mjs";
 import {checkStringOrDate} from "../src/util.mjs";

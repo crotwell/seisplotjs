@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import * as fs from "fs/promises";
 import { Buffer } from "buffer";

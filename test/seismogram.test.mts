@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {FDSNSourceId} from "../src/fdsnsourceid.mjs";
 import { createQuakeFromValues, UNKNOWN_PUBLIC_ID} from "../src/quakeml.mjs";

@@ -1,19 +1,20 @@
+import {describe, expect, test} from 'vitest';
 
 import * as nws from "../../src/nws.mjs";
 
 import fs from "fs";
 
-let pointsJson: nws.NWSPointInfo;
-let forecastJson: nws.NWSForecast;
+let pointsJson= nws.NWSPointInfo;
+let forecastJson= nws.NWSForecast;
 
-beforeAll(() => {
-  const pointsFilename = "./test/nws/nws_points.geojson";
-  const pointsRawData = fs.readFileSync(pointsFilename, 'utf8');
-  pointsJson = JSON.parse(pointsRawData);
-  const forecastFilename = "./test/nws/nws_forecast.geojson";
-  const forecastRawData = fs.readFileSync(forecastFilename, 'utf8');
-  forecastJson = JSON.parse(forecastRawData);
-});
+
+const pointsFilename = "./test/nws/nws_points.geojson";
+const pointsRawData = fs.readFileSync(pointsFilename, 'utf8');
+pointsJson = JSON.parse(pointsRawData);
+const forecastFilename = "./test/nws/nws_forecast.geojson";
+const forecastRawData = fs.readFileSync(forecastFilename, 'utf8');
+forecastJson = JSON.parse(forecastRawData);
+
 
 test( "parsePoints", () => {
   expect(pointsJson).toBeObject();

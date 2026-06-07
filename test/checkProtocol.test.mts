@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {checkProtocol} from "../src/util.mjs";
 

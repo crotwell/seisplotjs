@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 import {seismogramSegmentAsLine} from "../src/seismographutil.mjs";
 import {Seismogram, SeismogramDisplayData} from "../src/seismogram.mjs";
 import {Seismograph} from "../src/seismograph.mjs";

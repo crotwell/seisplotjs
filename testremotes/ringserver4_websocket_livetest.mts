@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 
 //import {WS_DATALINK_SUBPROTOCOL} from "../src/datalink.mjs";

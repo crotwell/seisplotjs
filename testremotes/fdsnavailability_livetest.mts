@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {AvailabilityQuery} from "../src/fdsnavailability.mjs";
 import { SeismogramDisplayData} from "../src/seismogram.mjs";

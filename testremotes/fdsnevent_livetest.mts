@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {EventQuery} from "../src/fdsnevent.mjs";
 import {Quake} from "../src/quakeml.mjs";

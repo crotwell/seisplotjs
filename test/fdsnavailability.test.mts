@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import * as fdsnavailability from "../src/fdsnavailability.mjs";
 import {EARTHSCOPE_HOST} from "../src/fdsncommon.mjs";

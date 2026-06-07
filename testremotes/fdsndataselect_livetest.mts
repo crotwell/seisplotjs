@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {DataSelectQuery} from "../src/fdsndataselect.mjs";
 import {Seismogram} from "../src/seismogram.mjs";

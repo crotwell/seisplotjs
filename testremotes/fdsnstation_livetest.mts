@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import * as fdsnstation from "../src/fdsnstation.mjs";
 

@@ -1,4 +1,5 @@
-import "./jestRatioMatchers";
+import "./jestRatioMatchers.mjs";
+import {describe, expect, test} from 'vitest';
 
 import {FDSNSourceId} from "../src/fdsnsourceid.mjs";
 import * as vector from "../src/vector.mjs";

@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import * as miniseed from "../../src/miniseed.mjs";
 import * as seedcodec from "../../src/seedcodec.mjs";

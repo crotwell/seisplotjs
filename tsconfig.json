@@ -1,25 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "module": "preserve",
+    "module": "es2020",
+    "target": "es2020", // set to the *lowest* target you support
     "lib": ["ESNext", "DOM"],
-    "moduleResolution": "bundler",
-    "strict": true,
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "noEmit": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": false,
-    "noImplicitReturns": true,
     "skipLibCheck": false,
+    "strict": true,
+    "verbatimModuleSyntax": true,
     "declaration": true,
-    "declarationDir": "dist/dts",
+    "sourceMap": true,
+    "declarationMap": true,
+    "rootDir": "src",
     "outDir": "dist/dts",
-    "rootDir": "."
+    "esModuleInterop": true,
+
+    "types": ["jest", "jest-extended"]
   },
-  "include": ["src"],
-  "sourceMap": true
+  "include": ["src"]
 }

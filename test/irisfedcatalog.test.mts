@@ -1,7 +1,4 @@
-
-/*
- * @jest-environment jsdom
- */
+import {describe, expect, test} from 'vitest';
 
 import {FedCatalogQuery} from "../src/irisfedcatalog.mjs";
 

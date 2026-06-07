@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import { FedCatalogQuery } from "../src/irisfedcatalog.mjs";
 import { allChannels } from "../src/stationxml.mjs";

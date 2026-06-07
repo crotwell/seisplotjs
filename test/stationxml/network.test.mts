@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {Network, allStations, allChannels} from "../../src/stationxml.mjs";
 

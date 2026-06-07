@@ -1,6 +1,7 @@
+import {describe, expect, test} from 'vitest';
 
 import {SacPoleZero} from "../../src/sacpolezero.mjs";
-import {readSacPoleZero} from "./sacfile";
+import {readSacPoleZero} from "./sacfile.mjs";
 
 
 test("parse sac polezero", () => {

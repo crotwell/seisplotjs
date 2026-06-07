@@ -1,7 +1,8 @@
+import {describe, expect, test} from 'vitest';
 
 import * as filter from "../../src/filter.mjs";
 import {Seismogram} from "../../src/seismogram.mjs";
-import {readSeismogram} from "./sacfile";
+import {readSeismogram} from "./sacfile.mjs";
 import {checkStringOrDate} from "../../src/util.mjs";
 
 test("init butterworth filter", () => {

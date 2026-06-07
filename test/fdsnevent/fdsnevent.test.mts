@@ -1,7 +1,4 @@
-
-/*
- * @jest-environment jsdom
- */
+import {describe, expect, test} from 'vitest';
 
 import * as fdsnevent from "../../src/fdsnevent.mjs";
 import * as quakeml from "../../src/quakeml.mjs";

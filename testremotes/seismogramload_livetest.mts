@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 import { SeismogramLoader } from "../src/seismogramloader.mjs";
 
 import {isoToDateTime} from "../src/util.mjs";

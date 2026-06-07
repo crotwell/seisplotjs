@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {SeismographConfig} from "../src/seismographconfig.mjs";
 

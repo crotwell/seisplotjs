@@ -1,9 +1,10 @@
+import {describe, expect, test} from 'vitest';
 import "../jestRatioMatchers.mjs";
 
 import * as filter from "../../src/filter.mjs";
 import * as taper from "../../src/taper.mjs";
 import {Seismogram, ensureIsSeismogram } from "../../src/seismogram.mjs";
-import {readSac} from "./sacfile";
+import {readSac} from "./sacfile.mjs";
 import {DateTime} from "luxon";
 
 test("simple value taper", () => {

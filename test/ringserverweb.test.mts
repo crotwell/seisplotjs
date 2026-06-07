@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import * as ringserverweb from "../src/ringserverweb.mjs";
 

@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {RingserverConnection} from "../src/ringserverweb4.mjs";
 import {SeedlinkConnection as Seedlink3Connection, SequencedDataRecord} from "../src/seedlink.mjs";

@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 import {RingserverConnection} from "../src/ringserverweb4.mjs";
 import {DataLinkConnection, DataLinkPacket} from "../src/datalink.mjs";

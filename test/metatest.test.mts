@@ -1,4 +1,5 @@
-import "./jestRatioMatchers";
+import {describe, expect, test} from 'vitest';
+import "./jestRatioMatchers.mjs";
 
 test("metatest", () => {
   expect(.0001).toBeCloseToRatio(0, 3, .0002, 3);

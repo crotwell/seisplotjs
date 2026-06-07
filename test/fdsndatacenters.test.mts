@@ -1,7 +1,4 @@
-
-/*
- * @jest-environment jsdom
- */
+import {describe, expect, test} from 'vitest';
 
 import * as fdsndatacenters from "../src/fdsndatacenters.mjs";
 

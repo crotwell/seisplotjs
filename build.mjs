@@ -13,7 +13,7 @@ const mypackage = loadJSON("./package.json");
 const dependencies = mypackage.dependencies;
 //import {dependencies, peerDependencies } from './package.json'  assert { type: "json" };
 
-const entryFile = "src/index.ts";
+const entryFile = "src/index.mts";
 const entryPoints = [entryFile];
 const shared = {
   entryPoints: [entryFile],
@@ -48,10 +48,10 @@ const nonEntryPoints = [
   "util",
   "vector",
   "version",
-].map((f) => `${f}.ts`);
+].map((f) => `${f}.mts`);
 const srcFiles = fs
   .readdirSync("./src")
-  .filter((k) => k.endsWith(".ts"))
+  .filter((k) => k.endsWith(".mts"))
   .filter((k) => !k.startsWith("index"))
   .filter((k) => !nonEntryPoints.includes(k))
   .map((f) => `src/${f}`);
@@ -66,7 +66,7 @@ build({
 });
 
 // without leaflet for node (leaflet requires window global)
-const nodeEntryFile = "src/index_node.ts";
+const nodeEntryFile = "src/index_node.mts";
 const nodeDependencies = Object.keys(dependencies).filter(
   (k) => k !== "leaflet" && k !== "leafletutil",
 );

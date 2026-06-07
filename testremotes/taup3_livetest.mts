@@ -1,3 +1,4 @@
+import {describe, expect, test} from 'vitest';
 
 
 import {setDefaultFetch} from "../src/util.mjs";
