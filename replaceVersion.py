@@ -14,8 +14,8 @@ print(f"Update {old} to {ver}")
 
 replaceItems = {
   f"seisplotjs_{old}_standalone.mjs": f"seisplotjs_{ver}_standalone.mjs",
-  "seisplotjs 3.1": f"seisplotjs 3.1",
-  "Seisplotjs 3.1": f"Seisplotjs 3.1",
+  "seisplotjs 3.1": f"seisplotjs 3.2",
+  "Seisplotjs 3.1": f"Seisplotjs 3.2",
   old: ver,
 }
 
