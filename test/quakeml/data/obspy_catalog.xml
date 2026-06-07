@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:anss="http://anss.org/xmlns/event/0.1" xmlns:catalog="http://anss.org/xmlns/catalog/0.1" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2">
   <eventParameters publicID="quakeml:earthquake.usgs.gov/fdsnws/event/1/query?starttime=2019-10-31T01%3A10%3A19.000000&amp;endtime=2019-10-31T01%3A31%3A19.000000&amp;minmagnitude=5.0">
     <creationInfo>
