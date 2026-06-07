@@ -40,7 +40,7 @@ test.skip("do seedlink3 test", () => new Promise(done => {
   function packetFun(mseedPacket: SequencedDataRecord) {
     expect(mseedPacket).toBeDefined();
     sl3Conn.close();
-    done();
+    done(null);
   }
   function errorFun(e: any) {
     sl3Conn.close();
@@ -56,7 +56,7 @@ test.skip("do seedlink3 test", () => new Promise(done => {
     return sl3Conn.close();
   }).then(_response => {
     expect(sl3Conn.isConnected()).toBeFalse();
-    done();
+    done(null);
   }).catch( err=> {
     done(err);
   });

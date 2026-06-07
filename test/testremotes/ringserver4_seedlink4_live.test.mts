@@ -47,7 +47,7 @@ test.skip("do seedlink4 test", () => new Promise(done => {
   function packetFun(mseedPacket: SEPacket) {
     expect(mseedPacket).toBeDefined();
     if (sl4Conn) {sl4Conn.close();}
-    done();
+    done(null);
   }
   function errorFun(e: any) {
     if (sl4Conn) {sl4Conn.close();}
@@ -75,7 +75,7 @@ test.skip("do seedlink4 test", () => new Promise(done => {
       return seedlink.close();
     }).then(_response => {
       expect(seedlink.isConnected()).toBeFalse();
-      done();
+      done(null);
     }).catch( err=> {
       done(err);
     });
@@ -90,7 +90,7 @@ test.skip("do seedlink4 test", () => new Promise(done => {
     return sl4Conn.close();
   }).then(_response => {
     expect(sl4Conn.isConnected()).toBeFalse();
-    done();
+    done(null);
   }).catch( err=> {
     done(err);
   });

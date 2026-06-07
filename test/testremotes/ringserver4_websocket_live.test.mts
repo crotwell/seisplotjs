@@ -32,7 +32,7 @@ test.skip("do websocket open test", () => new Promise(done => {
   webSocket.onopen = () => {
     console.log(`onopen:`);
     webSocket.close();
-    done();
+    done(null);
   };
 
 
