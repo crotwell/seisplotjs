@@ -31,9 +31,11 @@
     "./nodeonly": {
       "types": "./dist/index_node.d.ts",
       "import": "./dist/index_node.mjs"
-    },
-    "./dist/esm/*": "./dist/esm/*",
+    }, 
     "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "files": [
     "./dist/index.js",
