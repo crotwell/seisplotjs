@@ -1,11 +1,11 @@
 import {describe, expect, test} from 'vitest';
 
-import {IRIS_HOST} from "../src/fdsncommon.mjs";
-import {setDefaultFetch} from "../src/util.mjs";
+import {IRIS_HOST} from "../../src/fdsncommon.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
-import * as traveltime from "../src/traveltime.mjs";
+import * as traveltime from "../../src/traveltime.mjs";
 
 /**
  * @module-tag remotes

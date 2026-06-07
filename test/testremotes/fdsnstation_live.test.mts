@@ -1,8 +1,8 @@
 import {describe, expect, test} from 'vitest';
 
-import * as fdsnstation from "../src/fdsnstation.mjs";
+import * as fdsnstation from "../../src/fdsnstation.mjs";
 
-import {setDefaultFetch} from "../src/util.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 

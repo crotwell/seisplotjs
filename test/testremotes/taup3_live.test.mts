@@ -1,11 +1,11 @@
 import {describe, expect, test} from 'vitest';
 
 
-import {setDefaultFetch} from "../src/util.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
-import * as taup3 from "../src/taup3.mjs";
+import * as taup3 from "../../src/taup3.mjs";
 
 /**
  * @module-tag remotes

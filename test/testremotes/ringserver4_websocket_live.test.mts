@@ -1,9 +1,9 @@
 import {describe, expect, test} from 'vitest';
 
 
-//import {WS_DATALINK_SUBPROTOCOL} from "../src/datalink.mjs";
-import {WS_SEEDLINK3_SUBPROTOCOL} from "../src/seedlink.mjs";
-//import {WS_SEEDLINK4_SUBPROTOCOL} from "../src/seedlink4.mjs";
+//import {WS_DATALINK_SUBPROTOCOL} from "../../src/datalink.mjs";
+import {WS_SEEDLINK3_SUBPROTOCOL} from "../../src/seedlink.mjs";
+//import {WS_SEEDLINK4_SUBPROTOCOL} from "../../src/seedlink4.mjs";
 
 /**
  * @module-tag remotes

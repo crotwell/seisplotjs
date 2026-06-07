@@ -1,13 +1,13 @@
 import {describe, expect, test} from 'vitest';
-import { SeismogramLoader } from "../src/seismogramloader.mjs";
+import { SeismogramLoader } from "../../src/seismogramloader.mjs";
 
-import {isoToDateTime} from "../src/util.mjs";
-import {EventQuery} from "../src/fdsnevent.mjs";
-import {StationQuery, LEVEL_CHANNEL} from "../src/fdsnstation.mjs";
+import {isoToDateTime} from "../../src/util.mjs";
+import {EventQuery} from "../../src/fdsnevent.mjs";
+import {StationQuery, LEVEL_CHANNEL} from "../../src/fdsnstation.mjs";
 import { Duration, Interval} from "luxon";
 
 
-import {setDefaultFetch} from "../src/util.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 

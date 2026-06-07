@@ -1,13 +1,13 @@
 import {describe, expect, test} from 'vitest';
 
-import { FedCatalogQuery } from "../src/irisfedcatalog.mjs";
-import { allChannels } from "../src/stationxml.mjs";
-import { isoToDateTime } from "../src/util.mjs";
-import { SeismogramDisplayData } from "../src/seismogram.mjs";
-import { isDef } from "../src/util.mjs";
+import { FedCatalogQuery } from "../../src/irisfedcatalog.mjs";
+import { allChannels } from "../../src/stationxml.mjs";
+import { isoToDateTime } from "../../src/util.mjs";
+import { SeismogramDisplayData } from "../../src/seismogram.mjs";
+import { isDef } from "../../src/util.mjs";
 import {Interval} from "luxon";
 
-import {setDefaultFetch} from "../src/util.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
@@ -47,7 +47,7 @@ test("live parse result", () => {
   });
 });
 
-jest.setTimeout(20*1000); // berkeley server takes a long time
+// berkeley server takes a long time
 test("run BK networks", () => {
     const fedCatQuery = new FedCatalogQuery();
     const NET = 'BK';
@@ -60,7 +60,7 @@ test("run BK networks", () => {
       expect(netArray[1]).toBeDefined();
       expect(netArray[1].networkCode).toBe(NET);
     });
-});
+}, 20*1000);
 
 test("run CO active stations", () => {
     const fedCatQuery = new FedCatalogQuery();

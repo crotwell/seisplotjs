@@ -1,9 +1,9 @@
 import {describe, expect, test} from 'vitest';
 
-import {RingserverConnection} from "../src/ringserverweb4.mjs";
+import {RingserverConnection} from "../../src/ringserverweb4.mjs";
 
 
-import {setDefaultFetch} from "../src/util.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 

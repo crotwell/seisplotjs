@@ -1,8 +1,8 @@
 import {describe, expect, test} from 'vitest';
 
-import {DataSelectQuery} from "../src/fdsndataselect.mjs";
-import {Seismogram} from "../src/seismogram.mjs";
-import {setDefaultFetch} from "../src/util.mjs";
+import {DataSelectQuery} from "../../src/fdsndataselect.mjs";
+import {Seismogram} from "../../src/seismogram.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);

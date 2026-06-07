@@ -1,11 +1,11 @@
 import {describe, expect, test} from 'vitest';
 
-import {RingserverConnection} from "../src/ringserverweb4.mjs";
-import {DataLinkConnection, DataLinkPacket} from "../src/datalink.mjs";
+import {RingserverConnection} from "../../src/ringserverweb4.mjs";
+import {DataLinkConnection, DataLinkPacket} from "../../src/datalink.mjs";
 import { DateTime, Duration} from "luxon";
 
 
-import {setDefaultFetch} from "../src/util.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 

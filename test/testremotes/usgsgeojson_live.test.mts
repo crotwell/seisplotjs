@@ -1,12 +1,12 @@
 import {describe, expect, test} from 'vitest';
 
 
-import {setDefaultFetch} from "../src/util.mjs";
+import {setDefaultFetch} from "../../src/util.mjs";
 import fetch from "cross-fetch";
 setDefaultFetch(fetch);
 
-import * as usgsgeosjon from "../src/usgsgeojson.mjs";
-import type {Quake} from "../src/quakeml.mjs";
+import * as usgsgeosjon from "../../src/usgsgeojson.mjs";
+import type {Quake} from "../../src/quakeml.mjs";
 
 /**
  * @module-tag remotes

@@ -1,8 +1,8 @@
 import {describe, expect, test} from 'vitest';
 
-import {EventQuery} from "../src/fdsnevent.mjs";
-import {Quake} from "../src/quakeml.mjs";
-import {setDefaultFetch, isoToDateTime} from "../src/util.mjs";
+import {EventQuery} from "../../src/fdsnevent.mjs";
+import {Quake} from "../../src/quakeml.mjs";
+import {setDefaultFetch, isoToDateTime} from "../../src/util.mjs";
 
 import { Interval} from "luxon";
 
