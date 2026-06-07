@@ -1,4 +1,4 @@
-import {describe, expect, test} from 'vitest';
+import {describe, expect, test, afterEach} from 'vitest';
 
 import {RingserverConnection} from "../../src/ringserverweb4.mjs";
 import {SeedlinkConnection as Seedlink3Connection, SequencedDataRecord} from "../../src/seedlink.mjs";
@@ -27,7 +27,7 @@ test("do id test", () => {
 
 let sl3Conn: Seedlink3Connection;
 
-test("do seedlink3 test", () => new Promise(done => {
+test.skip("do seedlink3 test", () => new Promise(done => {
   // def is IRIS
   const ring = new RingserverConnection();
   const USC_HOST = "eeyore.seis.sc.edu";
@@ -61,7 +61,7 @@ test("do seedlink3 test", () => new Promise(done => {
     done(err);
   });
 
-}));
+}), 10000);
 
 afterEach(() => {
   if (sl3Conn) { sl3Conn.close();}

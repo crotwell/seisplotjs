@@ -29,7 +29,7 @@ test( "load HODGE for local eq test", () => {
     .timeRange(localQueryTimeWindow);
   const staUrl = stationQuery.formURL(LEVEL_CHANNEL);
   expect(staUrl).toContain('cha=');
-//  expect(localEventQuery instanceof StationQuery).toBeTrue();
+//  expect(localEventQuery instanceof EventQuery).toBeTrue();
   const seisLoad = new SeismogramLoader(stationQuery, localEventQuery );
   seisLoad.startPhaseList = "P";
   seisLoad.endPhaseList = "S";
@@ -37,9 +37,9 @@ test( "load HODGE for local eq test", () => {
   seisLoad.startOffset = Duration.fromMillis(-30*1000); // seconds
   seisLoad.endOffset = Duration.fromMillis(120*1000); // or as duration
   return seisLoad.load().then( loadResult  => {
-      expect(loadResult.waveforms).toHaveLength(3);
       expect(loadResult.inventory).toHaveLength(1);
       expect(loadResult.catalog).toHaveLength(1);
+      expect(loadResult.waveforms).toHaveLength(3);
     });
 
-}, 20000);
+}, 10000);

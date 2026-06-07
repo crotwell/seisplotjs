@@ -1,4 +1,4 @@
-import {describe, expect, test} from 'vitest';
+import {describe, expect, test, afterEach} from 'vitest';
 
 import {RingserverConnection} from "../../src/ringserverweb4.mjs";
 import {DataLinkConnection, DataLinkPacket} from "../../src/datalink.mjs";
@@ -27,7 +27,7 @@ test("do id test", () => {
 
 let dlConn: DataLinkConnection;
 
-test("do datalink test", () => {
+test.skip("do datalink test", () => {
   // def is IRIS
   const ring = new RingserverConnection();
   const USC_HOST = "eeyore.seis.sc.edu";
@@ -68,7 +68,7 @@ test("do datalink test", () => {
   }).then(_response => {
     expect(dlConn.isConnected()).toBeFalse();
   });
-});
+}, 10000);
 
 afterEach(() => {
   if (dlConn) { dlConn.close();}

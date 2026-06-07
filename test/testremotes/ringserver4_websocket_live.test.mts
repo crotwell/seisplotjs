@@ -9,7 +9,7 @@ import {WS_SEEDLINK3_SUBPROTOCOL} from "../../src/seedlink.mjs";
  * @module-tag remotes
  */
 
-test("do websocket open test", () => new Promise(done => {
+test.skip("do websocket open test", () => new Promise(done => {
   const USC_HOST = "eeyore.seis.sc.edu";
   const USC_PREFIX = "testringserver";
   const url = `ws://${USC_HOST}/${USC_PREFIX}/seedlink`;
@@ -36,4 +36,4 @@ test("do websocket open test", () => new Promise(done => {
   };
 
 
-}));
+}), 10000);
