@@ -54,7 +54,7 @@ mapDiv.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, evt => {
     `;
 });
 
-mapDiv.addEventListener("stationclick", evt => {
+mapDiv.addEventListener(sp.stationxml.STATION_CLICK_EVENT, evt => {
   const infoDiv = document.querySelector("#stationinfo");
   const station = evt.detail.station;
   infoDiv.innerHTML = `
