@@ -24,25 +24,21 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "node": "./dist/index_node.mjs",
-      "import": "./dist/index.mjs"
+      "types": "./dist/dts/index.d.mts",
+      "node": "./dist/dts/index_node.mjs",
+      "import": "./dist/dts/index.mjs"
     },
     "./nodeonly": {
-      "types": "./dist/index_node.d.ts",
-      "import": "./dist/index_node.mjs"
-    }, 
+      "types": "./dist/dts/index_node.d.mts",
+      "import": "./dist/dts/index_node.mjs"
+    },
     "./package.json": "./package.json"
   },
   "engines": {
     "node": ">=18"
   },
   "files": [
-    "./dist/index.js",
-    "./dist/index.mjs",
-    "./dist/index.d.ts",
-    "./dist/index_node.mjs",
-    "./dist/index_node.d.ts",
+    "./dist/dts/*",
     "src/*.mts"
   ],
   "dependencies": {
@@ -79,22 +75,20 @@
     "testremotes": "vitest run --tags-filter='remotes'",
     "build:clean": "rimraf dist docs/seisplotjs_${npm_package_version}_standalone.mjs",
     "apidoc:clean": "rimraf docs/api",
-    "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && ((npm run dts ) || npm run tsc)",
+    "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && npm run tsc",
     "tutorial_snippet": "python3 snippetToTutorial.py",
     "standalone": "npm run esstandalone && cp dist/seisplotjs_${npm_package_version}_standalone.mjs docs/.",
     "doc": "npm run standalone && npm run apidoc && npm run tutorial_snippet ",
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
-    "prepare": "npm run compile && npm run dts_node ",
+    "prepare": "npm run compile ",
     "version": "npm run compile && npm run bumpversion && npm run doc",
     "version_to_src": "genversion --semi --es6 src/version.mts",
     "postversion": "echo remember: git push && echo remember: git push --tags",
     "bumpversion": "python3 replaceVersion.py && echo ${npm_package_version} > VERSION",
     "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
-    "prepublishOnly": "npm run compile && npm run tsc && npm run dts_node && npm run publint && npm run test && npm run testremotes && echo skip npm outdated && echo skip lint && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
+    "prepublishOnly": "npm run compile && npm run publint && npm run test && npm run testremotes && echo skip npm outdated && echo skip lint && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
     "servedocs": "npx http-server ./docs -c-1 --cors -a 127.0.0.1",
-    "tsc": "tsc --project tsconfig.json && tsc --project tsconfig_test.json",
-    "dts": "npx npm-dts generate --output dist/index.d.ts",
-    "dts_node": "npx npm-dts generate --entry src/index_node.ts --output dist/index_node.d.ts"
+    "tsc": "tsc --project tsconfig.json && tsc --project tsconfig_test.json"
   },
   "repository": {
     "type": "git",
@@ -105,7 +99,7 @@
     "earthquake",
     "miniseed",
     "fdsn",
-    "iris"
+    "iris", "earthscope"
   ],
   "author": "Philip Crotwell <crotwell@seis.sc.edu>",
   "license": "MIT",
@@ -142,17 +136,11 @@
     "eslint-plugin-jsdoc": "^63.0.1",
     "eslint-plugin-node": "^11.1.0",
     "genversion": "^3.2.0",
-    "jest": "^30.4.2",
-    "jest-environment-jsdom": "^30.4.1",
     "jest-extended": "^7.0.0",
     "jsdom": "^29.1.1",
-    "npm-dts": "^1.3.13",
     "prismjs": "^1.30.0",
-    "replace-in-file": "^8.4.0",
     "resize-observer-polyfill": "^1.5.1",
     "rimraf": "^6.1.3",
-    "ts-jest": "^29.4.11",
-    "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.1",
     "vitest": "^4.1.8"
