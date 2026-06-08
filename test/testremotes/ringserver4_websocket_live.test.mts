@@ -9,6 +9,12 @@ import {WS_SEEDLINK3_SUBPROTOCOL} from "../../src/seedlink.mjs";
  * @module-tag remotes
  */
 
+/*
+skip as:
+TypeError: The "event" argument must be an instance of Event. Received an instance of Event
+
+think might be jsdom issue, although it used to work???
+ */
 test.skip("do websocket open test", () => new Promise(done => {
   const USC_HOST = "eeyore.seis.sc.edu";
   const USC_PREFIX = "testringserver";
@@ -36,4 +42,4 @@ test.skip("do websocket open test", () => new Promise(done => {
   };
 
 
-}), 10000);
+}), 5000);
