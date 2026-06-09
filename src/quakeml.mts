@@ -210,7 +210,14 @@ export class Quake extends BaseElement {
     const allOrigins = [];
 
     for (const originEl of allOriginEls) {
-      allOrigins.push(Origin.createFromXml(originEl, allPicks));
+      // skip instead of fail for invalid origin, not sure if this is
+      // a good idea or not, but helps skip some bad origins from usgs
+      try {
+        allOrigins.push(Origin.createFromXml(originEl, allPicks));
+      } catch (err) {
+        const pubId = originEl.getAttribute("publicID");
+        console.warn(`Parse error for origin, skipping. Id: ${pubId}  ${err}`);
+      }
     }
 
     const allStationMagEls = Array.from(
