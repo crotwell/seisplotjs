@@ -1795,7 +1795,7 @@ export class MomentTensor extends BaseElement {
     );
     let derivedOrigin;
     if (!isNonEmptyStringArg(derivedOriginID)) {
-      console.log("momentTensor missing derivedOriginID");
+      console.warn("momentTensor missing derivedOriginID");
     } else {
       derivedOrigin = allOrigins.find(
         (o) => o.publicId === derivedOriginID,

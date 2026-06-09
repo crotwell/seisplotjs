@@ -37,10 +37,7 @@ export function inputIdFilter(inputId: string, container?: Element|null) {
     let inputEl = queryEl.querySelector(`#${inputId}`) as HTMLInputElement;
     if ( inputEl != null) {
       out = inputEl.checked;
-    } else {
-      console.log(`null inputIdFilter: ${inputId}`)
     }
-    console.log(`${inputId} => ${out}`)
     return out;
 }
 

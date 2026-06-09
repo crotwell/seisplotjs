@@ -168,7 +168,6 @@ export class OrganizedDisplay extends SeisPlotElement {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
     const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT)?.shadowRoot?.querySelector("div");
     const selectedData = sortedData.filter(sdd => defaultPlotSelect(sdd, toolsElement));
-    console.log(`selected ${selectedData.length} data`)
     return selectedData;
   }
 
