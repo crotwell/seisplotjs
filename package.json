@@ -24,13 +24,13 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/dts/index.d.mts",
-      "node": "./dist/dts/index_node.mjs",
-      "import": "./dist/dts/index.mjs"
+      "types": "./dist/index.d.mts",
+      "node": "./dist/index_node.mjs",
+      "import": "./dist/index.mjs"
     },
     "./nodeonly": {
-      "types": "./dist/dts/index_node.d.mts",
-      "import": "./dist/dts/index_node.mjs"
+      "types": "./dist/index_node.d.mts",
+      "import": "./dist/index_node.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -38,7 +38,7 @@
     "node": ">=18"
   },
   "files": [
-    "./dist/dts/*",
+    "./dist/*",
     "src/*.mts"
   ],
   "dependencies": {
@@ -64,7 +64,6 @@
   },
   "scripts": {
     "esstandalone": "npx esbuild src/index.mts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2022 --format=esm",
-    "esmb": "node build.mjs",
     "srclint": "eslint src/* ",
     "testlint": "eslint -c eslint_test.config.mjs test/** testremotes/**",
     "lint": "npm run srclint && npm run testlint",
@@ -75,7 +74,7 @@
     "testremotes": "vitest run --tags-filter='remotes'",
     "build:clean": "rimraf dist docs/seisplotjs_${npm_package_version}_standalone.mjs",
     "apidoc:clean": "rimraf docs/api",
-    "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && npm run tsc",
+    "compile": "npm run build:clean && npm run version_to_src && npm run standalone && npm run tsc",
     "tutorial_snippet": "python3 snippetToTutorial.py",
     "standalone": "npm run esstandalone && cp dist/seisplotjs_${npm_package_version}_standalone.mjs docs/.",
     "doc": "npm run standalone && npm run apidoc && npm run tutorial_snippet ",

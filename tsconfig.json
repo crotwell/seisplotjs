@@ -10,7 +10,7 @@
     "sourceMap": true,
     "declarationMap": true,
     "rootDir": "src",
-    "outDir": "dist/dts",
+    "outDir": "dist",
     "esModuleInterop": true,
 
     "types": ["jest", "jest-extended"]
