@@ -71,7 +71,7 @@
             map.removeColorClass("customcolor");
             map.colorClass("quakecolor", "yellow");
 
-            //map.stationRemoveClass(allStations[0], "customcolor");
+            // map.stationRemoveClass(allStations[0], "customcolor");
           });
         });
 
@@ -79,12 +79,12 @@
         const infoList = document.querySelectorAll("sp-quake-table");
         infoList.forEach((it) => {
           it.quakeList = ds.catalog;
-          it.addStyle(`
-            table tbody tr.${SELECTED_ROW} td {
-              background-color: green;
-              color: white;
-            }
-          `);
+          // it.addStyle(`
+          //   table tbody tr.${SELECTED_ROW} td {
+          //     background-color: green;
+          //     color: white;
+          //   }
+          // `);
           it.addEventListener("quakeclick", (ce) => {
             mapList.forEach((map) => {
               map.quakeList.forEach((q) => {
@@ -98,11 +98,39 @@
               let allRows = quakeRow.parentNode.querySelectorAll(`tbody tr`);
               console.log(`num rows: ${Array.from(allRows).length}`);
               allRows.forEach((r) => {
-                console.log(`${r.classList.contains(SELECTED_ROW)}`);
-                r.classList.remove(SELECTED_ROW);
+                if (r.classList.contains(SELECTED_ROW)) {
+                  console.log(`${r.classList.contains(SELECTED_ROW)}`);
+                  r.removeAttribute("style");
+                  r.classList.remove(SELECTED_ROW);
+                }
               });
               quakeRow.classList.add(SELECTED_ROW);
+              quakeRow.setAttribute("style", "background-color: green");
               //ce.detail.mouseevent.currentTarget.setAttribute("style", "background-color: green");
+            });
+          });
+          // Click on a quake map circle
+          mapList.forEach((map) => {
+            map.addEventListener("quakeclick", (me) => {
+              map.quakeList.forEach((q) => {
+                map.removeColorClass(sp.leafletutil.cssClassForQuake(q));
+                map.colorClass(
+                  sp.leafletutil.cssClassForQuake(me.detail.quake),
+                  "green",
+                );
+              });
+              // console.log(`mEvent: ${me.detail.quake}`);
+              const SELECTED_ROW = "SelectedRow";
+              let quakeRow = it.findRowForQuake(me.detail.quake);
+              let allRows = quakeRow.parentNode.querySelectorAll(`tbody tr`);
+              allRows.forEach((r) => {
+                if (r.classList.contains(SELECTED_ROW)) {
+                  r.removeAttribute("style");
+                  r.classList.remove(SELECTED_ROW);
+                }
+              });
+              quakeRow.classList.add(SELECTED_ROW);
+              quakeRow.setAttribute("style", "background-color: green");
             });
           });
         });
