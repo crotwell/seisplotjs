@@ -89,6 +89,7 @@ const seismographmarker = null;
 const seismographutil = null;
 const seismographconfigeditor = null;
 const spectraplot = null;
+const spectrogram = null;
 const spelement = null;
 const transition = null;
 // leaflet cannot run in node as needs window
@@ -146,6 +147,7 @@ export {
   seismographconfigeditor,
   sorting,
   spelement,
+  spectrogram,
   spectraplot,
   stationxml,
   syngine,
