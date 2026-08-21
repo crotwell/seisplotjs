@@ -871,6 +871,12 @@ export function doFetchWithTimeout(
       absoluteUrl,
     )}`,
   );
+  /*
+  // debug log post data:
+  if (internalFetchInit.method === "POST") {
+    log(internalFetchInit.body);
+  }
+  */
   // save fetcher as const so typescript won't think it has become undef
   const fetchForRedirect = fetcher;
   return fetcher(absoluteUrl.href, internalFetchInit)
