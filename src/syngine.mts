@@ -790,6 +790,29 @@ export class SyngineQuery extends FDSNCommon {
     return appendToPath(`${protocol}${colon}//${this._host}${port}`, path);
   }
 
+  formInstaseisVersionURL(): string {
+    return appendToPath(this.formBaseURL(), "instaseisversion");
+  }
+
+  /**
+   * Queries the remote web service to get its version
+   *
+   * @returns Promise to version string
+   */
+  queryInstaseisVersion(): Promise<string> {
+    const url = this.formInstaseisVersionURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
+      (response) => {
+        if (response.status === 200) {
+          return response.text();
+        } else {
+          throw new Error(`Status not 200: ${response.status}`);
+        }
+      },
+    );
+  }
+
   formVersionURL(): string {
     return appendToPath(this.formBaseURL(), "version");
   }
