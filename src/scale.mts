@@ -333,7 +333,7 @@ export class LinkedTimeScale {
       // this prevents future links from causeing recalc
       this._zoomedDuration = originalDuration;
     } else if (glist.length > 0) {
-      this._originalDuration = glist.reduce((acc, cur) => {
+      this._originalDuration = glist.reduce<Duration>((acc: Duration, cur: TimeScalable) => {
         return acc > cur.duration ? acc : cur.duration;
       }, Duration.fromMillis(0));
     }
