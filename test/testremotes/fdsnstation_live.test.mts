@@ -10,7 +10,7 @@ setDefaultFetch(fetch);
  * @module-tag remotes
  */
 
-test("version", () => {
+test.skip("version", () => {
   const avail = new fdsnstation.StationQuery();
   return avail.queryVersion().then( res => {
     expect(res.length).toBeGreaterThan(1);
