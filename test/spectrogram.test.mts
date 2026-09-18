@@ -6,73 +6,58 @@ import * as fftFunctions from "../src/fft.mjs";
 import { Seismogram, SeismogramDisplayData } from '../src/seismogram.mjs';
 import { SeismogramSegment } from '../src/seismogramsegment.mjs';
 import { FFTResult } from '../src/fft.mjs';
+import { SeismographConfig } from '../src/seismographconfig.mjs';
+
 
 vi.stubGlobal('ImageData', canvas.ImageData);
 
 test("SpectrogramConfig preserves inherited defaults", () => {
-    const config = new SpectrogramConfig();
-    expect(config).toBeDefined();
-    // Gives correct defaults for both seismograph and spectrogram config
-    expect(JSON.parse(JSON.stringify(config))).toMatchObject({
-        configId: 1,
-        isXAxis: true,
-        isXAxisTop: false,
-        xAxisTimeZone: null,
-        isYAxisNice: true,
-        isYAxis: true,
-        isYAxisRight: false,
-        yAxisNumTickHint: 8,
-        xGridLines: false,
-        yGridLines: false,
-        gridLineColor: "gainsboro",
-        _timeFormat: null,
-        showTitle: true,
-        _xLabel: "Time",
-        xLabelOrientation: "horizontal",
-        _xSublabel: "",
-        xSublabelIsUnits: false,
-        _yLabel: "Frequency",
-        _yLabelRight: "",
-        yLabelOrientation: "vertical",
-        _ySublabel: "",
-        ySublabelTrans: 15,
-        ySublabelIsUnits: true,
-        amplitudeMode: "minmax",
-        doGain: true,
-        windowAmp: true,
-        resolutionScale: 2,
-        _fixedAmplitudeScale: null,
-        _fixedTimeScale: null,
-        _linkedAmplitudeScale: { "_scaleId": 1, "_halfWidth": 0, "_graphSet": {}, "_recalcTimeoutID": null },
-        _linkedTimeScale: { "_prev_zoom_k": 1, "_prev_zoom_x": 0, "_scaleId": 1, "_graphSet": {}, "_originalDuration": "PT0S", "_originalOffset": "PT0S", "_zoomedDuration": "PT0S", "_zoomedOffset": null },
-        isRelativeTime: false,
-        doMarkers: true,
-        markerTextOffset: 0.85,
-        markerTextAngle: 45,
-        markerFlagpoleBase: "bottom",
-        minHeight: 0,
-        maxHeight: null,
-        minWidth: 0,
-        maxWidth: null,
-        margin: { "top": 25, "right": 20, "bottom": 42, "left": 85 },
-        segmentDrawCompressedCutoff: 10,
-        maxZoomPixelPerSample: 20,
-        wheelZoom: false,
-        allowZoom: true,
-        connectSegments: false,
-        lineColors: ["skyblue", "olivedrab", "goldenrod", "firebrick", "darkcyan", "chocolate", "darkmagenta", "mediumseagreen", "rebeccapurple", "sienna", "orchid", "royalblue", "mediumturquoise", "chartreuse", "peru", "black"],
-        lineWidth: 1,
-        fftSize: 256,
-        windowSize: 256,
-        overlapPerc: 0.86,
-        minChunkTime: 10,
-        windowType: "hann",
-        freqMin: 0,
-        freqMax: 15,
-        minDb: 30,
-        maxDb: 120,
-        spectrogramColorMap: "jet",
-    });
+    const defaultConfig = new SpectrogramConfig();
+    const defaultSeismographConfig = new SeismographConfig();
+    expect(defaultConfig).toBeDefined();
+    expect(defaultSeismographConfig).toBeDefined();
+
+    // Check if SpectrogramConfig has all the default values of SeismographConfig
+    expect({ ...defaultConfig }).toEqual(
+        expect.objectContaining({
+            ...defaultSeismographConfig,
+            // Below are the properties that we *don't* want to check for equality, because
+            // they are unique to each instance
+            configId: expect.any(Number),
+            margin: expect.objectContaining({
+                ...defaultSeismographConfig.margin,
+                toString: expect.any(Function),
+            }),
+            _yLabel: expect.any(String),
+            _linkedAmplitudeScale: expect.objectContaining({
+                ...defaultSeismographConfig._linkedAmplitudeScale,
+                _scaleId: expect.any(Number),
+            }),
+            _linkedTimeScale: expect.objectContaining({
+                ...defaultSeismographConfig._linkedTimeScale,
+                _scaleId: expect.any(Number),
+            }),
+        }),
+    );
+
+    const uniqueSpectrogramConfigs = Object.fromEntries(
+        Object.entries(defaultConfig).filter(([key]) => !(key in defaultSeismographConfig)),
+    );
+    expect(uniqueSpectrogramConfigs).toMatchInlineSnapshot(`
+      {
+        "fftSize": 256,
+        "freqMax": 15,
+        "freqMin": 0,
+        "frequencyFormat": [Function],
+        "maxDb": 120,
+        "minChunkTime": 10,
+        "minDb": 30,
+        "overlapPerc": 0.86,
+        "spectrogramColorMap": "jet",
+        "windowSize": 256,
+        "windowType": "hann",
+      }
+    `)
 });
 
 test('DataChunk correctly converts and stores times', () => {
@@ -150,7 +135,6 @@ test("all ColorMaps give the right output", () => {
     const colorInputs = [0, 0.25, 0.5, 0.75, 1];
     for (let i = 0; i < colorMaps.length; i++) {
         const colorMap = new ColorMap(colorMaps[i] as ColorMapName);
-        console.log(colorMaps[i])
         const rgbValues = colorInputs.map(input => colorMap.getRGB(input));
         expect(rgbValues).toMatchSnapshot();
     }
