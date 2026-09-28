@@ -81,26 +81,107 @@ test('ChunkProcessor correctly processes empty data', () => {
     }
 });
 
-test('ChunkProcessor correctly processes sine data', () => {
-    const spectrogramConfig = new SpectrogramConfig();
-    spectrogramConfig.fftSize = 512;
-    spectrogramConfig.windowSize = 256;
-    const chunkProcessor = new ChunkProcessor(spectrogramConfig, 100, 256);
-    let dataArr = []
-    for (let i = 0; i < 512; i++) {
-        dataArr.push(
-            Math.sin(2 * Math.PI * 5 * (i / 512)) +
-            Math.sin(2 * Math.PI * 4 * (i / 512)) +
-            Math.sin(2 * Math.PI * 3 * (i / 512)) +
-            Math.sin(2 * Math.PI * 2 * (i / 512)) +
-            Math.sin(2 * Math.PI * 1 * (i / 512))
+test('ChunkProcessor produces predictable bands for aligned sine waves', () => {
+    const config = new SpectrogramConfig();
+    config.fftSize = 512;
+    config.windowSize = 256;
+
+    const sampleRate = 100;
+    const processor = new ChunkProcessor(config, sampleRate, 256);
+
+    // Integer bins for the 256-sample analysis window. Since the FFT is
+    // zero-padded from 256 to 512, the corresponding FFT bins are doubled.
+    const analysisWindowBins = [2, 6, 12, 24, 38];
+    const frequencies = analysisWindowBins.map(
+        (bin) => bin * sampleRate / config.windowSize,
+    );
+
+    // Add sine waves of each frequency calculated in analysisWindowBins into the input data
+    const input = Float32Array.from({ length: 512 }, (_, i) => {
+        const time = i / sampleRate;
+        return frequencies.reduce(
+            (sum, frequency) =>
+                sum + Math.sin(2 * Math.PI * frequency * time),
+            0,
         );
-    }
-    const out = chunkProcessor.process(new Float32Array(dataArr), 0, 512, spectrogramConfig, (val) => [val * 255, val * 255, val * 255]);
+    });
+
+    // Calculate the spectrogram for the input
+    const out = processor.process(
+        input,
+        0,
+        input.length,
+        config,
+        (value) => [value * 255, value * 255, value * 255],
+    );
+
+    // The output should be an RGBA array, with one set for each pixel
     expect(out.data.length).toBe(out.width * out.height * 4);
-    expect(out.width).toEqual(15);
-    expect(out.height).toEqual(257);
-    expect(out.data).toMatchSnapshot();
+    // The width of the output is defined by the overlap and sample rate
+    expect(out.width).toBe(15);
+    // The height of the output is the output amount of bins, but only
+    // the positive component, so it's halved
+    expect(out.height).toBe(config.fftSize / 2 + 1);
+
+    // Helper to get a pixel offset at the given coordinates
+    const pixel = (x: number, y: number) =>
+        out.data[(y * out.width + x) * 4];
+
+    // Average each FFT bin across time slices. This avoids making the test
+    // depend on small phase/window differences in individual columns
+    const averageSpectrum = Array.from(
+        { length: out.height },
+        (_, fftBin) => {
+            const row = out.height - 1 - fftBin;
+            let total = 0;
+
+            for (let x = 0; x < out.width; x++) {
+                // We can get away with only using the red channel because all
+                // pixel values are identical
+                total += pixel(x, row);
+            }
+
+            return total / out.width;
+        },
+    );
+
+    // Map the window size bins to the full size of the FFT size
+    const expectedFftBins = analysisWindowBins.map(
+        (bin) => bin * (config.fftSize / config.windowSize)
+    );
+
+    // Now that we have a frequency output, we want to check if the appropriate
+    // frequency bins (the ones that correspond to the input sine waves) are bright
+    for (const expectedBin of expectedFftBins) {
+        const currRegionSize = 3
+        // Calculate the peak brightness of the region of frequency bins where we
+        // expect the sine wave frequency to be
+        const currentRegionPeak = Math.max(
+            ...averageSpectrum.slice(
+                Math.max(expectedBin - Math.floor(currRegionSize / 2), 0),
+                Math.min(expectedBin + Math.floor(currRegionSize / 2) + 1, config.fftSize)
+            ),
+        );
+
+        // We slice "neighbor" regions of bins (just nearby frequency bin regions that
+        // should not be affected by the sine wave we're checking) to compare against, expecting
+        // our region to be brighter than its neighbors
+        const neighborBinOffset = 3
+        const neighborBinSize = 2
+        const neighboringBins = [
+            ...averageSpectrum.slice(
+                expectedBin - neighborBinOffset - neighborBinSize + 1,
+                expectedBin - neighborBinOffset
+            ),
+            ...averageSpectrum.slice(
+                expectedBin + neighborBinOffset,
+                expectedBin + neighborBinOffset + neighborBinSize
+            ),
+        ];
+        // Amidst all the neighbor points, our bin should have the brightest
+        const neighboringPeak = Math.max(...neighboringBins);
+        expect(currentRegionPeak).toBeGreaterThan(neighboringPeak);
+    }
 });
 
 test("all window functions give the right output", () => {
