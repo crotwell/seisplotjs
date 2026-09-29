@@ -11,9 +11,16 @@ import * as syngine from "../../src/syngine.mjs";
  * @module-tag remotes
  */
 
-test("version", () => {
+test.skip("version", () => {
   const query = new syngine.SyngineQuery();
   return query.queryVersion().then( res => {
+    expect(res.length).toBeGreaterThan(1);
+  });
+});
+
+test("instaseisversion", () => {
+  const query = new syngine.SyngineQuery();
+  return query.queryInstaseisVersion().then( res => {
     expect(res.length).toBeGreaterThan(1);
   });
 });
