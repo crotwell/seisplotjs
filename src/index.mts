@@ -56,6 +56,7 @@ export * as seismographconfig from "./seismographconfig.mjs";
 export * as seismographconfigeditor from "./seismographconfigeditor.mjs";
 export * as sorting from "./sorting.mjs";
 export * as spelement from "./spelement.mjs";
+export * as spectrogram from "./spectrogram.mjs";
 export * as stationxml from "./stationxml.mjs";
 export * as syngine from "./syngine.mjs";
 export * as taper from "./taper.mjs";
