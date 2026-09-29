@@ -1,8 +1,8 @@
-import { expect, test, vi } from 'vitest';
-import { ChunkProcessor, ColorMap, ColorMapName, DataChunk, SpectrogramConfig, WindowFunctionType } from '../src/spectrogram.mjs';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { CanvasRenderer, ChunkProcessor, ColorMap, ColorMapName, DataChunk, SpectrogramConfig, WindowFunctionType } from '../src/spectrogram.mjs';
 import canvas from 'canvas';
 
-import * as fftFunctions from "../src/fft.mjs";
+import * as fftFunctions from '../src/fft.mjs';
 import { Seismogram, SeismogramDisplayData } from '../src/seismogram.mjs';
 import { SeismogramSegment } from '../src/seismogramsegment.mjs';
 import { FFTResult } from '../src/fft.mjs';
@@ -11,7 +11,7 @@ import { SeismographConfig } from '../src/seismographconfig.mjs';
 
 vi.stubGlobal('ImageData', canvas.ImageData);
 
-test("SpectrogramConfig preserves inherited defaults", () => {
+test('SpectrogramConfig preserves inherited defaults', () => {
     const defaultConfig = new SpectrogramConfig();
     const defaultSeismographConfig = new SeismographConfig();
     expect(defaultConfig).toBeDefined();
@@ -163,7 +163,7 @@ test('ChunkProcessor produces predictable bands for aligned sine waves', () => {
             ),
         );
 
-        // We slice "neighbor" regions of bins (just nearby frequency bin regions that
+        // We slice 'neighbor' regions of bins (just nearby frequency bin regions that
         // should not be affected by the sine wave we're checking) to compare against, expecting
         // our region to be brighter than its neighbors
         const neighborBinOffset = 3
@@ -184,8 +184,8 @@ test('ChunkProcessor produces predictable bands for aligned sine waves', () => {
     }
 });
 
-test("all window functions give the right output", () => {
-    const windowTypes = ["hann", "hamming", "blackman", "rectangular"];
+test('all window functions give the right output', () => {
+    const windowTypes = ['hann', 'hamming', 'blackman', 'rectangular'];
     for (let i = 0; i < windowTypes.length; i++) {
         const config = new SpectrogramConfig();
         config.fftSize = 4;
@@ -211,8 +211,8 @@ test("all window functions give the right output", () => {
     }
 });
 
-test("all ColorMaps give the right output", () => {
-    const colorMaps = ["viridis", "inferno", "grayscale", "jet", "hot", "cool", "spring", "summer", "autumn", "winter", "bone"];
+test('all ColorMaps give the right output', () => {
+    const colorMaps = ['viridis', 'inferno', 'grayscale', 'jet', 'hot', 'cool', 'spring', 'summer', 'autumn', 'winter', 'bone'];
     const colorInputs = [0, 0.25, 0.5, 0.75, 1];
     for (let i = 0; i < colorMaps.length; i++) {
         const colorMap = new ColorMap(colorMaps[i] as ColorMapName);
@@ -220,3 +220,74 @@ test("all ColorMaps give the right output", () => {
         expect(rgbValues).toMatchSnapshot();
     }
 });
+
+describe('CanvasRenderer.render', () => {
+    const chunkWidth = 15;
+    const chunkHeight = 257;
+    beforeEach(() => {
+        vi.restoreAllMocks();
+        const bitmap = {
+            width: chunkWidth,
+            height: chunkHeight,
+            close: vi.fn(),
+        };
+
+        const createImageBitmap = vi
+            .fn()
+            .mockResolvedValue(bitmap);
+
+        vi.stubGlobal('createImageBitmap', createImageBitmap);
+    });
+
+    test('initializes the canvas and renders the processed spectrogram', async () => {
+        // Arbitrary canvas size because zeros messes up the calculations
+        const { canvas, context } = makeCanvasMock(100, 100);
+
+        const process = vi
+            .spyOn(ChunkProcessor.prototype, 'process')
+            .mockReturnValue(new ImageData(chunkWidth, chunkHeight));
+
+        const renderer = new CanvasRenderer(canvas as unknown as HTMLCanvasElement, 256);
+
+        const inputData = new Float32Array(2048).fill(0)
+        const spectrogramConfig = new SpectrogramConfig();
+        const sampleRate = 100
+        spectrogramConfig.fftSize = 512;
+        spectrogramConfig.windowSize = 256;
+
+        await renderer.render(
+            inputData,
+            spectrogramConfig,
+            sampleRate,
+            0,
+            0,
+            inputData.length / sampleRate
+        );
+
+        expect(canvas.getContext).toHaveBeenCalled();
+        // We have indeed processed chunks with ChunkProcessor
+        expect(process).toHaveBeenCalled();
+        // We have drawn data to the canvas
+        expect(context.drawImage).toHaveBeenCalled();
+    });
+});
+
+function makeCanvasMock(width: number, height: number) {
+    const context = {
+        clearRect: vi.fn(),
+        drawImage: vi.fn(),
+        save: vi.fn(),
+        beginPath: vi.fn(),
+        rect: vi.fn(),
+        clip: vi.fn(),
+        restore: vi.fn(),
+    };
+
+    const canvas = {
+        width,
+        height,
+        getContext: vi.fn(() => context),
+    };
+
+    return { canvas, context };
+}

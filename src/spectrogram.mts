@@ -214,7 +214,7 @@ customElements.define(SPECTROGRAM_ELEMENT, Spectrogram);
 
 // Renderer for drawing the spectrogram on a canvas. This class handles the processing of data into spectrogram chunks and
 // managing the caching of processed chunks for performance optimization
-class CanvasRenderer {
+export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D | null = null;
   private windowSize: number;
@@ -222,9 +222,9 @@ class CanvasRenderer {
   // Cache of processed data chunks, keyed by a unique identifier for each chunk. This allows for reusing previously processed chunks
   private chunksCache: Map<string, DataChunk> = new Map();
 
-  constructor(canvas: HTMLCanvasElement, canvasSize: number) {
+  constructor(canvas: HTMLCanvasElement, windowSize: number) {
     this.canvas = canvas;
-    this.windowSize = canvasSize;
+    this.windowSize = windowSize;
   }
 
   /**
