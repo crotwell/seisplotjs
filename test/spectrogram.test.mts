@@ -211,14 +211,23 @@ test('all window functions give the right output', () => {
     }
 });
 
-test('all ColorMaps give the right output', () => {
-    const colorMaps = ['viridis', 'inferno', 'grayscale', 'jet', 'hot', 'cool', 'spring', 'summer', 'autumn', 'winter', 'bone'];
+test.each([
+    'viridis',
+    'inferno',
+    'grayscale',
+    'jet',
+    'hot',
+    'cool',
+    'spring',
+    'summer',
+    'autumn',
+    'winter',
+    'bone'
+])('%s ColorMap gives the right output', (mapName) => {
     const colorInputs = [0, 0.25, 0.5, 0.75, 1];
-    for (let i = 0; i < colorMaps.length; i++) {
-        const colorMap = new ColorMap(colorMaps[i] as ColorMapName);
-        const rgbValues = colorInputs.map(input => colorMap.getRGB(input));
-        expect(rgbValues).toMatchSnapshot();
-    }
+    const colorMap = new ColorMap(mapName as ColorMapName);
+    const rgbValues = colorInputs.map(input => colorMap.getRGB(input));
+    expect(rgbValues).toMatchSnapshot();
 });
 
 describe('CanvasRenderer.render', () => {
@@ -269,6 +278,63 @@ describe('CanvasRenderer.render', () => {
         expect(process).toHaveBeenCalled();
         // We have drawn data to the canvas
         expect(context.drawImage).toHaveBeenCalled();
+    });
+
+    test.each([
+        { overlap: 0.25, expectedLength: 1152 },
+        { overlap: 0.75, expectedLength: 1024 },
+        { overlap: 0.95, expectedLength: 1001 },
+    ])('overlap config gives correct behavior', async ({ overlap, expectedLength }) => {
+        // Arbitrary canvas size because zeros messes up the calculations
+        const { canvas } = makeCanvasMock(100, 100);
+
+        const process = vi
+            .spyOn(ChunkProcessor.prototype, 'process')
+            .mockReturnValue(new ImageData(chunkWidth, chunkHeight));
+
+        const renderer = new CanvasRenderer(canvas as unknown as HTMLCanvasElement, 256);
+
+        const inputData = new Float32Array(2048).fill(0)
+        const spectrogramConfig = new SpectrogramConfig();
+        const sampleRate = 100
+        spectrogramConfig.fftSize = 512;
+        spectrogramConfig.windowSize = 256;
+        spectrogramConfig.overlapPerc = overlap;
+
+        await renderer.render(
+            inputData,
+            spectrogramConfig,
+            sampleRate,
+            0,
+            0,
+            inputData.length / sampleRate
+        );
+
+        const [_, chunkSamplesStart, chunkSamplesEnd] = process.mock.calls[0];
+        expect(chunkSamplesEnd - chunkSamplesStart).toBe(expectedLength);
+        process.mockClear();
+    });
+
+    test('reusing cached chunks for the same request', async () => {
+        // Arbitrary canvas size because zeros messes up the calculations
+        const { canvas } = makeCanvasMock(100, 100);
+
+        const process = vi
+            .spyOn(ChunkProcessor.prototype, 'process')
+            .mockReturnValue(new ImageData(chunkWidth, chunkHeight));
+
+        const renderer = new CanvasRenderer(canvas as unknown as HTMLCanvasElement, 256);
+
+        const inputData = new Float32Array(2048).fill(0)
+        const spectrogramConfig = new SpectrogramConfig();
+        const sampleRate = 100
+        spectrogramConfig.fftSize = 512;
+        spectrogramConfig.windowSize = 256;
+
+        await renderer.render(inputData, spectrogramConfig, sampleRate, 0, 0, 10);
+        await renderer.render(inputData, spectrogramConfig, sampleRate, 0, 0, 10);
+
+        expect(process).toHaveBeenCalledTimes(1);
     });
 });
 
