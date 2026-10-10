@@ -10,9 +10,6 @@ import { Interval} from "luxon";
 import * as mseed3 from "../src/mseed3.mjs";
 import { scaleLinear as d3scaleLinear } from "d3-scale";
 
-import { TextDecoder } from "util";
-global.TextDecoder = TextDecoder;
-
 import fs from "fs";
 
 

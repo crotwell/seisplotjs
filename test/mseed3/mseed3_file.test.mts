@@ -3,8 +3,6 @@ import {describe, expect, test} from 'vitest';
 // git clone https://github.com/iris-edu/miniSEED3.git
 // cp -r miniSEED3/reference-data test/mseed3/.
 
-import { TextDecoder } from "util";
-global.TextDecoder = TextDecoder;
 
 
 import { isDef } from "../../src/util.mjs";

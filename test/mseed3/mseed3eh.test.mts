@@ -1,8 +1,6 @@
 import {describe, expect, test} from 'vitest';
 
 
-import { TextDecoder } from "util";
-global.TextDecoder = TextDecoder;
 
 import {isoToDateTime} from "../../src/util.mjs";
 
