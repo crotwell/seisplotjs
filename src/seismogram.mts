@@ -27,7 +27,7 @@ import { Quake } from "./quakeml.mjs";
 import { AMPLITUDE_MODE, MinMaxable } from "./scale.mjs";
 import { SeismogramSegment } from "./seismogramsegment.mjs";
 //export {SeismogramSegment} from "./seismogramsegment";
-import type { TraveltimeJsonType, TraveltimeArrivalType } from "./traveltime.mjs";
+import type { TauP3TimeJsonType, TraveltimeArrivalType } from "./taup3.mjs";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;
@@ -682,7 +682,7 @@ export class SeismogramDisplayData {
 
   addTravelTimes(
     ttimes:
-      | TraveltimeJsonType
+      | TauP3TimeJsonType
       | TraveltimeArrivalType
       | Array<TraveltimeArrivalType>,
   ) {

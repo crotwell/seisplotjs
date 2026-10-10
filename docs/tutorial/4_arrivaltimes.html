@@ -168,7 +168,7 @@ const ttimePromise = Promise.all([quakePromise, stationsPromise])
           allDistDeg.push(daz.distanceDeg);
         }
       }
-      const taupQuery = new sp.traveltime.TraveltimeQuery();
+      const taupQuery = new sp.taup3.TauPQuery();
       taupQuery.distdeg(allDistDeg);
       taupQuery.evdepthInMeter(q.depth);
       taupQuery.phases(allPhases);

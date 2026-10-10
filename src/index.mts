@@ -62,7 +62,6 @@ export * as taper from "./taper.mjs";
 export * as taup3 from "./taup3.mjs";
 export * as transfer from "./transfer.mjs";
 export * as transition from "./transition.mjs";
-export * as traveltime from "./traveltime.mjs";
 export * as usgsgeojson from "./usgsgeojson.mjs";
 export * as util from "./util.mjs";
 export { version } from "./version.mjs";

@@ -60,7 +60,6 @@ import * as taper from "./taper.mjs";
 import * as taup3 from "./taup3.mjs";
 import * as transfer from "./transfer.mjs";
 //import * as transition from "./transition.mjs";
-import * as traveltime from "./traveltime.mjs";
 import * as usgsgeojson from "./usgsgeojson.mjs";
 import * as util from "./util.mjs";
 import { version } from "./version.mjs";
@@ -153,7 +152,6 @@ export {
   taup3,
   transfer,
   transition,
-  traveltime,
   usgsgeojson,
   util,
   vector,

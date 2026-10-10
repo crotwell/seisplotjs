@@ -8,7 +8,7 @@ import { Quake, parseQuakeML } from "./quakeml.mjs";
 import { Network, parseStationXml, allChannels } from "./stationxml.mjs";
 import { SeismogramDisplayData } from "./seismogram.mjs";
 import { isValidMarker } from "./seismographmarker.mjs";
-import { isValidTraveltimeArrivalType } from "./traveltime.mjs";
+import { isValidTraveltimeArrivalType } from "./taup3.mjs";
 import {
   downloadBlobAsFile,
   doFetchWithTimeout,

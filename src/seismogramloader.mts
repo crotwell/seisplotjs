@@ -1,8 +1,9 @@
 import { Dataset } from "./dataset.mjs";
 import { Duration, Interval } from "luxon";
-import type { TraveltimeJsonType } from "./traveltime.mjs";
+import type { TauP3TimeJsonType } from "./taup3.mjs";
 import { distaz } from "./distaz.mjs";
-import { TraveltimeQuery, createOriginArrival } from "./traveltime.mjs";
+import { createOriginArrival } from "./taup3.mjs";
+import { TauPQuery } from "./taup3.mjs";
 import { DataSelectQuery } from "./fdsndataselect.mjs";
 import { EventQuery } from "./fdsnevent.mjs";
 import { StationQuery } from "./fdsnstation.mjs";
@@ -254,7 +255,7 @@ export class SeismogramLoader {
       .join(",");
     return Promise.all([networkListPromise, quakeListPromise])
       .then(([netList, quakeList]) => {
-        const ttpromiseList: Array<Promise<[Quake, TraveltimeJsonType]>> = [];
+        const ttpromiseList: Array<Promise<[Quake, TauP3TimeJsonType]>> = [];
 
         for (const q of quakeList) {
           // separate call per quake as depth might be different
@@ -271,7 +272,7 @@ export class SeismogramLoader {
             }
           }
           if (allDistDeg.length > 0) {
-            const taupQuery = new TraveltimeQuery();
+            const taupQuery = new TauPQuery();
             taupQuery.distdeg(allDistDeg);
             taupQuery.phases(allPhasesWithoutOrigin);
             // save quake along with result from traveltime
@@ -282,7 +283,7 @@ export class SeismogramLoader {
         return Promise.all([Promise.all(ttpromiseList), netList, quakeList]);
       })
       .then(([ttList, netList, quakeList]) => {
-        const ttMap = new Map<Quake, TraveltimeJsonType>();
+        const ttMap = new Map<Quake, TauP3TimeJsonType>();
         for (const [q, tt] of ttList) {
           ttMap.set(q, tt);
         }
@@ -315,10 +316,10 @@ export class SeismogramLoader {
                 stationArrivals.push(a);
               }
             }
-            const station_ttjson: TraveltimeJsonType = {
+            const station_ttjson: TauP3TimeJsonType = {
               model: ttjson.model,
-              sourcedepth: ttjson.sourcedepth,
-              receiverdepth: ttjson.receiverdepth,
+              sourcedepthlist: ttjson.sourcedepthlist,
+              receiverdepthlist: ttjson.receiverdepthlist,
               phases: ttjson.phases,
               arrivals: stationArrivals,
             };

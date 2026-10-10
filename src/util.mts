@@ -295,7 +295,7 @@ customElements.define(DEBUG_ELEMENT, SeisPlotDebugElement);
 export function warn(msg: string): void {
   if (console) {
     // eslint-disable-next-line no-console
-    console.assert(false, `${stringify(msg)}`);
+    console.warn(`${stringify(msg)}`);
   }
 
   if (typeof document !== "undefined" && document !== null) {

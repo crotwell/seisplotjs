@@ -1,4 +1,4 @@
-import type { TraveltimeJsonType } from "./traveltime.mjs";
+import type { TauP3TimeJsonType } from "./taup3.mjs";
 import { Quake, Origin } from "./quakeml.mjs";
 import { Station, Channel } from "./stationxml.mjs";
 import * as distaz from "./distaz.mjs";
@@ -42,7 +42,7 @@ export function isValidMarker(v: unknown): v is MarkerType {
  */
 export function createMarkersForTravelTimes(
   quake: Quake,
-  ttime: TraveltimeJsonType,
+  ttime: TauP3TimeJsonType,
 ): Array<MarkerType> {
   return ttime.arrivals.map((a) => {
     return {
