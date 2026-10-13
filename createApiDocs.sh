@@ -86,7 +86,6 @@ desc_taup3='travel times of seismic waves via TauP version 3 web service'
 desc_textformat='number formatting'
 desc_transition='animation transition helper'
 desc_transfer='instrument deconvolution of seismograms using response'
-desc_traveltime='travel times of seismic waves via the EarthScope traveltime web service'
 desc_usgsgeojson='query and parse GeoJson from USGS'
 desc_util='general utility functions'
 desc_vector='vector process of seismograms'
@@ -131,7 +130,7 @@ cat > docs/api/index.html <<EOF
               <section class='p2 mb2 clearfix bg-white minishadow'>
         <div class='clearfix'>
 
-          <h3>Seisplotjs <span class="sp_version">3.1.4-alpha.1</span> API Documentation</h3>
+          <h3>Seisplotjs <span class="sp_version">3.3.0-SNAPSHOT</span> API Documentation</h3>
           <p>Seisplotjs is a collection of javascript routines for requesting,
             manipulating and plotting seismic data. It is divided into submodules,
             which are listed below.
@@ -149,7 +148,7 @@ for path in dist/*.mjs
 do
   f=${path##*/}
   jsfile=${f%.mjs}
-  if [  "${jsfile}" == "index_node" ]  || [ "${jsfile}" == "index" ]; then
+  if [  "${jsfile}" == "index_node" ]  || [ "${jsfile}" == "index" ]  || [ "${jsfile}" == "seisplotjs_3.3.0-SNAPSHOT_standalone" ]; then
     # skip index files
     continue
   fi
