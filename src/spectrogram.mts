@@ -31,7 +31,7 @@ import { Seismograph } from "./seismograph.mjs";
 import { fftForward } from "./fft.mjs";
 import { SeismographConfig, numberFormatWrapper } from "./seismographconfig.mjs";
 import { clearCanvas } from "./seismographutil.mjs";
-import { util } from "./index_node.mjs";
+import { warn } from "./util.mjs";
 import type { Axis } from "d3-axis";
 import type { NumberValue as d3NumberValue } from "d3-scale";
 import {
@@ -154,7 +154,7 @@ export class Spectrogram extends Seismograph {
         viewStartTime,
         viewEndTime
       ).catch((err) => {
-        util.warn(`Error rendering spectrogram: ${err.message}`);
+        warn(`Error rendering spectrogram: ${err.message}`);
         return;
       });
     });
