@@ -67246,7 +67246,11 @@ var TauPQuery = class extends FDSNCommon {
     }
     super(TAUP_SERVICE, host);
     this.specVersion("3");
-    this._path_base = LOCALWS_PATH_BASE;
+    if (this._host === USC_HOST) {
+      this._path_base = USCWS_PATH_BASE;
+    } else {
+      this._path_base = LOCALWS_PATH_BASE;
+    }
     this._evdepth = [0];
     this._format = JSON_FORMAT;
     this._noheader = false;
@@ -67269,7 +67273,7 @@ var TauPQuery = class extends FDSNCommon {
    * Gets/Sets the remote port to connect to.
    *
    * @param value optional new value if setting
-   * @returns new value if getting, this if setting
+   * @returns this
    */
   port(value) {
     doIntGetterSetter(this, "port", value);
@@ -67278,6 +67282,12 @@ var TauPQuery = class extends FDSNCommon {
   getPort() {
     return this._port;
   }
+  /**
+   * Gets/Sets the base part of the path, like uscws in
+   * http://www.seis.sc.edu/uscws/taup/3
+   * @param  value  new value
+   * @return       this
+   */
   pathBase(value) {
     doStringGetterSetter(this, "path_base", value);
     return this;
@@ -67290,7 +67300,7 @@ var TauPQuery = class extends FDSNCommon {
    * the status code when no matching data is found by the service.
    *
    * @param value optional new value if setting
-   * @returns new value if getting, this if setting
+   * @returns this if setting
    */
   nodata(value) {
     doIntGetterSetter(this, "nodata", value);

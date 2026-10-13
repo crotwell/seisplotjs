@@ -442,7 +442,7 @@ export function queryEarthquakes(hash) {
       let traveltimes = [];
       let mystation = hash.chanTR[0].channel.station;
       hash.quakes.forEach((quake) => {
-        let ttresult = new sp.traveltime.TraveltimeQuery()
+        let ttresult = new sp.taup3.TauPQuery()
           .evdepth(quake.depth > 0 ? quake.depth / 1000 : 0)
           .evlat(quake.latitude)
           .evlon(quake.longitude)

@@ -42,6 +42,8 @@ const ttimePromise = Promise.all([quakePromise, stationsPromise])
         }
       }
       const taupQuery = new sp.taup3.TauPQuery();
+      taupQuery.host("www.seis.sc.edu");
+      taupQuery.pathBase(sp.fdsncommon.USCWS_PATH_BASE);
       taupQuery.distdeg(allDistDeg);
       taupQuery.evdepthInMeter(q.depth);
       taupQuery.phases(allPhases);
@@ -64,6 +66,10 @@ const ttimePromise = Promise.all([quakePromise, stationsPromise])
       networkList,
       quakeList,
     );
+    const taupQuery = new sp.taup3.TauPQuery();
+    taupQuery.host("www.seis.sc.edu");
+    taupQuery.pathBase(sp.fdsncommon.USCWS_PATH_BASE);
+    loader.taupQuery = taupQuery;
     loader.startOffset = -300;
     loader.endOffset = 1200;
     loader.markedPhaseList = "PcP,SS";

@@ -13,6 +13,7 @@ export const FDSN_HOST = "www.fdsn.org";
 
 export const FDSNWS_PATH_BASE = "fdsnws";
 export const IRISWS_PATH_BASE = "irisws";
+export const USCWS_PATH_BASE = "uscws";
 export const LOCALWS_PATH_BASE = "localws";
 
 export class FDSNCommon {

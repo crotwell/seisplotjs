@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, LOCALWS_PATH_BASE, appendToPath } from "./fdsncommon.mjs";
+import { FDSNCommon, LOCALWS_PATH_BASE, USCWS_PATH_BASE, appendToPath } from "./fdsncommon.mjs";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -223,7 +223,11 @@ export class TauPQuery extends FDSNCommon {
     }
     super(TAUP_SERVICE, host);
     this.specVersion("3");
-    this._path_base = LOCALWS_PATH_BASE;
+    if (this._host === USC_HOST) {
+      this._path_base = USCWS_PATH_BASE;
+    } else {
+      this._path_base = LOCALWS_PATH_BASE;
+    }
     this._evdepth = [0];
     this._format = JSON_FORMAT;
     this._noheader = false; // only for text format
@@ -251,7 +255,7 @@ export class TauPQuery extends FDSNCommon {
    * Gets/Sets the remote port to connect to.
    *
    * @param value optional new value if setting
-   * @returns new value if getting, this if setting
+   * @returns this
    */
   port(value?: number): TauPQuery {
     doIntGetterSetter(this, "port", value);
@@ -262,6 +266,12 @@ export class TauPQuery extends FDSNCommon {
     return this._port;
   }
 
+  /**
+   * Gets/Sets the base part of the path, like uscws in
+   * http://www.seis.sc.edu/uscws/taup/3
+   * @param  value  new value
+   * @return       this
+   */
   pathBase(value?: string): TauPQuery {
     doStringGetterSetter(this, "path_base", value);
     return this;
@@ -276,7 +286,7 @@ export class TauPQuery extends FDSNCommon {
    * the status code when no matching data is found by the service.
    *
    * @param value optional new value if setting
-   * @returns new value if getting, this if setting
+   * @returns this if setting
    */
   nodata(value?: number): TauPQuery {
     doIntGetterSetter(this, "nodata", value);

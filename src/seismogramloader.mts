@@ -33,6 +33,7 @@ export class SeismogramLoader {
   markOrigin: boolean;
   eventQuery: EventQuery | Promise<Array<Quake>>;
   dataselectQuery: null | DataSelectQuery;
+  taupQuery: null | TauPQuery;
   _startPhaseList: Array<string>;
   _endPhaseList: Array<string>;
   _markedPhaseList: Array<string>;
@@ -74,6 +75,7 @@ export class SeismogramLoader {
     if (isDef(dataselectQuery)) {
       this.dataselectQuery = dataselectQuery;
     }
+    this.taupQuery = null;
 
     this._startPhaseList = ["p", "P", "Pdiff", "PKP"];
     this._endPhaseList = ["s", "S", "Sdiff", "SKS"];
@@ -272,7 +274,10 @@ export class SeismogramLoader {
             }
           }
           if (allDistDeg.length > 0) {
-            const taupQuery = new TauPQuery();
+            let taupQuery = this.taupQuery;
+            if (taupQuery == null) {
+              taupQuery = new TauPQuery();
+            }
             taupQuery.distdeg(allDistDeg);
             taupQuery.phases(allPhasesWithoutOrigin);
             // save quake along with result from traveltime
