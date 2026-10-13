@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.2.6_standalone.mjs";
+import * as sp from "../../seisplotjs_3.3.0-SNAPSHOT_standalone.mjs";
 
 const hostUrl = "https://rtserve.earthscope.org";
 const rs = new sp.ringserverweb4.RingserverConnection(hostUrl);
