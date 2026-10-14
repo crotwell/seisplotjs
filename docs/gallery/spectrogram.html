@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Organized Display</title>
+    <style>
+      spectra-plot {
+        height: 400px;
+        display: block;
+      }
+      sp-spectrogram {
+        min-height: 200px;
+        height: 800px;
+        --sp-seismograph-height: 250px;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.3.0-SNAPSHOT</span>
+    </h5>
+
+    <h3>Spectrogram Display:</h3>
+    <h5 id="sp-spectrogram">&lt;sp-spectrogram&gt;</h5>
+    <div id="spectrodiv">
+      <!--
+      <sp-spectrogram></sp-spectrogram>
+      -->
+    </div>
+    <script type="module">
+      import * as sp from "../seisplotjs_3.3.0-SNAPSHOT_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
+
+      sp.dataset.load("dataset.zip").then((ds) => {
+        let seisConfig = new sp.spectrogram.SpectrogramConfig();
+        //seisConfig.linkedAmplitudeScale = new sp.scale.LinkedAmplitudeScale();
+        seisConfig.linkedAmplitudeScale =
+          new sp.scale.IndividualAmplitudeScale();
+        seisConfig.doGain = true;
+        seisConfig.doRmean = true;
+        //seisConfig.minHeight = 400;
+        seisConfig.isRelativeTime = false;
+        console.log(
+          `seisconfig in html: ${seisConfig.configId}  ${seisConfig.doGain}`,
+        );
+        const spectrogram = new sp.spectrogram.Spectrogram(ds.waveforms);
+        document.querySelector("#spectrodiv").appendChild(spectrogram);
+        /*
+        document.querySelectorAll("sp-spectrogram").forEach((graph) => {
+          //graph.seismographConfig = seisConfig;
+          graph.seisData = ds.waveforms;
+        });
+        */
+      });
+    </script>
+  </body>
+</html>
