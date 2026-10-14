@@ -77,7 +77,7 @@ export class SpectrogramConfig extends SeismographConfig {
   windowType: WindowFunctionType = "hann";
   // Frequency range for the spectrogram display in Hz - always constrained to not exceed the Nyquist frequency (sampleRate / 2)
   freqMin: number = 0;
-  freqMax: number = 15;
+  freqMax: number = Number.MAX_VALUE;
   // Function to format frequency values for display on the y-axis. Default is to format with 1 decimal place
   frequencyFormat: (val: number) => string = (val) => val.toFixed(1);
   // Lower and upper bounds for spectrogram color scaling in decibels. FFT power values below minDb are shown as the darkest

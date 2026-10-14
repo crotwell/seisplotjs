@@ -46,7 +46,7 @@ test('SpectrogramConfig preserves inherited defaults', () => {
     expect(uniqueSpectrogramConfigs).toMatchInlineSnapshot(`
       {
         "fftSize": 256,
-        "freqMax": 15,
+        "freqMax": 1.7976931348623157e+308,
         "freqMin": 0,
         "frequencyFormat": [Function],
         "maxDb": 120,
