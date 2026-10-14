@@ -47,7 +47,9 @@
         console.log(
           `seisconfig in html: ${seisConfig.configId}  ${seisConfig.doGain}`,
         );
-        const spectrogram = new sp.spectrogram.Spectrogram(ds.waveforms);
+        // just draw first one
+        const waveform = ds.waveforms[0];
+        const spectrogram = new sp.spectrogram.Spectrogram(waveform, seisConfig);
         document.querySelector("#spectrodiv").appendChild(spectrogram);
         /*
         document.querySelectorAll("sp-spectrogram").forEach((graph) => {
