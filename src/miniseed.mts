@@ -98,6 +98,11 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   out.recordSize = 4096;
   out.sampleRate = out.calcSampleRate();
   out.startTime = out.startBTime.toDateTime();
+  if ((out.activityFlags & 2) !== 0) {
+    // time correction not yet applied, but luxon only allows millisecond
+    // and timeCorrection is tenth-millis
+    out.startTime = out.startTime.plus(out.timeCorrection/10);
+  }
 
   for (let i = 0; i < out.numBlockettes; i++) {
     let nextOffset = dataView.getUint16(offset + 2, headerByteSwap);
@@ -170,7 +175,7 @@ export function parseBlockette(
     );
   } else if (type === 1001) {
     const timeQual = body.getUint8(4);
-    const microsecond = body.getUint8(5);
+    const microsecond = body.getInt8(5);
     //const reserved = body.getUint8(6)
     const frameCount = body.getUint8(7);
     return new Blockette1001(type, body, timeQual, microsecond, frameCount);
@@ -527,13 +532,40 @@ export class BTime {
  * Sanity checks on a BTime to see if a record might be in the wrong byte order
  * and so need to be byte swapped before parsing. Checks year betwee 1960 and 2055.
  *
+ * Note from the Java seisFile package that is helpful:
+ *
+ * Time capsule: note that year 2056 as a short byte swaps to itself, so whomever
+ * is maintaining this code off in the distant future, 49 years from now as
+ * I write this in 2007, should find some other header to use for byte swap checking!
+ *
+ * Also, 1800 swaps to 2055, so careful on the low end as well.
+ * Other swaps that overlap (in 1800 to 2500 range) are:
+ * 1800  2055
+ * 1801  2311
+ * 2055  1800
+ * 2056  2056
+ * 2057  2312
+ * 2311  1801
+ * 2312  2057
+ * 2313  2313
+ *
+ * So, 1802 to 2310 are a safe "good" year range, with the exception of 2056
+ *
+ * Using the jday helps but isn't definitive as 1 byte swaps to 256,
+ * 256 to 1 and 257 to itself.
+ * Similar tenthmilli has same as jday as well as 3 swaps to 768
+ *
+ * If mseed was going to support little endian headers they should have put in a damn flag!
+ *  - HPC
+
+ *
  * @param   bTime  time
  * @returns        true is byte order appears to be wrong, false if it seems ok
  */
 export function checkByteSwap(bTime: BTime): boolean {
   // IRIS syngine uses 1900-01-01 start if no eq
-  if (bTime.year === 1900 && bTime.jday === 1 ) {return false;}
-  return bTime.year < 1960 || bTime.year > 2055;
+  // libmseed uses year in 1900 to 2100, but notes 2056 is problematic
+  return bTime.year < 1900 || bTime.year > 2055;
 }
 
 /**

@@ -1112,9 +1112,9 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   const xExtras: Record<string, unknown> = {};
   const ms2H = ms2record.header;
   xHeader.flags =
-    (ms2H.activityFlags & 1) * 2 +
-    (ms2H.ioClockFlags & 64) * 4 +
-    (ms2H.dataQualityFlags & 16) * 8;
+    (ms2H.activityFlags & 1) * 1 +
+    (ms2H.dataQualityFlags & 128) * 2 +
+    (ms2H.ioClockFlags & 32) * 4;
   xHeader.year = ms2H.startBTime.year;
   xHeader.dayOfYear = ms2H.startBTime.jday;
   xHeader.hour = ms2H.startBTime.hour;
@@ -1193,7 +1193,7 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
       xHeader.encoding = DOUBLE;
     }
   }
-  const out = new MSeed3Record(xHeader, xExtras, new DataView(data.buffer));
+  const out = new MSeed3Record(xHeader, xExtras, new DataView(data.buffer, data.byteOffset, data.byteLength));
   return out;
 }
 
