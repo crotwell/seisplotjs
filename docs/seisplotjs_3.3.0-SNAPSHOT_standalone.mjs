@@ -19043,7 +19043,7 @@ var require_utils = __commonJS({
     }
     function escapeExpression(string4) {
       if (typeof string4 !== "string") {
-        if (string4 && string4.toHTML) {
+        if (string4 && typeof string4.toHTML === "function") {
           return string4.toHTML();
         } else if (string4 == null) {
           return "";
@@ -19089,11 +19089,13 @@ var require_exception = __commonJS({
     var errorProps = ["description", "fileName", "lineNumber", "endLineNumber", "message", "name", "number", "stack"];
     function Exception(message, node2) {
       var loc = node2 && node2.loc, line = void 0, endLineNumber = void 0, column = void 0, endColumn = void 0;
-      if (loc) {
+      if (loc && loc.start) {
         line = loc.start.line;
-        endLineNumber = loc.end.line;
         column = loc.start.column;
-        endColumn = loc.end.column;
+        if (loc.end) {
+          endLineNumber = loc.end.line;
+          endColumn = loc.end.column;
+        }
         message += " - " + line + ":" + column;
       }
       var tmp = Error.prototype.constructor.call(this, message);
@@ -19177,6 +19179,15 @@ var require_each = __commonJS({
     var _utils = require_utils();
     var _exception = require_exception();
     var _exception2 = _interopRequireDefault(_exception);
+    function closeIterator(iterator) {
+      try {
+        var _close = iterator["return"];
+        if (_utils.isFunction(_close)) {
+          _close.call(iterator);
+        }
+      } catch (closeError) {
+      }
+    }
     exports["default"] = function(instance) {
       instance.registerHelper("each", function(context, options) {
         if (!options) {
@@ -19192,7 +19203,7 @@ var require_each = __commonJS({
         if (options.data) {
           data = _utils.createFrame(options.data);
         }
-        function execIteration(field, index, last) {
+        function execIteration(field, index, last, value) {
           if (data) {
             data.key = field;
             data.index = index;
@@ -19202,40 +19213,46 @@ var require_each = __commonJS({
               data.contextPath = contextPath + field;
             }
           }
-          ret = ret + fn(context[field], {
+          ret = ret + fn(value, {
             data,
-            blockParams: _utils.blockParams([context[field], field], [contextPath + field, null])
+            blockParams: _utils.blockParams([value, field], [contextPath + field, null])
           });
         }
         if (context && typeof context === "object") {
           if (_utils.isArray(context)) {
             for (var j = context.length; i < j; i++) {
               if (i in context) {
-                execIteration(i, i, i === context.length - 1);
+                execIteration(i, i, i === context.length - 1, context[i]);
               }
             }
           } else if (typeof Symbol === "function" && context[Symbol.iterator]) {
-            var newContext = [];
             var iterator = context[Symbol.iterator]();
-            for (var it = iterator.next(); !it.done; it = iterator.next()) {
-              newContext.push(it.value);
-            }
-            context = newContext;
-            for (var j = context.length; i < j; i++) {
-              execIteration(i, i, i === context.length - 1);
+            var current = iterator.next();
+            while (!current.done) {
+              var next = iterator.next();
+              try {
+                execIteration(i, i, next.done, current.value);
+              } catch (e) {
+                if (!next.done) {
+                  closeIterator(iterator);
+                }
+                throw e;
+              }
+              current = next;
+              i++;
             }
           } else {
             (function() {
               var priorKey = void 0;
               Object.keys(context).forEach(function(key) {
                 if (priorKey !== void 0) {
-                  execIteration(priorKey, i - 1);
+                  execIteration(priorKey, i - 1, false, context[priorKey]);
                 }
                 priorKey = key;
                 i++;
               });
               if (priorKey !== void 0) {
-                execIteration(priorKey, i - 1, true);
+                execIteration(priorKey, i - 1, true, context[priorKey]);
               }
             })();
           }
@@ -19530,6 +19547,7 @@ var require_proto_access = __commonJS({
     exports.__esModule = true;
     exports.createProtoAccessControl = createProtoAccessControl;
     exports.resultIsAllowed = resultIsAllowed;
+    exports.isPrototypeConstructor = isPrototypeConstructor;
     exports.resetLoggedProperties = resetLoggedProperties;
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { "default": obj };
@@ -19566,6 +19584,9 @@ var require_proto_access = __commonJS({
       } else {
         return checkWhiteList(protoAccessControl.properties, propertyName);
       }
+    }
+    function isPrototypeConstructor(parent, propertyName, result) {
+      return propertyName === "constructor" && typeof result === "function" && parent === result.prototype;
     }
     function checkWhiteList(protoAccessControlForType, propertyName) {
       if (protoAccessControlForType.whitelist[propertyName] !== void 0) {
@@ -19608,7 +19629,7 @@ var require_base = __commonJS({
     var _logger = require_logger();
     var _logger2 = _interopRequireDefault(_logger);
     var _internalProtoAccess = require_proto_access();
-    var VERSION2 = "4.7.9";
+    var VERSION2 = "4.7.10";
     exports.VERSION = VERSION2;
     var COMPILER_REVISION = 8;
     exports.COMPILER_REVISION = COMPILER_REVISION;
@@ -19797,7 +19818,13 @@ var require_runtime = __commonJS({
         options.hooks = this.hooks;
         options.protoAccessControl = this.protoAccessControl;
         var result = env.VM.invokePartial.call(this, partial2, context, options);
+        if (result == null && Utils.isFunction(partial2)) {
+          throw new _exception2["default"]("The partial " + options.name + " returned no output: partials must return a string");
+        }
         if (result == null && env.compile) {
+          if (typeof partial2 !== "string") {
+            throw new _exception2["default"]("The partial " + options.name + " could not be compiled: partials must be strings or functions returning strings");
+          }
           options.partials[options.name] = env.compile(partial2, templateSpec.compilerOptions, env);
           result = options.partials[options.name](context, options);
         }
@@ -19831,7 +19858,7 @@ var require_runtime = __commonJS({
           if (result == null) {
             return result;
           }
-          if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          if (Object.prototype.hasOwnProperty.call(parent, propertyName) && !_internalProtoAccess.isPrototypeConstructor(parent, propertyName, result)) {
             return result;
           }
           if (_internalProtoAccess.resultIsAllowed(result, container.protoAccessControl, propertyName)) {
@@ -19966,7 +19993,7 @@ var require_runtime = __commonJS({
         } else {
           partial2 = lookupOwnProperty(options.partials, options.name);
         }
-      } else if (!partial2.call && !options.name) {
+      } else if (typeof partial2 !== "function" && !options.name) {
         options.name = partial2;
         partial2 = lookupOwnProperty(options.partials, partial2);
       }
@@ -20864,6 +20891,16 @@ var require_parser = __commonJS({
   }
 });
 
+// node_modules/handlebars/dist/cjs/handlebars/compiler/node-types.js
+var require_node_types = __commonJS({
+  "node_modules/handlebars/dist/cjs/handlebars/compiler/node-types.js"(exports) {
+    "use strict";
+    exports.__esModule = true;
+    var NODE_TYPES = ["Program", "BlockStatement", "DecoratorBlock", "PartialStatement", "PartialBlockStatement", "Decorator", "MustacheStatement", "ContentStatement", "CommentStatement", "SubExpression", "PathExpression", "StringLiteral", "NumberLiteral", "BooleanLiteral", "UndefinedLiteral", "NullLiteral", "Hash", "HashPair"];
+    exports.NODE_TYPES = NODE_TYPES;
+  }
+});
+
 // node_modules/handlebars/dist/cjs/handlebars/compiler/visitor.js
 var require_visitor = __commonJS({
   "node_modules/handlebars/dist/cjs/handlebars/compiler/visitor.js"(exports, module) {
@@ -20874,8 +20911,13 @@ var require_visitor = __commonJS({
     }
     var _exception = require_exception();
     var _exception2 = _interopRequireDefault(_exception);
+    var _utils = require_utils();
+    var _nodeTypes = require_node_types();
     function Visitor() {
       this.parents = [];
+    }
+    function isDispatchable(visitor, type) {
+      return _utils.indexOf(_nodeTypes.NODE_TYPES, type) !== -1 || !(type in Visitor.prototype) && typeof visitor[type] === "function";
     }
     Visitor.prototype = {
       constructor: Visitor,
@@ -20884,7 +20926,7 @@ var require_visitor = __commonJS({
       acceptKey: function acceptKey(node2, name) {
         var value = this.accept(node2[name]);
         if (this.mutating) {
-          if (value && !Visitor.prototype[value.type]) {
+          if (value && !isDispatchable(this, value.type)) {
             throw new _exception2["default"]('Unexpected node type "' + value.type + '" found when accepting ' + name + " on " + node2.type);
           }
           node2[name] = value;
@@ -20914,7 +20956,7 @@ var require_visitor = __commonJS({
         if (!object2) {
           return;
         }
-        if (!this[object2.type]) {
+        if (!isDispatchable(this, object2.type) || !this[object2.type]) {
           throw new _exception2["default"]("Unknown type: " + object2.type, object2);
         }
         if (this.current) {
@@ -21021,7 +21063,7 @@ var require_whitespace_control = __commonJS({
           omitRight(body, i);
           if (omitLeft(body, i)) {
             if (current.type === "PartialStatement") {
-              current.indent = /([ \t]+$)/.exec(body[i - 1].original)[1];
+              current.indent = /(?:^|[^ \t])([ \t]+)$/.exec(body[i - 1].original)[1];
             }
           }
         }
@@ -21097,7 +21139,7 @@ var require_whitespace_control = __commonJS({
         return isRoot;
       }
       if (prev.type === "ContentStatement") {
-        return (sibling || !isRoot ? /\r?\n\s*?$/ : /(^|\r?\n)\s*?$/).test(prev.original);
+        return (sibling || !isRoot ? /(?:^|\S)[^\S\n]*\n\s*$/ : /^\s*$|(?:^|\S)[^\S\n]*\n\s*$/).test(prev.original);
       }
     }
     function isNextWhitespace(body, i, isRoot) {
@@ -21127,7 +21169,7 @@ var require_whitespace_control = __commonJS({
         return;
       }
       var original = current.value;
-      current.value = current.value.replace(multiple ? /\s+$/ : /[ \t]+$/, "");
+      current.value = current.value.replace(multiple ? /(^|\S)\s+$/ : /(^|[^ \t])[ \t]+$/, "$1");
       current.leftStripped = current.value !== original;
       return current.leftStripped;
     }
@@ -21354,15 +21396,12 @@ var require_base2 = __commonJS({
     var _whitespaceControl2 = _interopRequireDefault(_whitespaceControl);
     var _helpers = require_helpers2();
     var Helpers = _interopRequireWildcard(_helpers);
-    var _exception = require_exception();
-    var _exception2 = _interopRequireDefault(_exception);
     var _utils = require_utils();
     exports.parser = _parser2["default"];
     var yy = {};
     _utils.extend(yy, Helpers);
     function parseWithoutProcessing(input2, options) {
       if (input2.type === "Program") {
-        validateInputAst(input2);
         return input2;
       }
       _parser2["default"].yy = yy;
@@ -21376,51 +21415,6 @@ var require_base2 = __commonJS({
       var ast = parseWithoutProcessing(input2, options);
       var strip = new _whitespaceControl2["default"](options);
       return strip.accept(ast);
-    }
-    function validateInputAst(ast) {
-      validateAstNode(ast);
-    }
-    function validateAstNode(node2) {
-      if (node2 == null) {
-        return;
-      }
-      if (Array.isArray(node2)) {
-        node2.forEach(validateAstNode);
-        return;
-      }
-      if (typeof node2 !== "object") {
-        return;
-      }
-      if (node2.type === "PathExpression") {
-        if (!isValidDepth(node2.depth)) {
-          throw new _exception2["default"]("Invalid AST: PathExpression.depth must be an integer");
-        }
-        if (!Array.isArray(node2.parts)) {
-          throw new _exception2["default"]("Invalid AST: PathExpression.parts must be an array");
-        }
-        for (var i = 0; i < node2.parts.length; i++) {
-          if (typeof node2.parts[i] !== "string") {
-            throw new _exception2["default"]("Invalid AST: PathExpression.parts must only contain strings");
-          }
-        }
-      } else if (node2.type === "NumberLiteral") {
-        if (typeof node2.value !== "number" || !isFinite(node2.value)) {
-          throw new _exception2["default"]("Invalid AST: NumberLiteral.value must be a number");
-        }
-      } else if (node2.type === "BooleanLiteral") {
-        if (typeof node2.value !== "boolean") {
-          throw new _exception2["default"]("Invalid AST: BooleanLiteral.value must be a boolean");
-        }
-      }
-      Object.keys(node2).forEach(function(propertyName) {
-        if (propertyName === "loc") {
-          return;
-        }
-        validateAstNode(node2[propertyName]);
-      });
-    }
-    function isValidDepth(depth) {
-      return typeof depth === "number" && isFinite(depth) && Math.floor(depth) === depth && depth >= 0;
     }
   }
 });
@@ -21441,6 +21435,7 @@ var require_compiler = __commonJS({
     var _utils = require_utils();
     var _ast = require_ast();
     var _ast2 = _interopRequireDefault(_ast);
+    var _nodeTypes = require_node_types();
     var slice2 = [].slice;
     function Compiler() {
     }
@@ -21494,7 +21489,7 @@ var require_compiler = __commonJS({
         return guid3;
       },
       accept: function accept(node2) {
-        if (!this[node2.type]) {
+        if (_utils.indexOf(_nodeTypes.NODE_TYPES, node2.type) === -1 || !this[node2.type]) {
           throw new _exception2["default"]("Unknown type: " + node2.type, node2);
         }
         this.sourceNode.unshift(node2);
@@ -21503,6 +21498,7 @@ var require_compiler = __commonJS({
         return ret;
       },
       Program: function Program(program) {
+        validateBlockParams(program);
         this.options.blockParams.unshift(program.blockParams);
         var body = program.body, bodyLength = body.length;
         for (var i = 0; i < bodyLength; i++) {
@@ -21586,6 +21582,9 @@ var require_compiler = __commonJS({
         this.DecoratorBlock(decorator);
       },
       ContentStatement: function ContentStatement(content) {
+        if (content.value != null && typeof content.value !== "string") {
+          throw invalidAst(content, "value must be a string");
+        }
         if (content.value) {
           this.opcode("appendContent", content.value);
         }
@@ -21605,7 +21604,7 @@ var require_compiler = __commonJS({
       },
       ambiguousSexpr: function ambiguousSexpr(sexpr, program, inverse) {
         var path2 = sexpr.path, name = path2.parts[0], isBlock = program != null || inverse != null;
-        this.opcode("getContext", path2.depth);
+        this.opcode("getContext", validateDepth(path2));
         this.opcode("pushProgram", program);
         this.opcode("pushProgram", inverse);
         path2.strict = true;
@@ -21632,27 +21631,32 @@ var require_compiler = __commonJS({
         }
       },
       PathExpression: function PathExpression(path2) {
-        this.addDepth(path2.depth);
-        this.opcode("getContext", path2.depth);
-        var name = path2.parts[0], scoped = _ast2["default"].helpers.scopedId(path2), blockParamId = !path2.depth && !scoped && this.blockParamIndex(name);
+        var depth = validateDepth(path2);
+        var parts = validateParts(path2);
+        this.addDepth(depth);
+        this.opcode("getContext", depth);
+        var name = parts[0], scoped = _ast2["default"].helpers.scopedId(path2), blockParamId = !depth && !scoped && this.blockParamIndex(name);
         if (blockParamId) {
-          this.opcode("lookupBlockParam", blockParamId, path2.parts);
+          this.opcode("lookupBlockParam", blockParamId, parts);
         } else if (!name) {
           this.opcode("pushContext");
         } else if (path2.data) {
           this.options.data = true;
-          this.opcode("lookupData", path2.depth, path2.parts, path2.strict);
+          this.opcode("lookupData", depth, parts, path2.strict);
         } else {
-          this.opcode("lookupOnContext", path2.parts, path2.falsy, path2.strict, scoped);
+          this.opcode("lookupOnContext", parts, path2.falsy, path2.strict, scoped);
         }
       },
       StringLiteral: function StringLiteral(string4) {
+        validateLiteral(string4);
         this.opcode("pushString", string4.value);
       },
       NumberLiteral: function NumberLiteral(number8) {
+        validateLiteral(number8);
         this.opcode("pushLiteral", number8.value);
       },
       BooleanLiteral: function BooleanLiteral(bool) {
+        validateLiteral(bool);
         this.opcode("pushLiteral", bool.value);
       },
       UndefinedLiteral: function UndefinedLiteral() {
@@ -21662,7 +21666,16 @@ var require_compiler = __commonJS({
         this.opcode("pushLiteral", "null");
       },
       Hash: function Hash(hash2) {
-        var pairs = hash2.pairs, i = 0, l2 = pairs.length;
+        var pairs = hash2.pairs, i = 0, l2 = void 0;
+        if (!_utils.isArray(pairs)) {
+          throw invalidAst(hash2, "pairs must be an array");
+        }
+        l2 = pairs.length;
+        for (var j = 0; j < l2; j++) {
+          if (!pairs[j] || typeof pairs[j].key !== "string") {
+            throw invalidAst(hash2, "pair keys must be strings");
+          }
+        }
         this.opcode("pushHash");
         for (; i < l2; i++) {
           this.pushParam(pairs[i].value);
@@ -21687,6 +21700,7 @@ var require_compiler = __commonJS({
         this.useDepths = true;
       },
       classifySexpr: function classifySexpr(sexpr) {
+        validateParts(sexpr.path);
         var isSimple = _ast2["default"].helpers.simpleId(sexpr.path);
         var isBlockParam = isSimple && !!this.blockParamIndex(sexpr.path.parts[0]);
         var isHelper = !isBlockParam && _ast2["default"].helpers.helperExpression(sexpr);
@@ -21713,15 +21727,20 @@ var require_compiler = __commonJS({
         }
       },
       pushParam: function pushParam(val) {
+        validateLiteral(val);
         var value = val.value != null ? val.value : val.original || "";
+        var depth = validateDepth(val);
         if (this.stringParams) {
+          if (typeof value !== "number" && typeof value !== "boolean") {
+            value = String(value);
+          }
           if (value.replace) {
             value = value.replace(/^(\.?\.\/)*/g, "").replace(/\//g, ".");
           }
-          if (val.depth) {
-            this.addDepth(val.depth);
+          if (depth) {
+            this.addDepth(depth);
           }
-          this.opcode("getContext", val.depth || 0);
+          this.opcode("getContext", depth);
           this.opcode("pushStringParam", value, val.type);
           if (val.type === "SubExpression") {
             this.accept(val);
@@ -21729,8 +21748,8 @@ var require_compiler = __commonJS({
         } else {
           if (this.trackIds) {
             var blockParamIndex = void 0;
-            if (val.parts && !_ast2["default"].helpers.scopedId(val) && !val.depth) {
-              blockParamIndex = this.blockParamIndex(val.parts[0]);
+            if (val.parts && !_ast2["default"].helpers.scopedId(val) && !depth) {
+              blockParamIndex = this.blockParamIndex(validateParts(val)[0]);
             }
             if (blockParamIndex) {
               var blockParamChild = val.parts.slice(1).join(".");
@@ -21817,6 +21836,48 @@ var require_compiler = __commonJS({
         return compiled._child(i, data, blockParams, depths);
       };
       return ret;
+    }
+    function invalidAst(node2, message) {
+      return new _exception2["default"]("Invalid AST: " + node2.type + " " + message, node2);
+    }
+    function validateDepth(node2) {
+      var depth = node2.depth;
+      if (depth == null) {
+        return 0;
+      }
+      if (typeof depth !== "number" || !isFinite(depth) || Math.floor(depth) !== depth || depth < 0) {
+        throw invalidAst(node2, "depth must be a non-negative integer");
+      }
+      return depth;
+    }
+    function validateLiteral(node2) {
+      var value = node2.value;
+      if (node2.type === "StringLiteral" && typeof value !== "string") {
+        throw invalidAst(node2, "value must be a string");
+      } else if (node2.type === "NumberLiteral" && typeof value !== "number") {
+        throw invalidAst(node2, "value must be a number");
+      } else if (node2.type === "BooleanLiteral" && typeof value !== "boolean") {
+        throw invalidAst(node2, "value must be a boolean");
+      }
+    }
+    function validateStringArray(node2, value, name) {
+      if (!_utils.isArray(value)) {
+        throw invalidAst(node2, name + " must be an array");
+      }
+      for (var i = 0; i < value.length; i++) {
+        if (typeof value[i] !== "string") {
+          throw invalidAst(node2, name + " must only contain strings");
+        }
+      }
+      return value;
+    }
+    function validateParts(path2) {
+      return validateStringArray(path2, path2.parts, "parts");
+    }
+    function validateBlockParams(program) {
+      if (program.blockParams != null) {
+        validateStringArray(program, program.blockParams, "blockParams");
+      }
     }
     function argEquals(a, b) {
       if (a === b) {
@@ -23596,10 +23657,22 @@ var require_source_map = __commonJS({
 
 // node_modules/handlebars/dist/cjs/handlebars/compiler/code-gen.js
 var require_code_gen = __commonJS({
-  "node_modules/handlebars/dist/cjs/handlebars/compiler/code-gen.js"(exports, module) {
+  "node_modules/handlebars/dist/cjs/handlebars/compiler/code-gen.js"(exports) {
     "use strict";
     exports.__esModule = true;
+    exports.safeJsonLiteral = safeJsonLiteral;
     var _utils = require_utils();
+    var NEEDS_ESCAPING = /[\x00-\x1f\\"\u2028\u2029<\ud800-\udfff]/;
+    var SCRIPT_DELIMITERS = /<(?=!--|\/?script)/gi;
+    function escapeScriptDelimiters(code) {
+      return code.replace(SCRIPT_DELIMITERS, "\\u003C");
+    }
+    function escapeSurrogate(surrogate) {
+      return "\\u" + surrogate.charCodeAt(0).toString(16);
+    }
+    function safeJsonLiteral(value) {
+      return escapeScriptDelimiters(JSON.stringify(value).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029").replace(/[\ud800-\udfff]/g, escapeSurrogate));
+    }
     var SourceNode = void 0;
     try {
       if (typeof define !== "function" || !define.amd) {
@@ -23692,7 +23765,11 @@ var require_code_gen = __commonJS({
         return this.wrap([fn, type ? "." + type + "(" : "(", params, ")"]);
       },
       quotedString: function quotedString(str) {
-        return '"' + (str + "").replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029") + '"';
+        str = str + "";
+        if (!NEEDS_ESCAPING.test(str)) {
+          return '"' + str + '"';
+        }
+        return safeJsonLiteral(str);
       },
       objectLiteral: function objectLiteral(obj) {
         var _this = this;
@@ -23726,7 +23803,6 @@ var require_code_gen = __commonJS({
       }
     };
     exports["default"] = CodeGen;
-    module.exports = exports["default"];
   }
 });
 
@@ -23756,7 +23832,7 @@ var require_javascript_compiler = __commonJS({
         return this.internalNameLookup(parent, name);
       },
       depthedLookup: function depthedLookup(name) {
-        return [this.aliasable("container.lookup"), "(depths, ", JSON.stringify(name), ")"];
+        return [this.aliasable("container.lookup"), "(depths, ", this.quotedString(name), ")"];
       },
       compilerInfo: function compilerInfo() {
         var revision = _base.COMPILER_REVISION, versions = _base.REVISION_CHANGES[revision];
@@ -23782,7 +23858,7 @@ var require_javascript_compiler = __commonJS({
       // END PUBLIC API
       internalNameLookup: function internalNameLookup(parent, name) {
         this.lookupPropertyFunctionIsUsed = true;
-        return ["lookupProperty(", parent, ",", JSON.stringify(name), ")"];
+        return ["lookupProperty(", parent, ",", this.quotedString(name), ")"];
       },
       lookupPropertyFunctionIsUsed: false,
       compile: function compile2(environment, options, context, asObject) {
@@ -24321,7 +24397,7 @@ var require_javascript_compiler = __commonJS({
           delete options.name;
         }
         if (indent) {
-          options.indent = JSON.stringify(indent);
+          options.indent = this.quotedString(indent);
         }
         options.helpers = "helpers";
         options.partials = "partials";
@@ -24367,7 +24443,7 @@ var require_javascript_compiler = __commonJS({
       },
       pushId: function pushId(type, name, child) {
         if (type === "BlockParam") {
-          this.pushStackLiteral("blockParams[" + name[0] + "].path[" + name[1] + "]" + (child ? " + " + JSON.stringify("." + child) : ""));
+          this.pushStackLiteral("blockParams[" + name[0] + "].path[" + name[1] + "]" + (child ? " + " + this.quotedString("." + child) : ""));
         } else if (type === "PathExpression") {
           this.pushString(name);
         } else if (type === "SubExpression") {
@@ -24605,7 +24681,7 @@ var require_javascript_compiler = __commonJS({
       },
       setupHelperArgs: function setupHelperArgs(helper, paramSize, params, useRegister) {
         var options = this.setupParams(helper, paramSize, params);
-        options.loc = JSON.stringify(this.source.currentLocation);
+        options.loc = locationLiteral(this);
         options = this.objectLiteral(options);
         if (useRegister) {
           this.useRegister("options");
@@ -24629,6 +24705,10 @@ var require_javascript_compiler = __commonJS({
     JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
       return !JavaScriptCompiler.RESERVED_WORDS[name] && /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(name);
     };
+    function locationLiteral(compiler) {
+      var loc = compiler.source.currentLocation;
+      return loc ? _codeGen.safeJsonLiteral(loc) : "undefined";
+    }
     function strictLookup(requireTerminal, compiler, parts, startPartIndex, type) {
       var stack = compiler.popStack(), len = parts.length;
       if (requireTerminal) {
@@ -24638,7 +24718,7 @@ var require_javascript_compiler = __commonJS({
         stack = compiler.nameLookup(stack, parts[i], type);
       }
       if (requireTerminal) {
-        return [compiler.aliasable("container.strict"), "(", stack, ", ", compiler.quotedString(parts[len]), ", ", JSON.stringify(compiler.source.currentLocation), " )"];
+        return [compiler.aliasable("container.strict"), "(", stack, ", ", compiler.quotedString(parts[len]), ", ", locationLiteral(compiler), " )"];
       } else {
         return stack;
       }
@@ -73326,7 +73406,6 @@ __export(external_exports, {
   ZodPrefault: () => ZodPrefault,
   ZodPreprocess: () => ZodPreprocess,
   ZodPromise: () => ZodPromise,
-  ZodProperties: () => ZodProperties,
   ZodReadonly: () => ZodReadonly,
   ZodRealError: () => ZodRealError,
   ZodRecord: () => ZodRecord,
@@ -73370,6 +73449,7 @@ __export(external_exports, {
   creditCard: () => creditCard2,
   cuid: () => cuid3,
   cuid2: () => cuid22,
+  currencyCode: () => currencyCode2,
   custom: () => custom,
   date: () => date3,
   decode: () => decode2,
@@ -73463,7 +73543,7 @@ __export(external_exports, {
   preprocess: () => preprocess,
   prettifyError: () => prettifyError,
   promise: () => promise,
-  properties: () => properties,
+  properties: () => _properties,
   property: () => _property,
   readonly: () => readonly,
   record: () => record,
@@ -73551,6 +73631,7 @@ __export(core_exports2, {
   $ZodCheckMultipleOf: () => $ZodCheckMultipleOf,
   $ZodCheckNumberFormat: () => $ZodCheckNumberFormat,
   $ZodCheckOverwrite: () => $ZodCheckOverwrite,
+  $ZodCheckProperties: () => $ZodCheckProperties,
   $ZodCheckProperty: () => $ZodCheckProperty,
   $ZodCheckRegex: () => $ZodCheckRegex,
   $ZodCheckSizeEquals: () => $ZodCheckSizeEquals,
@@ -73604,7 +73685,6 @@ __export(core_exports2, {
   $ZodPrefault: () => $ZodPrefault,
   $ZodPreprocess: () => $ZodPreprocess,
   $ZodPromise: () => $ZodPromise,
-  $ZodProperties: () => $ZodProperties,
   $ZodReadonly: () => $ZodReadonly,
   $ZodRealError: () => $ZodRealError,
   $ZodRecord: () => $ZodRecord,
@@ -73772,6 +73852,7 @@ __export(core_exports2, {
   _xor: () => _xor,
   base64Charset: () => base64Charset,
   base64urlCharset: () => base64urlCharset,
+  canParseURL: () => canParseURL,
   clone: () => clone2,
   compile: () => compile,
   compileFn: () => compileFn,
@@ -73794,7 +73875,6 @@ __export(core_exports2, {
   initializeContext: () => initializeContext,
   isBackEdge: () => isBackEdge,
   isRecursiveSchema: () => isRecursiveSchema,
-  isTransforming: () => isTransforming,
   isValidBase64: () => isValidBase64,
   isValidBase64URL: () => isValidBase64URL,
   isValidCIDRv6: () => isValidCIDRv6,
@@ -73831,6 +73911,7 @@ __export(core_exports2, {
   util: () => util_exports2,
   validate: () => validate,
   validateAsync: () => validateAsync,
+  validateURL: () => validateURL,
   version: () => version2,
   withParser: () => withParser
 });
@@ -73906,6 +73987,7 @@ __export(util_exports2, {
   required: () => required,
   safeExtend: () => safeExtend,
   shallowClone: () => shallowClone,
+  sizeCaps: () => sizeCaps,
   slugify: () => slugify,
   stringifyPrimitive: () => stringifyPrimitive,
   toZod: () => toZod,
@@ -74425,6 +74507,18 @@ function prefixIssues(path2, issues) {
 function unwrapMessage(message) {
   return typeof message === "string" ? message : message?.message;
 }
+function sizeCaps(defChecks) {
+  const caps = [];
+  for (const ch of defChecks ?? []) {
+    const d = ch._zod.def;
+    if (!/_(length|size)$|_equals$/.test(d.check))
+      break;
+    const max = d.maximum ?? d.length ?? d.size;
+    if (max >= 0)
+      caps.push([max, ch]);
+  }
+  return caps;
+}
 function attachSchema(issues, start2, inst) {
   var _a3;
   for (let i = start2; i < issues.length; i++) {
@@ -74571,9 +74665,6 @@ function members(proto, table) {
       Object.defineProperty(proto, key, { ...desc, enumerable: false });
     else
       defineBound(proto, key, desc.value);
-  }
-  for (const sym of Object.getOwnPropertySymbols(table)) {
-    defineBound(proto, sym, table[sym]);
   }
 }
 function own(inst, key, value, enumerable = true) {
@@ -74727,8 +74818,7 @@ function $constructor(name, initializer3, proto, params) {
       } finally {
         _zodDesc.value = void 0;
       }
-    }
-    if (inst._zod.traits.has(name)) {
+    } else if (inst._zod.traits.has(name)) {
       return;
     }
     inst._zod.traits.add(name);
@@ -75170,6 +75260,7 @@ __export(regexes_exports, {
   creditCard: () => creditCard,
   cuid: () => cuid,
   cuid2: () => cuid2,
+  currencyCode: () => currencyCode,
   date: () => date2,
   datetime: () => datetime,
   domain: () => domain,
@@ -75268,6 +75359,7 @@ var domain = /^(?=.{1,253}$)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a
 var httpProtocol = /^https?$/;
 var e164 = /^\+[1-9]\d{6,14}$/;
 var creditCard = /^\d(?:[ -]?\d){11,18}$/;
+var currencyCode = /^(?:AED|AFN|ALL|AMD|AOA|ARS|AUD|AWG|AZN|BAM|BBD|BDT|BHD|BIF|BMD|BND|BOB|BOV|BRL|BSD|BTN|BWP|BYN|BZD|CAD|CDF|CHE|CHF|CHW|CLF|CLP|CNY|COP|COU|CRC|CUP|CVE|CZK|DJF|DKK|DOP|DZD|EGP|ERN|ETB|EUR|FJD|FKP|GBP|GEL|GHS|GIP|GMD|GNF|GTQ|GYD|HKD|HNL|HTG|HUF|IDR|ILS|INR|IQD|IRR|ISK|JMD|JOD|JPY|KES|KGS|KHR|KMF|KPW|KRW|KWD|KYD|KZT|LAK|LBP|LKR|LRD|LSL|LYD|MAD|MDL|MGA|MKD|MMK|MNT|MOP|MRU|MUR|MVR|MWK|MXN|MXV|MYR|MZN|NAD|NGN|NIO|NOK|NPR|NZD|OMR|PAB|PEN|PGK|PHP|PKR|PLN|PYG|QAR|RON|RSD|RUB|RWF|SAR|SBD|SCR|SDG|SEK|SGD|SHP|SLE|SOS|SRD|SSP|STN|SVC|SYP|SZL|THB|TJS|TMT|TND|TOP|TRY|TTD|TWD|TZS|UAH|UGX|USD|USN|UYI|UYU|UYW|UZS|VED|VES|VND|VUV|WST|XAD|XAF|XAG|XAU|XBA|XBB|XBC|XBD|XCD|XCG|XDR|XOF|XPD|XPF|XPT|XSU|XTS|XUA|XXX|YER|ZAR|ZMW|ZWG)$/;
 var iban = /^[A-Z]{2}(?!00|01|99)\d{2}[A-Z0-9]{11,30}$/;
 var dateSource = `(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))`;
 function anchor(source) {
@@ -75752,6 +75844,34 @@ var $ZodCheckProperty = /* @__PURE__ */ $constructor("$ZodCheckProperty", (inst,
     return;
   };
 });
+var $ZodCheckProperties = /* @__PURE__ */ $constructor("$ZodCheckProperties", (inst, def) => {
+  $ZodCheck.init(inst, def);
+  hide(inst, Symbol.iterator, function* () {
+    yield inst;
+  });
+  let entries;
+  inst._zod.check = (payload) => {
+    if (payload.value == null) {
+      payload.issues.push({ expected: "object", code: "invalid_type", input: payload.value, inst });
+      return void 0;
+    }
+    entries ?? (entries = Reflect.ownKeys(def.shape).map((key) => [key, def.shape[key]]));
+    const input2 = payload.value;
+    let proms;
+    for (const [key, schema] of entries) {
+      const result = schema._zod.run({ value: input2[key], issues: [] }, {});
+      if (result instanceof Promise) {
+        proms ?? (proms = []);
+        proms.push(result.then((result2) => handleCheckPropertyResult(result2, payload, key)));
+      } else {
+        handleCheckPropertyResult(result, payload, key);
+      }
+    }
+    if (proms)
+      return Promise.all(proms).then(() => void 0);
+    return void 0;
+  };
+});
 var $ZodCheckMimeType = /* @__PURE__ */ $constructor("$ZodCheckMimeType", (inst, def) => {
   $ZodCheck.init(inst, def);
   const mimeSet = new Set(def.mime);
@@ -75819,7 +75939,7 @@ ${content.join("\n")}
 var version2 = {
   major: 4,
   minor: 6,
-  patch: 1
+  patch: 7
 };
 
 // node_modules/zod/v4/core/schemas.js
@@ -76007,11 +76127,32 @@ var $ZodEmail = /* @__PURE__ */ $constructor("$ZodEmail", (inst, def) => {
 });
 var URL_BAD_FORMAT = 1;
 var URL_UNPARSEABLE = 2;
+function canParseURL(input2) {
+  try {
+    if (typeof URL !== "undefined" && typeof URL.canParse === "function")
+      return URL.canParse(input2);
+    new URL(input2);
+    return true;
+  } catch {
+    return false;
+  }
+}
+function validateURL(trimmed, def) {
+  if (!("normalize" in def) && !("hostname" in def) && !("protocol" in def)) {
+    return canParseURL(trimmed) || URL_UNPARSEABLE;
+  }
+  return parseURLObject(trimmed, def);
+}
 function parseURLObject(trimmed, def) {
   if (!def.normalize && def.protocol?.source === httpProtocol.source && !/^https?:\/\//i.test(trimmed)) {
     return URL_BAD_FORMAT;
   }
   try {
+    if (typeof URL !== "undefined") {
+      const URLStatic = URL;
+      if (typeof URLStatic.parse === "function")
+        return URLStatic.parse(trimmed) ?? URL_UNPARSEABLE;
+    }
     return new URL(trimmed);
   } catch {
     return URL_UNPARSEABLE;
@@ -76034,7 +76175,7 @@ var $ZodURL = /* @__PURE__ */ $constructor("$ZodURL", (inst, def) => {
   inst._zod.check = (payload) => {
     try {
       const trimmed = payload.value.trim();
-      const url2 = parseURLObject(trimmed, def);
+      const url2 = validateURL(trimmed, def);
       if (url2 === URL_BAD_FORMAT) {
         payload.issues.push({
           code: "invalid_format",
@@ -76054,6 +76195,10 @@ var $ZodURL = /* @__PURE__ */ $constructor("$ZodURL", (inst, def) => {
           inst,
           continue: !def.abort
         });
+        return;
+      }
+      if (url2 === true) {
+        payload.value = stripTabAndNewline(trimmed);
         return;
       }
       if (def.hostname && !urlHostnameOk(url2, def.hostname)) {
@@ -76145,12 +76290,7 @@ var ipv6Alphabet = /^[0-9a-fA-F:.]+$/;
 function isValidIPv6(value) {
   if (!ipv6Alphabet.test(value))
     return false;
-  try {
-    new URL(`http://[${value}]`);
-    return true;
-  } catch {
-    return false;
-  }
+  return canParseURL(`http://[${value}]`);
 }
 var $ZodIPv6 = /* @__PURE__ */ $constructor("$ZodIPv6", (inst, def) => {
   def.pattern ?? (def.pattern = ipv6);
@@ -76555,6 +76695,31 @@ var $ZodDate = /* @__PURE__ */ $constructor("$ZodDate", (inst, def) => {
     return payload;
   };
 });
+function capSize(inst, size) {
+  const caps = sizeCaps(inst._zod.def.checks);
+  if (!caps.length)
+    return;
+  const cap = Math.min(...caps.map((c) => c[0]));
+  const parse5 = inst._zod.parse;
+  inst._zod.parse = (payload, ctx) => {
+    const n2 = size(payload.value);
+    if (n2 > cap && !ctx?.skipChecks && ctx?.direction !== "backward") {
+      for (const [max, ch] of sizeCaps(inst._zod.def.checks)) {
+        if (n2 > max && ch._zod.def.when(payload)) {
+          const start2 = payload.issues.length;
+          ch._zod.check(payload);
+          payload.issues[start2].continue = false;
+          attachSchema(payload.issues, start2, inst);
+          return payload;
+        }
+      }
+    }
+    return parse5(payload, ctx);
+  };
+}
+var arraySize = (input2) => Array.isArray(input2) ? input2.length : -1;
+var mapSize = (input2) => input2 instanceof Map ? input2.size : -1;
+var setSize = (input2) => input2 instanceof Set ? input2.size : -1;
 function handleArrayResult(result, final, index) {
   if (result.issues.length) {
     final.issues.push(...prefixIssues(index, result.issues));
@@ -76598,6 +76763,7 @@ var $ZodArray = /* @__PURE__ */ $constructor("$ZodArray", (inst, def) => {
     }
     return payload;
   };
+  capSize(inst, arraySize);
 });
 function handlePropertyResult(result, final, key, input2, optin, optout) {
   const isPresent = key in input2;
@@ -76623,7 +76789,7 @@ function handlePropertyResult(result, final, key, input2, optin, optout) {
     return;
   }
   if (result.value === void 0) {
-    if (isPresent) {
+    if (isPresent || optin === "defaulted" && !isOptionalOut) {
       final.value[key] = void 0;
     }
   } else {
@@ -76859,16 +77025,16 @@ var $ZodObjectJIT = /* @__PURE__ */ $constructor("$ZodObjectJIT", (inst, def) =>
         doc.write(`
         if (${id2}.issues.length) {${prefixStr(id2, k)}
         }
-        
-        if (${id2}.value === undefined) {
-          if (${isPresent}) {
-            newResult[${k}] = undefined;
-          }
+      `);
+        if (optin === "defaulted") {
+          doc.write(`newResult[${k}] = ${id2}.value;`);
         } else {
+          doc.write(`
+        if (${id2}.value !== undefined || ${isPresent}) {
           newResult[${k}] = ${id2}.value;
         }
-
       `);
+        }
       }
     }
     doc.write(`payload.value = newResult;`);
@@ -77554,6 +77720,7 @@ var $ZodMap = /* @__PURE__ */ $constructor("$ZodMap", (inst, def) => {
       return Promise.all(proms).then(() => payload);
     return payload;
   };
+  capSize(inst, mapSize);
 });
 function handleMapResult(keyResult, valueResult, final, key, input2, inst, ctx) {
   if (keyResult.issues.length) {
@@ -77620,6 +77787,7 @@ var $ZodSet = /* @__PURE__ */ $constructor("$ZodSet", (inst, def) => {
       return Promise.all(proms).then(() => payload);
     return payload;
   };
+  capSize(inst, setSize);
 });
 function handleSetResult(result, final) {
   if (result.issues.length) {
@@ -78215,59 +78383,6 @@ function handleRefineResult(result, payload, input2, inst) {
     payload.issues.push(issue(_iss));
   }
 }
-function handlePropertiesResult(result, payload, key) {
-  if (result.issues.length) {
-    payload.issues.push(...prefixIssues(key, result.issues));
-  }
-}
-var $ZodProperties = /* @__PURE__ */ $constructor("$ZodProperties", (inst, def) => {
-  $ZodType.init(inst, def);
-  $ZodCheck.init(inst, def);
-  const memo2 = globalConfig.memoizer;
-  memo2?.attach(inst);
-  let entries;
-  const runShape = (payload, ctx) => {
-    entries ?? (entries = Reflect.ownKeys(def.shape).map((key) => [key, def.shape[key]]));
-    const input2 = payload.value;
-    let proms;
-    for (const [key, schema] of entries) {
-      const result = schema._zod.run({ value: input2[key], issues: [] }, ctx);
-      if (result instanceof Promise) {
-        proms ?? (proms = []);
-        proms.push(result.then((result2) => handlePropertiesResult(result2, payload, key)));
-      } else {
-        handlePropertiesResult(result, payload, key);
-      }
-    }
-    if (proms)
-      return Promise.all(proms).then(() => void 0);
-    return void 0;
-  };
-  inst._zod.parse = (payload, ctx) => {
-    const input2 = payload.value;
-    if (input2 === null || typeof input2 !== "object" && typeof input2 !== "function") {
-      payload.issues.push({ expected: "object", code: "invalid_type", input: input2, inst });
-      return payload;
-    }
-    if (ctx.direction === "backward")
-      ctx = { ...ctx, direction: "forward" };
-    if (memo2)
-      memo2.alloc(inst, payload, input2, ctx);
-    const result = runShape(payload, ctx);
-    return result instanceof Promise ? result.then(() => payload) : payload;
-  };
-  inst._zod.check = (payload) => {
-    if (payload.value == null) {
-      payload.issues.push({ expected: "object", code: "invalid_type", input: payload.value, inst });
-      return void 0;
-    }
-    return runShape(payload, {});
-  };
-}, {
-  *[Symbol.iterator]() {
-    yield this;
-  }
-});
 
 // node_modules/zod/v4/core/memoizer.js
 var $ZodCyclicError = class extends Error {
@@ -78279,7 +78394,7 @@ var $ZodCyclicError = class extends Error {
 var STATE = "~memo";
 var NO_ISSUES = [];
 function isRef(value) {
-  return value !== null && (typeof value === "object" || typeof value === "function");
+  return value !== null && typeof value === "object";
 }
 function cloneIssues(issues) {
   return issues.map((iss) => iss.path ? { ...iss, path: iss.path.slice() } : { ...iss });
@@ -78328,9 +78443,6 @@ function isRecursive(inst, stack, resolve) {
       check2(def.catchall);
       break;
     }
-    case "properties":
-      merge4(shape(def.shape, false));
-      break;
     case "array":
       check2(def.element);
       break;
@@ -78658,6 +78770,7 @@ var error = () => {
     json_string: "\u0646\u064E\u0635 \u0639\u0644\u0649 \u0647\u064A\u0626\u0629 JSON",
     e164: "\u0631\u0642\u0645 \u0647\u0627\u062A\u0641 \u0628\u0645\u0639\u064A\u0627\u0631 E.164",
     credit_card: "\u0631\u0642\u0645 \u0628\u0637\u0627\u0642\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646",
+    currency_code: "\u0631\u0645\u0632 \u0627\u0644\u0639\u0645\u0644\u0629",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0645\u062F\u062E\u0644"
@@ -78769,6 +78882,7 @@ var error2 = () => {
     json_string: "JSON string",
     e164: "E.164 number",
     credit_card: "kredit kart\u0131 n\xF6mr\u0259si",
+    currency_code: "valyuta kodu",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -78929,6 +79043,7 @@ var error3 = () => {
     json_string: "JSON \u0440\u0430\u0434\u043E\u043A",
     e164: "\u043D\u0443\u043C\u0430\u0440 E.164",
     credit_card: "\u043D\u0443\u043C\u0430\u0440 \u043A\u0440\u044D\u0434\u044B\u0442\u043D\u0430\u0439 \u043A\u0430\u0440\u0442\u044B",
+    currency_code: "\u043A\u043E\u0434 \u0432\u0430\u043B\u044E\u0442\u044B",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0443\u0432\u043E\u0434"
@@ -79047,6 +79162,7 @@ var error4 = () => {
     json_string: "JSON \u043D\u0438\u0437",
     e164: "E.164 \u043D\u043E\u043C\u0435\u0440",
     credit_card: "\u043D\u043E\u043C\u0435\u0440 \u043D\u0430 \u043A\u0440\u0435\u0434\u0438\u0442\u043D\u0430 \u043A\u0430\u0440\u0442\u0430",
+    currency_code: "\u043A\u043E\u0434 \u043D\u0430 \u0432\u0430\u043B\u0443\u0442\u0430",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0432\u0445\u043E\u0434"
@@ -79172,6 +79288,7 @@ var error5 = () => {
     json_string: "JSON \u09B8\u09CD\u099F\u09CD\u09B0\u09BF\u0982",
     e164: "E.164 \u09A8\u09AE\u09CD\u09AC\u09B0",
     credit_card: "\u0995\u09CD\u09B0\u09C7\u09A1\u09BF\u099F \u0995\u09BE\u09B0\u09CD\u09A1 \u09A8\u09AE\u09CD\u09AC\u09B0",
+    currency_code: "\u09AE\u09C1\u09A6\u09CD\u09B0\u09BE \u0995\u09CB\u09A1",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0987\u09A8\u09AA\u09C1\u099F"
@@ -79285,6 +79402,7 @@ var error6 = () => {
     json_string: "cadena JSON",
     e164: "n\xFAmero E.164",
     credit_card: "n\xFAmero de targeta de cr\xE8dit",
+    currency_code: "codi de moneda",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "entrada"
@@ -79398,6 +79516,7 @@ var error7 = () => {
     json_string: "\u062F\u06D5\u0642\u06CC JSON",
     e164: "\u0698\u0645\u0627\u0631\u06D5\u06CC E.164",
     credit_card: "\u0698\u0645\u0627\u0631\u06D5\u06CC \u06A9\u0627\u0631\u062A\u06CC \u06A9\u0631\u06CE\u062F\u06CC\u062A",
+    currency_code: "\u06A9\u06C6\u062F\u06CC \u062F\u0631\u0627\u0648",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u062A\u06CE\u06A9\u0631\u062F\u06D5"
@@ -79530,6 +79649,7 @@ var error8 = () => {
     json_string: "\u0159et\u011Bzec ve form\xE1tu JSON",
     e164: "\u010D\xEDslo E.164",
     credit_card: "\u010D\xEDslo kreditn\xED karty",
+    currency_code: "k\xF3d m\u011Bny",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "vstup"
@@ -79646,6 +79766,7 @@ var error9 = () => {
     json_string: "JSON-streng",
     e164: "E.164-nummer",
     credit_card: "kreditkortnummer",
+    currency_code: "valutakode",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -79766,6 +79887,7 @@ var error10 = () => {
     json_string: "JSON-String",
     e164: "E.164-Nummer",
     credit_card: "Kreditkartennummer",
+    currency_code: "W\xE4hrungscode",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "Eingabe"
@@ -79879,6 +80001,7 @@ var error11 = () => {
     json_string: "\u03C3\u03C5\u03BC\u03B2\u03BF\u03BB\u03BF\u03C3\u03B5\u03B9\u03C1\u03AC JSON",
     e164: "\u03B1\u03C1\u03B9\u03B8\u03BC\u03CC\u03C2 E.164",
     credit_card: "\u03B1\u03C1\u03B9\u03B8\u03BC\u03CC\u03C2 \u03C0\u03B9\u03C3\u03C4\u03C9\u03C4\u03B9\u03BA\u03AE\u03C2 \u03BA\u03AC\u03C1\u03C4\u03B1\u03C2",
+    currency_code: "\u03BA\u03C9\u03B4\u03B9\u03BA\u03CC\u03C2 \u03BD\u03BF\u03BC\u03AF\u03C3\u03BC\u03B1\u03C4\u03BF\u03C2",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u03B5\u03AF\u03C3\u03BF\u03B4\u03BF\u03C2"
@@ -79990,6 +80113,7 @@ var error12 = () => {
     base64url: "base64url-encoded string",
     json_string: "JSON string",
     e164: "E.164 number",
+    currency_code: "currency code",
     credit_card: "credit card number",
     iban: "IBAN",
     jwt: "JWT",
@@ -80115,6 +80239,7 @@ var error13 = () => {
     json_string: "JSON-karaktraro",
     e164: "E.164-nombro",
     credit_card: "kreditkarta numero",
+    currency_code: "valuta kodo",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "enigo"
@@ -80228,6 +80353,7 @@ var error14 = () => {
     json_string: "cadena JSON",
     e164: "n\xFAmero E.164",
     credit_card: "n\xFAmero de tarjeta de cr\xE9dito",
+    currency_code: "c\xF3digo de moneda",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "entrada"
@@ -80365,6 +80491,7 @@ var error15 = () => {
     json_string: "JSON \u0631\u0634\u062A\u0647",
     e164: "E.164 \u0639\u062F\u062F",
     credit_card: "\u0634\u0645\u0627\u0631\u0647 \u06A9\u0627\u0631\u062A \u0627\u0639\u062A\u0628\u0627\u0631\u06CC",
+    currency_code: "\u06A9\u062F \u0627\u0631\u0632",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0648\u0631\u0648\u062F\u06CC"
@@ -80488,6 +80615,7 @@ var error16 = () => {
     json_string: "JSON-merkkijono",
     e164: "E.164-luku",
     credit_card: "luottokortin numero",
+    currency_code: "valuuttakoodi",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "templaattimerkkijono"
@@ -80600,6 +80728,7 @@ var error17 = () => {
     json_string: "cha\xEEne de caract\xE8res JSON",
     e164: "num\xE9ro au format E.164",
     credit_card: "num\xE9ro de carte de cr\xE9dit",
+    currency_code: "code de devise",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "entr\xE9e"
@@ -80730,6 +80859,7 @@ var error18 = () => {
     json_string: "cha\xEEne JSON",
     e164: "num\xE9ro E.164",
     credit_card: "num\xE9ro de carte de cr\xE9dit",
+    currency_code: "code de devise",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "entr\xE9e"
@@ -80842,6 +80972,7 @@ var error19 = () => {
     json_string: "JSON \u0AB8\u0ACD\u0A9F\u0ACD\u0AB0\u0ABF\u0A82\u0A97",
     e164: "E.164 \u0AA8\u0A82\u0AAC\u0AB0",
     credit_card: "\u0A95\u0ACD\u0AB0\u0AC7\u0AA1\u0ABF\u0A9F \u0A95\u0ABE\u0AB0\u0ACD\u0AA1 \u0AA8\u0A82\u0AAC\u0AB0",
+    currency_code: "\u0A9A\u0AB2\u0AA3 \u0A95\u0ACB\u0AA1",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0A87\u0AA8\u0AAA\u0AC1\u0A9F"
@@ -80991,6 +81122,7 @@ var error20 = () => {
     json_string: { label: "\u05DE\u05D7\u05E8\u05D5\u05D6\u05EA JSON", gender: "f" },
     e164: { label: "\u05DE\u05E1\u05E4\u05E8 E.164", gender: "m" },
     credit_card: { label: "\u05DE\u05E1\u05E4\u05E8 \u05DB\u05E8\u05D8\u05D9\u05E1 \u05D0\u05E9\u05E8\u05D0\u05D9", gender: "m" },
+    currency_code: { label: "\u05E7\u05D5\u05D3 \u05DE\u05D8\u05D1\u05E2", gender: "m" },
     iban: { label: "IBAN", gender: "m" },
     jwt: { label: "JWT", gender: "m" },
     template_literal: { label: "\u05E7\u05DC\u05D8", gender: "m" },
@@ -81156,6 +81288,7 @@ var error21 = () => {
     json_string: "JSON \u0938\u094D\u091F\u094D\u0930\u093F\u0902\u0917",
     e164: "E.164 \u0938\u0902\u0916\u094D\u092F\u093E",
     credit_card: "\u0915\u094D\u0930\u0947\u0921\u093F\u091F \u0915\u093E\u0930\u094D\u0921 \u0938\u0902\u0916\u094D\u092F\u093E",
+    currency_code: "\u092E\u0941\u0926\u094D\u0930\u093E \u0915\u094B\u0921",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0907\u0928\u092A\u0941\u091F"
@@ -81266,6 +81399,7 @@ var error22 = () => {
     json_string: "JSON tekst",
     e164: "E.164 broj",
     credit_card: "broj kreditne kartice",
+    currency_code: "kod valute",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "unos"
@@ -81393,6 +81527,7 @@ var error23 = () => {
     json_string: "JSON string",
     e164: "E.164 sz\xE1m",
     credit_card: "hitelk\xE1rtyasz\xE1m",
+    currency_code: "p\xE9nznemk\xF3d",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "bemenet"
@@ -81546,6 +81681,7 @@ var error24 = () => {
     json_string: "JSON \u057F\u0578\u0572",
     e164: "E.164 \u0570\u0561\u0574\u0561\u0580",
     credit_card: "\u056F\u0580\u0565\u0564\u056B\u057F \u0584\u0561\u0580\u057F\u056B \u0570\u0561\u0574\u0561\u0580",
+    currency_code: "\u0561\u0580\u056A\u0578\u0582\u0575\u0569\u056B \u056F\u0578\u0564",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0574\u0578\u0582\u057F\u0584"
@@ -81664,6 +81800,7 @@ var error25 = () => {
     json_string: "string JSON",
     e164: "angka E.164",
     credit_card: "nomor kartu kredit",
+    currency_code: "kode mata uang",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -81775,6 +81912,7 @@ var error26 = () => {
     json_string: "JSON strengur",
     e164: "E.164 t\xF6lugildi",
     credit_card: "kreditkortan\xFAmer",
+    currency_code: "gjaldmi\xF0ilsk\xF3\xF0i",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "gildi"
@@ -81889,6 +82027,7 @@ var error27 = () => {
     json_string: "stringa JSON",
     e164: "numero E.164",
     credit_card: "numero di carta di credito",
+    currency_code: "codice valuta",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -82002,6 +82141,7 @@ var error28 = () => {
     json_string: "JSON\u6587\u5B57\u5217",
     e164: "E.164\u756A\u53F7",
     credit_card: "\u30AF\u30EC\u30B8\u30C3\u30C8\u30AB\u30FC\u30C9\u756A\u53F7",
+    currency_code: "\u901A\u8CA8\u30B3\u30FC\u30C9",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u5165\u529B\u5024"
@@ -82114,6 +82254,7 @@ var error29 = () => {
     json_string: "JSON \u10D5\u10D4\u10DA\u10D8",
     e164: "E.164 \u10DC\u10DD\u10DB\u10D4\u10E0\u10D8",
     credit_card: "\u10E1\u10D0\u10D9\u10E0\u10D4\u10D3\u10D8\u10E2\u10DD \u10D1\u10D0\u10E0\u10D0\u10D7\u10D8\u10E1 \u10DC\u10DD\u10DB\u10D4\u10E0\u10D8",
+    currency_code: "\u10D5\u10D0\u10DA\u10E3\u10E2\u10D8\u10E1 \u10D9\u10DD\u10D3\u10D8",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u10E8\u10D4\u10E7\u10D5\u10D0\u10DC\u10D0"
@@ -82231,6 +82372,7 @@ var error30 = () => {
     json_string: "\u1781\u17D2\u179F\u17C2\u17A2\u1780\u17D2\u179F\u179A JSON",
     e164: "\u179B\u17C1\u1781 E.164",
     credit_card: "\u179B\u17C1\u1781\u1794\u17D0\u178E\u17D2\u178E\u17A5\u178E\u1791\u17B6\u1793",
+    currency_code: "\u1780\u17BC\u178A\u179A\u17BC\u1794\u17B7\u1799\u1794\u17D0\u178E\u17D2\u178E",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u1791\u17B7\u1793\u17D2\u1793\u1793\u17D0\u1799\u1794\u1789\u17D2\u1785\u17BC\u179B"
@@ -82351,6 +82493,7 @@ var error31 = () => {
     json_string: "JSON\u0CB8\u0CCD\u0C9F\u0CCD\u0CB0\u0CBF\u0C82\u0C97\u0CCD",
     e164: "E.164 \u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6",
     credit_card: "\u0C95\u0CCD\u0CB0\u0CC6\u0CA1\u0CBF\u0C9F\u0CCD \u0C95\u0CBE\u0CB0\u0CCD\u0CA1\u0CCD \u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6",
+    currency_code: "\u0C95\u0CB0\u0CC6\u0CA8\u0CCD\u0CB8\u0CBF \u0C95\u0CCB\u0CA1\u0CCD",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0C87\u0CA8\u0CCD\u0CAA\u0CC1\u0C9F\u0CCD"
@@ -82466,6 +82609,7 @@ var error32 = () => {
     json_string: "JSON \uBB38\uC790\uC5F4",
     e164: "E.164 \uBC88\uD638",
     credit_card: "\uC2E0\uC6A9\uCE74\uB4DC \uBC88\uD638",
+    currency_code: "\uD1B5\uD654 \uCF54\uB4DC",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\uC785\uB825"
@@ -82664,6 +82808,7 @@ var error33 = () => {
     json_string: "JSON eilut\u0117",
     e164: "E.164 numeris",
     credit_card: "kredito kortel\u0117s numeris",
+    currency_code: "valiutos kodas",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u012Fvestis"
@@ -82789,6 +82934,7 @@ var error34 = () => {
     json_string: "JSON \u043D\u0438\u0437\u0430",
     e164: "E.164 \u0431\u0440\u043E\u0458",
     credit_card: "\u0431\u0440\u043E\u0458 \u043D\u0430 \u043A\u0440\u0435\u0434\u0438\u0442\u043D\u0430 \u043A\u0430\u0440\u0442\u0438\u0447\u043A\u0430",
+    currency_code: "\u043A\u043E\u0434 \u043D\u0430 \u0432\u0430\u043B\u0443\u0442\u0430",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0432\u043D\u0435\u0441"
@@ -82903,6 +83049,7 @@ var error35 = () => {
     json_string: "string JSON",
     e164: "nombor E.164",
     credit_card: "nombor kad kredit",
+    currency_code: "kod mata wang",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -83015,6 +83162,7 @@ var error36 = () => {
     json_string: "JSON \u0938\u094D\u091F\u094D\u0930\u093F\u0919",
     e164: "E.164 \u0928\u092E\u094D\u092C\u0930",
     credit_card: "\u0915\u094D\u0930\u0947\u0921\u093F\u091F \u0915\u093E\u0930\u094D\u0921 \u0928\u092E\u094D\u092C\u0930",
+    currency_code: "\u092E\u0941\u0926\u094D\u0930\u093E \u0915\u094B\u0921",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0907\u0928\u092A\u0941\u091F"
@@ -83126,6 +83274,7 @@ var error37 = () => {
     json_string: "JSON string",
     e164: "E.164-nummer",
     credit_card: "creditcardnummer",
+    currency_code: "valutacode",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "invoer"
@@ -83241,6 +83390,7 @@ var error38 = () => {
     json_string: "JSON-streng",
     e164: "E.164-nummer",
     credit_card: "kredittkortnummer",
+    currency_code: "valutakode",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -83354,6 +83504,7 @@ var error39 = () => {
     json_string: "JSON-streng",
     e164: "E.164-nummer",
     credit_card: "kredittkortnummer",
+    currency_code: "valutakode",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -83467,6 +83618,7 @@ var error40 = () => {
     json_string: "JSON metin",
     e164: "E.164 say\u0131s\u0131",
     credit_card: "i'tib\xE2r kart\u0131 numaras\u0131",
+    currency_code: "para birimi kodu",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "giren"
@@ -83581,6 +83733,7 @@ var error41 = () => {
     json_string: "JSON \u0645\u062A\u0646",
     e164: "\u062F E.164 \u0634\u0645\u06D0\u0631\u0647",
     credit_card: "\u062F \u06A9\u0631\u06CC\u0689\u06CC\u067C \u06A9\u0627\u0631\u062A \u0634\u0645\u06CC\u0631\u0647",
+    currency_code: "\u062F \u0627\u0633\u0639\u0627\u0631\u0648 \u06A9\u0648\u0689",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0648\u0631\u0648\u062F\u064A"
@@ -83700,6 +83853,7 @@ var error42 = () => {
     json_string: "ci\u0105g znak\xF3w w formacie JSON",
     e164: "liczba E.164",
     credit_card: "numer karty kredytowej",
+    currency_code: "kod waluty",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "wej\u015Bcie"
@@ -83814,6 +83968,7 @@ var error43 = () => {
     json_string: "o texto JSON",
     e164: "o n\xFAmero E.164",
     credit_card: "o n\xFAmero de cart\xE3o de cr\xE9dito",
+    currency_code: "o c\xF3digo de moeda",
     iban: "o IBAN",
     jwt: "o JWT",
     template_literal: "a entrada"
@@ -83957,6 +84112,7 @@ var error44 = () => {
     json_string: "o texto JSON",
     e164: "o n\xFAmero E.164",
     credit_card: "o n\xFAmero de cart\xE3o de cr\xE9dito",
+    currency_code: "o c\xF3digo de moeda",
     iban: "o IBAN",
     jwt: "o JWT",
     template_literal: "a entrada"
@@ -84101,6 +84257,7 @@ var error45 = () => {
     json_string: "\u0219ir JSON",
     e164: "num\u0103r E.164",
     credit_card: "num\u0103r de card de credit",
+    currency_code: "cod valutar",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "intrare"
@@ -84273,6 +84430,7 @@ var error46 = () => {
     json_string: "JSON \u0441\u0442\u0440\u043E\u043A\u0430",
     e164: "\u043D\u043E\u043C\u0435\u0440 E.164",
     credit_card: "\u043D\u043E\u043C\u0435\u0440 \u043A\u0440\u0435\u0434\u0438\u0442\u043D\u043E\u0439 \u043A\u0430\u0440\u0442\u044B",
+    currency_code: "\u043A\u043E\u0434 \u0432\u0430\u043B\u044E\u0442\u044B",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0432\u0432\u043E\u0434"
@@ -84391,6 +84549,7 @@ var error47 = () => {
     json_string: "re\u0165azec vo form\xE1te JSON",
     e164: "\u010D\xEDslo E.164",
     credit_card: "\u010D\xEDslo kreditnej karty",
+    currency_code: "k\xF3d meny",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "vstup"
@@ -84507,6 +84666,7 @@ var error48 = () => {
     json_string: "JSON niz",
     e164: "E.164 \u0161tevilka",
     credit_card: "\u0161tevilka kreditne kartice",
+    currency_code: "koda valute",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "vnos"
@@ -84621,6 +84781,7 @@ var error49 = () => {
     json_string: "JSON-str\xE4ng",
     e164: "E.164-nummer",
     credit_card: "kreditkortsnummer",
+    currency_code: "valutakod",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "mall-literal"
@@ -84736,6 +84897,7 @@ var error50 = () => {
     json_string: "JSON \u0B9A\u0BB0\u0BAE\u0BCD",
     e164: "E.164 \u0B8E\u0BA3\u0BCD",
     credit_card: "\u0B95\u0B9F\u0BA9\u0BCD \u0B85\u0B9F\u0BCD\u0B9F\u0BC8 \u0B8E\u0BA3\u0BCD",
+    currency_code: "\u0BA8\u0BBE\u0BA3\u0BAF\u0B95\u0BCD \u0B95\u0BC1\u0BB1\u0BBF\u0BAF\u0BC0\u0B9F\u0BC1",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "input"
@@ -84851,6 +85013,7 @@ var error51 = () => {
     json_string: "\u0441\u0430\u0442\u0440\u0438 JSON",
     e164: "\u0440\u0430\u049B\u0430\u043C\u0438 E.164",
     credit_card: "\u0440\u0430\u049B\u0430\u043C\u0438 \u043A\u043E\u0440\u0442\u0438 \u043A\u0440\u0435\u0434\u0438\u0442\u04E3",
+    currency_code: "\u0440\u0430\u043C\u0437\u0438 \u0430\u0441\u044A\u043E\u0440",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0432\u0443\u0440\u0443\u0434"
@@ -84967,6 +85130,7 @@ var error52 = () => {
     json_string: "\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E41\u0E1A\u0E1A JSON",
     e164: "\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E42\u0E17\u0E23\u0E28\u0E31\u0E1E\u0E17\u0E4C\u0E23\u0E30\u0E2B\u0E27\u0E48\u0E32\u0E07\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28 (E.164)",
     credit_card: "\u0E2B\u0E21\u0E32\u0E22\u0E40\u0E25\u0E02\u0E1A\u0E31\u0E15\u0E23\u0E40\u0E04\u0E23\u0E14\u0E34\u0E15",
+    currency_code: "\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E01\u0E38\u0E25\u0E40\u0E07\u0E34\u0E19",
     iban: "IBAN",
     jwt: "\u0E42\u0E17\u0E40\u0E04\u0E19 JWT",
     template_literal: "\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E1B\u0E49\u0E2D\u0E19"
@@ -85082,6 +85246,7 @@ var error53 = () => {
     json_string: "JSON setiri",
     e164: "E.164 nomeri",
     credit_card: "kredit kartyny\u0148 nomeri",
+    currency_code: "wal\xFDuta kody",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u015Fablon"
@@ -85189,6 +85354,7 @@ var error54 = () => {
     json_string: "JSON dizesi",
     e164: "E.164 say\u0131s\u0131",
     credit_card: "kredi kart\u0131 numaras\u0131",
+    currency_code: "para birimi kodu",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u015Eablon dizesi"
@@ -85299,6 +85465,7 @@ var error55 = () => {
     json_string: "\u0440\u044F\u0434\u043E\u043A JSON",
     e164: "\u043D\u043E\u043C\u0435\u0440 E.164",
     credit_card: "\u043D\u043E\u043C\u0435\u0440 \u043A\u0440\u0435\u0434\u0438\u0442\u043D\u043E\u0457 \u043A\u0430\u0440\u0442\u043A\u0438",
+    currency_code: "\u043A\u043E\u0434 \u0432\u0430\u043B\u044E\u0442\u0438",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0432\u0445\u0456\u0434\u043D\u0456 \u0434\u0430\u043D\u0456"
@@ -85417,6 +85584,7 @@ var error56 = () => {
     json_string: "\u062C\u06D2 \u0627\u06CC\u0633 \u0627\u0648 \u0627\u06CC\u0646 \u0633\u0679\u0631\u0646\u06AF",
     e164: "\u0627\u06CC 164 \u0646\u0645\u0628\u0631",
     credit_card: "\u06A9\u0631\u06CC\u0688\u0679 \u06A9\u0627\u0631\u0688 \u0646\u0645\u0628\u0631",
+    currency_code: "\u06A9\u0631\u0646\u0633\u06CC \u06A9\u0648\u0688",
     iban: "IBAN",
     jwt: "\u062C\u06D2 \u0688\u0628\u0644\u06CC\u0648 \u0679\u06CC",
     template_literal: "\u0627\u0646 \u067E\u0679"
@@ -85532,6 +85700,7 @@ var error57 = () => {
     json_string: "JSON satr",
     e164: "E.164 raqam",
     credit_card: "kredit karta raqami",
+    currency_code: "valyuta kodi",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "kirish"
@@ -85645,6 +85814,7 @@ var error58 = () => {
     json_string: "chu\u1ED7i JSON",
     e164: "s\u1ED1 E.164",
     credit_card: "s\u1ED1 th\u1EBB t\xEDn d\u1EE5ng",
+    currency_code: "m\xE3 ti\u1EC1n t\u1EC7",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u0111\u1EA7u v\xE0o"
@@ -85758,6 +85928,7 @@ var error59 = () => {
     json_string: "JSON\u5B57\u7B26\u4E32",
     e164: "E.164\u53F7\u7801",
     credit_card: "\u4FE1\u7528\u5361\u53F7",
+    currency_code: "\u8D27\u5E01\u4EE3\u7801",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u8F93\u5165"
@@ -85872,6 +86043,7 @@ var error60 = () => {
     json_string: "JSON \u5B57\u4E32",
     e164: "E.164 \u6578\u503C",
     credit_card: "\u4FE1\u7528\u5361\u865F",
+    currency_code: "\u8CA8\u5E63\u4EE3\u78BC",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u8F38\u5165"
@@ -85984,6 +86156,7 @@ var error61 = () => {
     json_string: "\u1ECD\u0300r\u1ECD\u0300 JSON",
     e164: "n\u1ECD\u0301mb\xE0 E.164",
     credit_card: "n\u1ECDmba kaadi gbese",
+    currency_code: "koodu ow\xF3",
     iban: "IBAN",
     jwt: "JWT",
     template_literal: "\u1EB9\u0300r\u1ECD \xECb\xE1w\u1ECDl\xE9"
@@ -86362,7 +86535,7 @@ function generateChecks(doc, ctx, schema, accessor) {
         generatePropertyCheck(doc, ctx, def, currentAccessor);
         break;
       case "properties":
-        generatePropertiesChecks(doc, ctx, def, currentAccessor, false);
+        generatePropertiesChecks(doc, ctx, def, currentAccessor);
         break;
       case "overwrite": {
         const newAccessor = newVar(ctx);
@@ -86472,11 +86645,11 @@ function generateMimeTypeCheck(doc, ctx, def, accessor) {
     doc.write(`if (!${mimeSet}.has(${accessor}.type)) return INVALID;`);
   }
 }
-function generatePropertiesChecks(doc, ctx, def, accessor, schemaRole) {
+function generatePropertiesChecks(doc, ctx, def, accessor) {
   if (def.when) {
     throw new ZodCompileUnsupportedError(`check with a custom "when" condition`);
   }
-  doc.write(schemaRole ? `if (${accessor} === null || (typeof ${accessor} !== "object" && typeof ${accessor} !== "function")) return INVALID;` : `if (${accessor} == null) return INVALID;`);
+  doc.write(`if (${accessor} == null) return INVALID;`);
   const shape = def.shape;
   for (const key of Reflect.ownKeys(shape)) {
     const keyExpr = typeof key === "symbol" ? addConstant(ctx, key) : esc(key);
@@ -86566,7 +86739,7 @@ var PATTERN_IS_COMPLETE = /* @__PURE__ */ new Set([
   "uuid",
   "xid"
 ]);
-function generateStringFormatCheck(doc, ctx, def, accessor) {
+function generateStringFormatCheck(doc, ctx, def, accessor, needsValue = true) {
   const fmt = def.format;
   if (fmt === "base64") {
     const validator = addConstant(ctx, isValidBase64);
@@ -86606,7 +86779,7 @@ function generateStringFormatCheck(doc, ctx, def, accessor) {
   }
   const formatDef = def;
   if (fmt === "url" || fmt === "httpurl" || formatDef.normalize || formatDef.hostname !== void 0 || formatDef.protocol !== void 0) {
-    const parseConst = addConstant(ctx, parseURLObject);
+    const parseConst = addConstant(ctx, validateURL);
     const defConst = addConstant(ctx, def);
     const trimVar = newVar(ctx);
     const urlVar = newVar(ctx);
@@ -86621,6 +86794,8 @@ function generateStringFormatCheck(doc, ctx, def, accessor) {
       const protocolConst = addConstant(ctx, urlProtocolOk);
       doc.write(`if (!${protocolConst}(${urlVar}, ${defConst}.protocol)) return INVALID;`);
     }
+    if (!needsValue)
+      return null;
     const outputVar = newVar(ctx);
     const outputExpr = formatDef.normalize ? `${urlVar}.href` : `${addConstant(ctx, stripTabAndNewline)}(${trimVar})`;
     doc.write(`const ${outputVar} = ${outputExpr};`);
@@ -86680,7 +86855,7 @@ function generateCheck(doc, ctx, schema, accessor, needsValue = true) {
   let typeAccessor;
   switch (type) {
     case "string":
-      typeAccessor = generateStringCheck(doc, ctx, schema, accessor);
+      typeAccessor = generateStringCheck(doc, ctx, schema, accessor, buildsValue);
       break;
     case "number":
       typeAccessor = generateNumberCheck(doc, schema, accessor);
@@ -86786,10 +86961,6 @@ function generateCheck(doc, ctx, schema, accessor, needsValue = true) {
     case "custom":
       typeAccessor = generateCustomCheck(doc, ctx, schema, accessor);
       break;
-    case "properties":
-      generatePropertiesChecks(doc, ctx, schema._zod.def, accessor, true);
-      typeAccessor = accessor;
-      break;
     case "transform":
       typeAccessor = generateTransformCheck(doc, ctx, schema, accessor);
       break;
@@ -86805,12 +86976,12 @@ function generateCheck(doc, ctx, schema, accessor, needsValue = true) {
     return null;
   return generateChecks(doc, ctx, schema, typeAccessor);
 }
-function generateStringCheck(doc, ctx, schema, accessor) {
+function generateStringCheck(doc, ctx, schema, accessor, needsValue = true) {
   doc.write(`if (typeof ${accessor} !== "string") return INVALID;`);
   const def = schema._zod.def;
   if (def.format === void 0)
     return accessor;
-  return generateStringFormatCheck(doc, ctx, def, accessor);
+  return generateStringFormatCheck(doc, ctx, def, accessor, needsValue);
 }
 function generateNumberCheck(doc, schema, accessor) {
   doc.write(`if (typeof ${accessor} !== "number" || !Number.isFinite(${accessor})) return INVALID;`);
@@ -86928,7 +87099,7 @@ function generateObjectCheck(doc, ctx, schema, accessor, buildsValue = true) {
     }
   }
   const outputVar = newVar(ctx);
-  const hasConditionalKeys = allKeys.some((k) => mayOutputUndefined(propShape[k]) || dropsWhenAbsent(propShape[k]));
+  const hasConditionalKeys = allKeys.some((k) => mayOmitUndefined(propShape[k]) || dropsWhenAbsent(propShape[k]));
   if (!buildsValue) {
     if (unknownKeysMode === "schema") {
       const knownSet = keys.length > 0 ? addConstant(ctx, new Set(keys)) : null;
@@ -86955,7 +87126,7 @@ function generateObjectCheck(doc, ctx, schema, accessor, buildsValue = true) {
       const out = propOutputs.get(k);
       if (dropsWhenAbsent(propShape[k])) {
         doc.write(`if (${kx} in ${accessor}) ${outputVar}[${kx}] = ${out};`);
-      } else if (mayOutputUndefined(propShape[k])) {
+      } else if (mayOmitUndefined(propShape[k])) {
         doc.write(`if (${out} !== undefined || ${kx} in ${accessor}) ${outputVar}[${kx}] = ${out};`);
       } else {
         doc.write(`${outputVar}[${kx}] = ${out};`);
@@ -87088,6 +87259,9 @@ function fastPathAcceptsAbsence(schema) {
 function dropsWhenAbsent(schema) {
   return schema._zod.optin === "optional" && schema._zod.optout === "optional";
 }
+function mayOmitUndefined(schema) {
+  return (schema._zod.optin !== "defaulted" || schema._zod.optout === "optional") && mayOutputUndefined(schema);
+}
 function mayOutputUndefined(schema) {
   const def = schema._zod.def;
   switch (def.type) {
@@ -87144,9 +87318,15 @@ function generateNullableCheck(doc, ctx, schema, accessor, buildsValue = true) {
   doc.write(`}`);
   return outputVar;
 }
+function generateSizeGate(doc, schema, size) {
+  for (const [max, check2] of sizeCaps(schema._zod.def.checks)) {
+    doc.write(`if (${size} > ${numericOperand(max, check2._zod.def.check)}) return INVALID;`);
+  }
+}
 function generateArrayCheck(doc, ctx, schema, accessor, buildsValue = true) {
   const def = schema._zod.def;
   doc.write(`if (!Array.isArray(${accessor})) return INVALID;`);
+  generateSizeGate(doc, schema, `${accessor}.length`);
   const outputVar = buildsValue ? newVar(ctx) : null;
   const iVar = newVar(ctx);
   const elemVar = newVar(ctx);
@@ -87546,6 +87726,7 @@ function literalPropertyKey(ctx, key) {
 function generateMapCheck(doc, ctx, schema, accessor) {
   const def = schema._zod.def;
   doc.write(`if (!(${accessor} instanceof Map)) return INVALID;`);
+  generateSizeGate(doc, schema, `${accessor}.size`);
   const outputVar = newVar(ctx);
   const kVar = newVar(ctx);
   const valVar = newVar(ctx);
@@ -87562,6 +87743,7 @@ function generateMapCheck(doc, ctx, schema, accessor) {
 function generateSetCheck(doc, ctx, schema, accessor) {
   const def = schema._zod.def;
   doc.write(`if (!(${accessor} instanceof Set)) return INVALID;`);
+  generateSizeGate(doc, schema, `${accessor}.size`);
   const outputVar = newVar(ctx);
   const valVar = newVar(ctx);
   doc.write(`const ${outputVar} = new Set();`);
@@ -87707,20 +87889,18 @@ function generateTransformCheck(doc, ctx, schema, accessor) {
 }
 
 // node_modules/zod/v4/core/api.js
+function snapshotChecks(def) {
+  if (def.checks)
+    def.checks = [...def.checks];
+  return def;
+}
 // @__NO_SIDE_EFFECTS__
 function _string(Class2, params) {
-  return new Class2({
-    type: "string",
-    ...normalizeParams(params)
-  });
+  return new Class2(snapshotChecks({ type: "string", ...normalizeParams(params) }));
 }
 // @__NO_SIDE_EFFECTS__
 function _coercedString(Class2, params) {
-  return new Class2({
-    type: "string",
-    coerce: true,
-    ...normalizeParams(params)
-  });
+  return new Class2(snapshotChecks({ type: "string", coerce: true, ...normalizeParams(params) }));
 }
 // @__NO_SIDE_EFFECTS__
 function _email(Class2, params) {
@@ -88024,20 +88204,11 @@ function _isoDuration(Class2, params) {
 }
 // @__NO_SIDE_EFFECTS__
 function _number(Class2, params) {
-  return new Class2({
-    type: "number",
-    checks: [],
-    ...normalizeParams(params)
-  });
+  return new Class2(snapshotChecks({ type: "number", checks: [], ...normalizeParams(params) }));
 }
 // @__NO_SIDE_EFFECTS__
 function _coercedNumber(Class2, params) {
-  return new Class2({
-    type: "number",
-    coerce: true,
-    checks: [],
-    ...normalizeParams(params)
-  });
+  return new Class2(snapshotChecks({ type: "number", coerce: true, checks: [], ...normalizeParams(params) }));
 }
 // @__NO_SIDE_EFFECTS__
 function _int(Class2, params) {
@@ -88379,9 +88550,8 @@ function _property(property, schema, params) {
   });
 }
 // @__NO_SIDE_EFFECTS__
-function _properties(Class2, shape, params) {
-  return new Class2({
-    type: "properties",
+function _properties(shape, params) {
+  return new $ZodCheckProperties({
     check: "properties",
     shape,
     ...normalizeParams(params)
@@ -89016,11 +89186,11 @@ function foldObjects(members2) {
     }
     objects.push(member);
   }
-  const properties2 = {};
+  const properties = {};
   const required2 = /* @__PURE__ */ new Set();
   for (const object2 of objects) {
     for (const key in object2.properties) {
-      if (Object.prototype.hasOwnProperty.call(properties2, key))
+      if (Object.prototype.hasOwnProperty.call(properties, key))
         continue;
       const parts = [];
       for (const other of objects) {
@@ -89031,12 +89201,12 @@ function foldObjects(members2) {
           parts.push(part);
       }
       const merged = parts.length === 1 ? parts[0] : foldObjects(parts) ?? { allOf: parts };
-      assignProp(properties2, key, merged);
+      assignProp(properties, key, merged);
     }
     for (const key of object2.required ?? [])
       required2.add(key);
   }
-  const folded = { type: "object", properties: properties2 };
+  const folded = { type: "object", properties };
   if (required2.size)
     folded.required = [...required2];
   if (objects.every((object2) => object2.additionalProperties === false)) {
@@ -89658,17 +89828,15 @@ var objectProcessor = (schema, ctx, _json, params) => {
       path: [...params.path, "properties", key]
     }));
   }
-  const allKeys = new Set(Object.keys(shape));
-  const requiredKeys = new Set([...allKeys].filter((key) => {
+  const requiredKeys = [];
+  for (const key of Object.keys(shape)) {
     const field = def.shape[key];
-    if (ctx.io === "input") {
-      return inputOptin(field) === void 0;
-    } else {
-      return field._zod.optout === void 0;
+    if (ctx.io === "input" ? inputOptin(field) === void 0 : field._zod.optout === void 0) {
+      requiredKeys.push(key);
     }
-  }));
-  if (requiredKeys.size > 0) {
-    json2.required = Array.from(requiredKeys);
+  }
+  if (requiredKeys.length > 0) {
+    json2.required = requiredKeys;
   }
   if (def.catchall?._zod.def.type === "never") {
     json2.additionalProperties = false;
@@ -89681,31 +89849,6 @@ var objectProcessor = (schema, ctx, _json, params) => {
       path: [...params.path, "additionalProperties"]
     });
   }
-};
-var propertiesProcessor = (schema, ctx, _json, params) => {
-  const json2 = _json;
-  const def = schema._zod.def;
-  if (Object.getOwnPropertySymbols(def.shape).length && handleUnrepresentable(schema, ctx, json2, params, "Symbol keys cannot be represented in JSON Schema")) {
-    return;
-  }
-  if (ctx.io === "output") {
-    for (const key in def.shape) {
-      if (isTransforming(def.shape[key]) && handleUnrepresentable(schema, ctx, json2, params, `z.properties() returns its input, so the output of a transforming schema at key "${key}" cannot be represented in JSON Schema`)) {
-        return;
-      }
-    }
-  }
-  json2.type = "object";
-  json2.properties = {};
-  for (const key in def.shape) {
-    assignProp(json2.properties, key, processSchema(def.shape[key], ctx, {
-      ...params,
-      path: [...params.path, "properties", key]
-    }));
-  }
-  const required2 = Object.keys(def.shape).filter((key) => inputOptin(def.shape[key]) === void 0);
-  if (required2.length > 0)
-    json2.required = required2;
 };
 var unionProcessor = (schema, ctx, json2, params) => {
   const def = schema._zod.def;
@@ -90026,7 +90169,6 @@ var allProcessors = {
   file: fileProcessor,
   success: successProcessor,
   custom: customProcessor,
-  properties: propertiesProcessor,
   function: functionProcessor,
   transform: transformProcessor,
   map: mapProcessor,
@@ -90223,7 +90365,6 @@ __export(schemas_exports2, {
   ZodPrefault: () => ZodPrefault,
   ZodPreprocess: () => ZodPreprocess,
   ZodPromise: () => ZodPromise,
-  ZodProperties: () => ZodProperties,
   ZodReadonly: () => ZodReadonly,
   ZodRecord: () => ZodRecord,
   ZodSet: () => ZodSet,
@@ -90261,6 +90402,7 @@ __export(schemas_exports2, {
   creditCard: () => creditCard2,
   cuid: () => cuid3,
   cuid2: () => cuid22,
+  currencyCode: () => currencyCode2,
   custom: () => custom,
   date: () => date3,
   describe: () => describe2,
@@ -90315,7 +90457,6 @@ __export(schemas_exports2, {
   prefault: () => prefault,
   preprocess: () => preprocess,
   promise: () => promise,
-  properties: () => properties,
   readonly: () => readonly,
   record: () => record,
   refine: () => refine,
@@ -90369,6 +90510,7 @@ __export(checks_exports2, {
   normalize: () => _normalize,
   overwrite: () => _overwrite,
   positive: () => _positive,
+  properties: () => _properties,
   property: () => _property,
   regex: () => _regex,
   size: () => _size,
@@ -90828,8 +90970,8 @@ function url(params) {
 }
 function httpUrl(params) {
   return _url(ZodURL, {
-    protocol: regexes_exports.httpProtocol,
-    hostname: regexes_exports.domain,
+    protocol: httpProtocol,
+    hostname: domain,
     ...util_exports2.normalizeParams(params)
   });
 }
@@ -90967,10 +91109,13 @@ function stringFormat(format2, fnOrRegex, _params = {}) {
   return _stringFormat(ZodCustomStringFormat, format2, fnOrRegex, _params);
 }
 function hostname2(_params) {
-  return _stringFormat(ZodCustomStringFormat, "hostname", regexes_exports.hostname, _params);
+  return _stringFormat(ZodCustomStringFormat, "hostname", hostname, _params);
 }
 function hex3(_params) {
-  return _stringFormat(ZodCustomStringFormat, "hex", regexes_exports.hex, _params);
+  return _stringFormat(ZodCustomStringFormat, "hex", hex2, _params);
+}
+function currencyCode2(_params) {
+  return _stringFormat(ZodCustomStringFormat, "currency_code", currencyCode, _params);
 }
 function hash(alg, params) {
   const enc = params?.enc ?? "hex";
@@ -91835,14 +91980,6 @@ var ZodCustom = /* @__PURE__ */ $constructor("ZodCustom", (inst, def) => {
   ZodType.init(inst, def);
   inst._zod.processJSONSchema = (ctx, json2, params) => customProcessor(inst, ctx, json2, params);
 });
-var ZodProperties = /* @__PURE__ */ $constructor("ZodProperties", (inst, def) => {
-  _ensureDefaultMemoizer();
-  $ZodProperties.init(inst, def);
-  ZodType.init(inst, def);
-});
-function properties(shape, params) {
-  return _properties(ZodProperties, shape, params);
-}
 function check(fn) {
   const ch = new $ZodCheck({
     check: "custom"
@@ -91866,7 +92003,7 @@ var ZodInstanceOf = /* @__PURE__ */ $constructor("ZodInstanceOf", (inst, def) =>
   ZodCustom.init(inst, def);
 }, {
   properties(shape, params) {
-    return this.check(properties(shape, params));
+    return this.check(_properties(shape, params));
   }
 });
 function _instanceof(cls, params = {}) {
@@ -92453,10 +92590,10 @@ function convertBaseSchema(schema, ctx) {
     }
     case "object": {
       const shape = {};
-      const properties2 = schema.properties || {};
+      const properties = schema.properties || {};
       const requiredSet = new Set(schema.required || []);
       const additionalSchema = typeof schema.additionalProperties === "object" ? convertSchema(schema.additionalProperties, ctx) : void 0;
-      for (const [key, propSchema] of Object.entries(properties2)) {
+      for (const [key, propSchema] of Object.entries(properties)) {
         const propZodSchema = convertSchema(propSchema, ctx);
         assignProp(shape, key, requiredSet.has(key) ? propZodSchema : propZodSchema.optional());
       }
@@ -92816,18 +92953,6 @@ function visit(schema, fnOrHandlers) {
         const original = def.getter;
         const { _cachedInner, ...rest } = def;
         return clone2(s2, { ...rest, getter: () => run(original()) });
-      }
-      case "properties": {
-        const oldShape = def.shape;
-        let changed = false;
-        const newShape = {};
-        for (const k of Reflect.ownKeys(oldShape)) {
-          const mapped = run(oldShape[k]);
-          if (mapped !== oldShape[k])
-            changed = true;
-          newShape[k] = mapped;
-        }
-        return changed ? clone2(s2, { ...def, shape: newShape }) : s2;
       }
       // A leaf by choice: `parts` are regex fragments, not data positions.
       case "template_literal":
@@ -95884,6 +96009,619 @@ input[type="text"].bigconfigtext {
 if (document) {
   insertCSS(configEditor_css, "configeditor");
 }
+
+// src/spectrogram.mts
+var spectrogram_exports = {};
+__export(spectrogram_exports, {
+  CanvasRenderer: () => CanvasRenderer,
+  ChunkProcessor: () => ChunkProcessor,
+  ColorMap: () => ColorMap,
+  DataChunk: () => DataChunk,
+  Spectrogram: () => Spectrogram,
+  SpectrogramConfig: () => SpectrogramConfig
+});
+var SPECTROGRAM_ELEMENT = "sp-spectrogram";
+var SpectrogramConfig = class extends SeismographConfig {
+  constructor() {
+    super();
+    // The number of points used to compute the FFT, determining the number of frequency bins in the spectrogram
+    this.fftSize = 256;
+    // The number of samples extracted for each distinct time frame. Must be <= fftSize
+    this.windowSize = 256;
+    // How much to overlap each FFT frame (as a fraction of the windowSize). A higher overlap results in smoother spectrograms, but
+    // increases computation time
+    this.overlapPerc = 0.86;
+    // Minimum time window for each spectrogram slice in seconds - ideally, resulting chunk times will be near this value. A higher
+    // value results in bigger chunks and better performance, but may result in a less smooth spectrogram
+    this.minChunkTime = 10;
+    // Type of window function to apply
+    this.windowType = "hann";
+    // Frequency range for the spectrogram display in Hz - always constrained to not exceed the Nyquist frequency (sampleRate / 2)
+    this.freqMin = 0;
+    this.freqMax = 15;
+    // Function to format frequency values for display on the y-axis. Default is to format with 1 decimal place
+    this.frequencyFormat = (val) => val.toFixed(1);
+    // Lower and upper bounds for spectrogram color scaling in decibels. FFT power values below minDb are shown as the darkest
+    // color, and values above maxDb are shown as the brightest color.
+    this.minDb = 30;
+    this.maxDb = 120;
+    // Color map for spectrogram display
+    this.spectrogramColorMap = "jet";
+    this.yLabel = "Frequency";
+  }
+};
+var Spectrogram = class extends Seismograph {
+  constructor(seisData, seisConfig) {
+    super(seisData, seisConfig);
+    this.spectrogramConfig = seisConfig || new SpectrogramConfig();
+    this.canvasRenderer = new CanvasRenderer(
+      this.canvas?.node(),
+      this.spectrogramConfig.windowSize
+    );
+  }
+  drawSeismograms() {
+    if (!this.isVisible()) {
+      return;
+    }
+    const canvas = this.canvas?.node();
+    if (!canvas)
+      return;
+    clearCanvas(canvas);
+    this.canvasRenderer.setCanvas(canvas);
+    this._seisDataList.forEach((sdd) => {
+      const xScale = this.timeScaleForSeisDisplayData(sdd, true);
+      const domainStart = xScale.domain().start?.valueOf();
+      const domainEnd = xScale.domain().end?.valueOf();
+      if (domainStart == null || domainEnd == null || domainStart === domainEnd) {
+        return;
+      }
+      const seismogram = sdd.seismogram;
+      if (!seismogram)
+        return;
+      const dataSampleRate = seismogram.sampleRate;
+      if (dataSampleRate == null)
+        return;
+      const viewStartTime = domainStart / 1e3;
+      const viewEndTime = domainEnd / 1e3;
+      const fullSeisData = new Float32Array(seismogram.y);
+      const seismogramStartSec = seismogram.startTime.valueOf() / 1e3;
+      this.canvasRenderer.render(
+        fullSeisData,
+        this.spectrogramConfig,
+        dataSampleRate,
+        seismogramStartSec,
+        viewStartTime,
+        viewEndTime
+      ).catch((err) => {
+        warn(`Error rendering spectrogram: ${err.message}`);
+        return;
+      });
+    });
+  }
+  // We need to override the normal axis creation to be frequencies instead of amplitudes, and to constrain the frequency
+  // range to the Nyquist frequency
+  createLeftRightAxis() {
+    let yAxis = null;
+    let yAxisRight = null;
+    const sampleRate = this.seisData.reduce(
+      (acc, curr) => Math.min(curr.seismogram?.sampleRate || Infinity, acc),
+      Infinity
+    );
+    const nyquist = sampleRate !== Infinity ? sampleRate / 2 : 0;
+    const safeFMax = Math.min(this.spectrogramConfig.freqMax, nyquist);
+    const safeFMin = Math.max(this.spectrogramConfig.freqMin, 0);
+    const axisScale = this.__initAmpScale().domain([safeFMin, safeFMax]);
+    if (this.spectrogramConfig.isYAxis) {
+      yAxis = axisLeft(axisScale).tickFormat(
+        numberFormatWrapper(this.spectrogramConfig.frequencyFormat)
+      );
+      yAxis.scale(axisScale);
+      yAxis.ticks(this.spectrogramConfig.yAxisNumTickHint, this.spectrogramConfig.frequencyFormat);
+    }
+    if (this.spectrogramConfig.isYAxisRight) {
+      yAxisRight = axisRight(axisScale).tickFormat(
+        numberFormatWrapper(this.spectrogramConfig.frequencyFormat)
+      );
+      yAxisRight.scale(axisScale);
+      yAxisRight.ticks(this.spectrogramConfig.yAxisNumTickHint, this.spectrogramConfig.frequencyFormat);
+    }
+    return [yAxis, yAxisRight];
+  }
+  createUnitsLabel() {
+    if (this.spectrogramConfig && this.spectrogramConfig.ySublabelIsUnits) {
+      return "Hz";
+    }
+    return "";
+  }
+  seisDataUpdated() {
+    this.canvasRenderer.clearCache();
+    super.seisDataUpdated();
+  }
+};
+customElements.define(SPECTROGRAM_ELEMENT, Spectrogram);
+var CanvasRenderer = class {
+  constructor(canvas, windowSize) {
+    this.ctx = null;
+    // Cache of processed data chunks, keyed by a unique identifier for each chunk. This allows for reusing previously processed chunks
+    this.chunksCache = /* @__PURE__ */ new Map();
+    this.canvas = canvas;
+    this.windowSize = windowSize;
+  }
+  /**
+   * Clears the cache of processed data chunks, forcing new chunks to be generated on the next render
+   */
+  clearCache() {
+    this.chunksCache.clear();
+  }
+  /**
+   * Sets the canvas element to render the spectrogram onto. This method should be called before calling render()
+   * @param canvas The HTMLCanvasElement to render the spectrogram onto
+   */
+  setCanvas(canvas) {
+    this.canvas = canvas;
+  }
+  /**
+   * Renders the spectrogram data onto the set canvas according to the provided configuration and view range. This method processes the data into chunks
+   * and creates a spectrogram image for each chunk, which is then drawn onto the canvas
+   * @param data The seismic data to render as a spectrogram
+   * @param config The configuration settings for the spectrogram rendering
+   * @param sampleRate The sample rate of the seismic data in Hz
+   * @param dataStartTime The start time of the seismic data in seconds from epoch
+   * @param viewStartTime The start time of the view range in seconds from epoch
+   * @param viewEndTime The end time of the view range in seconds from epoch
+   * @returns A promise resolving when rendering is complete
+   */
+  async render(data, config2, sampleRate, dataStartTime, viewStartTime, viewEndTime) {
+    this.ctx = this.canvas.getContext("2d", { alpha: true });
+    const processor = new ChunkProcessor(
+      config2,
+      sampleRate,
+      this.windowSize
+    );
+    if (!this.ctx || !data || !data.length || viewStartTime >= viewEndTime) {
+      return;
+    }
+    const dataEndTime = dataStartTime + data.length / sampleRate;
+    const fMin = config2.freqMin;
+    const fMax = config2.freqMax;
+    const colorMap = new ColorMap(config2.spectrogramColorMap);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const overlap = Math.floor(config2.overlapPerc * this.windowSize);
+    const hopSize = Math.max(1, this.windowSize - overlap);
+    const targetSamples = config2.minChunkTime * sampleRate;
+    const hopsPerChunk = Math.ceil(targetSamples / hopSize);
+    const chunkSamples = hopsPerChunk * hopSize;
+    const overlapStartAbs = Math.max(viewStartTime, dataStartTime);
+    const overlapEndAbs = Math.min(viewEndTime, dataEndTime);
+    if (overlapEndAbs <= overlapStartAbs)
+      return;
+    const dataRelStartIdx = Math.floor((overlapStartAbs - dataStartTime) * sampleRate);
+    const dataRelEndIdx = Math.ceil((overlapEndAbs - dataStartTime) * sampleRate);
+    const startChunkId = Math.floor(dataRelStartIdx / chunkSamples);
+    const endChunkId = Math.floor((dataRelEndIdx - 1) / chunkSamples);
+    for (let i = startChunkId; i <= endChunkId; i++) {
+      let chunkStart = i * chunkSamples;
+      let chunkEnd = (i + 1) * chunkSamples;
+      let chunkId = `chunk_${i}`;
+      if (chunkStart < dataRelStartIdx || chunkEnd > dataRelEndIdx) {
+        chunkStart = Math.max(chunkStart, dataRelStartIdx);
+        chunkEnd = Math.min(chunkEnd, dataRelEndIdx);
+        chunkId = `chunk_${chunkStart}_${chunkEnd}`;
+      }
+      let chunk = this.chunksCache.get(chunkId);
+      if (!chunk) {
+        const newChunk = new DataChunk(
+          chunkId,
+          chunkStart,
+          chunkEnd,
+          sampleRate
+        );
+        this.chunksCache.set(chunkId, newChunk);
+        const imgData = processor.process(
+          data,
+          chunkStart,
+          chunkEnd,
+          config2,
+          (val) => colorMap.getRGB(val)
+        );
+        const bmp = await createImageBitmap(imgData);
+        newChunk.image = bmp;
+        chunk = newChunk;
+      }
+      if (chunk.image && this.ctx) {
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clip();
+        this.drawChunk(
+          chunk,
+          sampleRate,
+          dataStartTime,
+          viewStartTime,
+          viewEndTime,
+          fMin,
+          fMax
+        );
+        this.ctx.restore();
+      }
+    }
+  }
+  /**
+   * Draws a chunk of spectrogram within the view range
+   * @param chunk DataChunk instance to draw
+   * @param sampleRate Sample rate of the seismic data in Hz
+   * @param startTime Start time of the seismic data in seconds from epoch
+   * @param viewStartTime Start time of the view range in seconds from epoch
+   * @param viewEndTime End time of the view range in seconds from epoch
+   * @param fMin Minimum frequency to display in Hz
+   * @param fMax Maximum frequency to display in Hz
+   */
+  drawChunk(chunk, sampleRate, startTime, viewStartTime, viewEndTime, fMin, fMax) {
+    if (!chunk.image) {
+      return;
+    }
+    const viewDuration = viewEndTime - viewStartTime;
+    const nyquist = sampleRate / 2;
+    const chunkStartTime = startTime + chunk.startTime;
+    const chunkEndTime = startTime + chunk.endTime;
+    const plotW = this.canvas.width;
+    const x1 = (chunkStartTime - viewStartTime) / viewDuration * plotW;
+    const x2 = (chunkEndTime - viewStartTime) / viewDuration * plotW;
+    if (x2 <= 0 || x1 >= plotW)
+      return;
+    const chunkX = Math.max(0, x1);
+    const chunkW = Math.min(plotW, x2) - chunkX;
+    const texW = chunk.image.width;
+    const drawStartX = (chunkX - x1) / (x2 - x1) * texW;
+    const drawWidth = chunkW / (x2 - x1) * texW;
+    const safeFMax = Math.min(fMax, nyquist);
+    const safeFMin = Math.max(fMin, 0);
+    const texH = chunk.image.height;
+    const drawStartY = (1 - safeFMax / nyquist) * texH;
+    const drawEndY = (1 - safeFMin / nyquist) * texH;
+    const drawHeight = drawEndY - drawStartY;
+    if (this.ctx && drawHeight > 0) {
+      this.ctx.drawImage(
+        chunk.image,
+        drawStartX,
+        drawStartY,
+        drawWidth,
+        drawHeight,
+        chunkX,
+        0,
+        chunkW,
+        this.canvas.height
+      );
+    }
+  }
+};
+var DataChunk = class {
+  constructor(id2, startIdx, endIdx, sampleRate) {
+    this.image = null;
+    this.isProcessing = false;
+    this.id = id2;
+    this.startIndex = startIdx;
+    this.endIndex = endIdx;
+    this.startTime = startIdx / sampleRate;
+    this.endTime = endIdx / sampleRate;
+  }
+};
+var ChunkProcessor = class {
+  constructor(config2, sampleRate, windowSize) {
+    this.fftSize = config2.fftSize;
+    this.windowBuffer = createWindow(windowSize, config2.windowType);
+    this.inputBuf = new Float32Array(this.fftSize);
+    this.sampleRate = sampleRate;
+  }
+  /**
+   * Processes the seismic data to create a spectrogram using fftForward, the given colormap, and
+   * index offsets for the input data.
+   * @param data The seismic data to process
+   * @param startIdx The starting index of the data to start the chunk at
+   * @param endIdx The ending index of the data to end the chunk at
+   * @param config The spectrogram configuration
+   * @param colormapToRgb The function to convert normalized values to RGB colors
+   * @returns The processed spectrogram image data
+   */
+  process(data, startIdx, endIdx, config2, colormapToRgb) {
+    const { minDb, maxDb, overlapPerc } = config2;
+    const windowSize = this.windowBuffer.length;
+    const overlap = Math.floor(overlapPerc * windowSize);
+    const hopSize = Math.max(1, windowSize - overlap);
+    const numHops = Math.ceil((endIdx - startIdx) / hopSize);
+    const width = numHops;
+    const height = (this.fftSize >> 1) + 1;
+    if (width <= 0)
+      return new ImageData(1, 1);
+    const imgData = new ImageData(width, height);
+    const pixels = imgData.data;
+    const inputBuf = this.inputBuf;
+    const windowBuf = this.windowBuffer;
+    let dcSum = 0;
+    let validCount = 0;
+    for (let i = 0; i < windowSize; i++) {
+      const idx = startIdx + i;
+      if (idx >= 0 && idx < data.length) {
+        dcSum += data[idx];
+        validCount++;
+      }
+    }
+    for (let x2 = 0; x2 < width; x2++) {
+      const signalStart = startIdx + x2 * hopSize;
+      const mean = validCount > 0 ? dcSum / validCount : 0;
+      let i = 0;
+      const currWindowSize = Math.min(windowSize, data.length - signalStart);
+      for (; i < currWindowSize; i++) {
+        if (signalStart + i < data.length && signalStart + i >= 0 && i >= 0 && i < windowSize) {
+          inputBuf[i] = (data[signalStart + i] - mean) * windowBuf[i];
+        }
+      }
+      for (; i < this.fftSize; i++) {
+        inputBuf[i] = 0;
+      }
+      const fft2 = new FFTExecutor(this.fftSize);
+      const mags = fft2.compute(inputBuf, this.sampleRate, minDb, maxDb);
+      for (let y2 = 0; y2 < height; y2++) {
+        if (y2 < 0 || y2 >= mags.length) {
+          break;
+        }
+        const rgb2 = colormapToRgb(mags[y2]);
+        const row = height - 1 - y2;
+        const idx = (row * width + x2) * 4;
+        pixels[idx] = rgb2[0];
+        pixels[idx + 1] = rgb2[1];
+        pixels[idx + 2] = rgb2[2];
+        pixels[idx + 3] = 255;
+      }
+      if (x2 + 1 < width) {
+        for (let k = 0; k < hopSize; k++) {
+          const outIdx = signalStart + k;
+          if (outIdx >= 0 && outIdx < data.length) {
+            dcSum -= data[outIdx];
+            validCount--;
+          }
+        }
+        const nextStart = signalStart + windowSize;
+        for (let k = 0; k < hopSize; k++) {
+          const inIdx = nextStart + k;
+          if (inIdx >= 0 && inIdx < data.length) {
+            dcSum += data[inIdx];
+            validCount++;
+          }
+        }
+      }
+    }
+    return imgData;
+  }
+};
+var FFTExecutor = class {
+  constructor(fftSize) {
+    this.EPS = 1e-20;
+    this.INV_LN10 = 1 / Math.LN10;
+    if (fftSize <= 0 || fftSize % 2 !== 0) {
+      throw new Error("FFT size must be a positive value and a power of two");
+    }
+    this.fftSize = fftSize;
+    this.complexIn = new Float32Array(fftSize * 2);
+    this.spectrum = new Float32Array(fftSize / 2 + 1);
+  }
+  /**
+   * Computes the FFT of the input signal and returns the magnitude spectrum normalized between 0 and 1 based on the provided minDb and maxDb values
+   * @param input Float32Array of length equal to fftSize
+   * @param sampleRate Sample rate of the input data, used to calculate the frequency bins for the output spectrum
+   * @param minDb Minimum dB value for normalization
+   * @param maxDb Maximum dB value for normalization
+   * @returns Float32Array of length fftSize / 2 + 1 containing the normalized magnitude spectrum
+   */
+  compute(input2, sampleRate, minDb, maxDb) {
+    const cin = this.complexIn;
+    for (let i = 0; i < this.fftSize; i++) {
+      const j = i << 1;
+      cin[j] = input2[i];
+      cin[j + 1] = 0;
+    }
+    const inputDisplayData = SeismogramDisplayData.fromContiguousData(
+      cin,
+      sampleRate,
+      DateTime.fromMillis(0)
+    );
+    const out = fftForward(inputDisplayData).packedFreq;
+    for (let i = 0; i < this.spectrum.length; i++) {
+      const realComp = out[i];
+      let p = 0;
+      if (realComp !== void 0) {
+        p = realComp * realComp + this.EPS;
+      }
+      const v = (10 * Math.log(p) * this.INV_LN10 - minDb) / (maxDb - minDb);
+      this.spectrum[i] = v < 0 ? 0 : v > 1 ? 1 : v;
+    }
+    return this.spectrum;
+  }
+};
+var createWindow = (size, type) => {
+  const window2 = new Float32Array(size);
+  if (type === "rectangular") {
+    return window2.fill(1);
+  }
+  const TWO_PI = 2 * Math.PI;
+  const denom = size - 1;
+  switch (type) {
+    case "hann":
+      for (let i = 0; i < size; i++) {
+        window2[i] = 0.5 * (1 - Math.cos(TWO_PI * i / denom));
+      }
+      break;
+    case "hamming":
+      for (let i = 0; i < size; i++) {
+        window2[i] = 0.54 - 0.46 * Math.cos(TWO_PI * i / denom);
+      }
+      break;
+    case "blackman":
+      for (let i = 0; i < size; i++) {
+        const angle = TWO_PI * i / denom;
+        window2[i] = 0.42 - 0.5 * Math.cos(angle) + 0.08 * Math.cos(2 * angle);
+      }
+      break;
+  }
+  return window2;
+};
+var ColorMap = class {
+  // [R, G, B, R, G, B...] for 0..255
+  constructor(type = "jet") {
+    this.type = type;
+    this.lut = new Uint8Array(256 * 3);
+    this.generateLut();
+  }
+  /**
+   * Generates a LUT for the selected color map type
+   */
+  generateLut() {
+    const fn = COLOR_MAP_FNS[this.type];
+    for (let i = 0; i <= 255; i++) {
+      const rgb2 = fn(i / 255);
+      const j = i * 3;
+      this.lut[j] = rgb2[0];
+      this.lut[j + 1] = rgb2[1];
+      this.lut[j + 2] = rgb2[2];
+    }
+  }
+  /**
+   * Returns the RGB color for a normalized value t (0-1) based on the LUT. If t is out of bounds, returns black
+   * @param t Normalized value (0-1) to map to an RGB color
+   * @returns RGB color as an array of three numbers [R, G, B] where each component is in the range 0-255
+   */
+  getRGB(t) {
+    const idx = (t <= 0 ? 0 : t >= 1 ? 255 : t * 255 | 0) * 3;
+    if (idx < 0 || idx + 2 >= this.lut.length) {
+      return [0, 0, 0];
+    }
+    return [this.lut[idx], this.lut[idx + 1], this.lut[idx + 2]];
+  }
+  /**
+   * Sets the color map type and regenerates the lookup table
+   * @param type String name of the color map to use. Must be one of the supported color map names
+   */
+  setMap(type) {
+    this.type = type;
+    this.generateLut();
+  }
+};
+function interpolateColorMap(t, map4) {
+  if (t <= 0) {
+    return map4[0];
+  }
+  if (t >= 1) {
+    return map4[map4.length - 1];
+  }
+  const step = 1 / (map4.length - 1);
+  const idx = t / step | 0;
+  const localT = (t - idx * step) / step;
+  const c1 = map4[idx];
+  const c2 = map4[idx + 1];
+  if (!c1 || c1.length < 3 || !c2 || c2.length < 3) {
+    return [0, 0, 0];
+  }
+  return [
+    c1[0] + (c2[0] - c1[0]) * localT | 0,
+    c1[1] + (c2[1] - c1[1]) * localT | 0,
+    c1[2] + (c2[2] - c1[2]) * localT | 0
+  ];
+}
+var VIRIDIS_MAP = [
+  [68, 1, 84],
+  [59, 82, 139],
+  [33, 145, 140],
+  [94, 201, 98],
+  [253, 231, 37]
+];
+var INFERNO_MAP = [
+  [0, 0, 4],
+  [87, 16, 110],
+  [187, 55, 84],
+  [249, 142, 9],
+  [252, 255, 164]
+];
+function viridis(t) {
+  return interpolateColorMap(t, VIRIDIS_MAP);
+}
+function inferno(t) {
+  return interpolateColorMap(t, INFERNO_MAP);
+}
+function grayscale(t) {
+  const v = Math.floor(t * 255);
+  return [v, v, v];
+}
+function jet(t) {
+  const v = Math.max(0, Math.min(1, t));
+  const r = Math.min(4 * v - 1.5, -4 * v + 4.5);
+  const g = Math.min(4 * v - 0.5, -4 * v + 3.5);
+  const b = Math.min(4 * v + 0.5, -4 * v + 2.5);
+  return [
+    Math.floor(Math.max(0, Math.min(1, r)) * 255),
+    Math.floor(Math.max(0, Math.min(1, g)) * 255),
+    Math.floor(Math.max(0, Math.min(1, b)) * 255)
+  ];
+}
+function hot(t) {
+  let r, g = 0, b = 0;
+  if (t < 0.33) {
+    r = t / 0.33;
+  } else if (t < 0.66) {
+    r = 1;
+    g = (t - 0.33) / 0.33;
+  } else {
+    r = 1;
+    g = 1;
+    b = (t - 0.66) / 0.34;
+  }
+  return [Math.floor(r * 255), Math.floor(g * 255), Math.floor(b * 255)];
+}
+function cool(t) {
+  const r = t;
+  const g = 1 - t;
+  const b = 1;
+  return [Math.floor(r * 255), Math.floor(g * 255), Math.floor(b * 255)];
+}
+function spring(t) {
+  return [255, Math.floor(t * 255), Math.floor((1 - t) * 255)];
+}
+function summer(t) {
+  return [
+    Math.floor(t * 255),
+    Math.floor((0.5 + 0.5 * t) * 255),
+    Math.floor(0.4 * 255)
+  ];
+}
+function autumn(t) {
+  return [255, Math.floor(t * 255), 0];
+}
+function winter(t) {
+  return [0, Math.floor(t * 255), Math.floor((1 - 0.5 * t) * 255)];
+}
+function bone(t) {
+  const r = t;
+  const sin = 0.1 * Math.sin(t * Math.PI * 2);
+  const g = t < 0.5 ? t + sin : t;
+  const b = t < 0.75 ? t + sin : t;
+  return [
+    Math.floor(Math.min(1, r) * 255),
+    Math.floor(Math.min(1, g) * 255),
+    Math.floor(Math.min(1, b) * 255)
+  ];
+}
+var COLOR_MAP_FNS = {
+  viridis,
+  inferno,
+  grayscale,
+  jet,
+  hot,
+  cool,
+  spring,
+  summer,
+  autumn,
+  winter,
+  bone
+};
 
 // src/syngine.mts
 var syngine_exports = {};
@@ -100608,6 +101346,7 @@ export {
   seismographutil_exports as seismographutil,
   sorting_exports as sorting,
   spectraplot_exports as spectraplot,
+  spectrogram_exports as spectrogram,
   spelement_exports as spelement,
   stationxml_exports as stationxml,
   syngine_exports as syngine,
