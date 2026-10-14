@@ -129,6 +129,8 @@
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",
     "@typescript/native": "npm:typescript@^7.0.2",
+    "@vitest/coverage-v8": "^4.1.10",
+    "canvas": "^3.2.3",
     "cross-fetch": "^4.1.0",
     "documentation": "^14.0.3",
     "esbuild": "^0.28.0",
