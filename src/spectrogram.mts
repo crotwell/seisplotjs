@@ -420,9 +420,9 @@ export class CanvasRenderer {
         drawStartY,
         drawWidth,
         drawHeight,
-        chunkX,
+        Math.floor(chunkX),  // Use Math.floor to avoid subpixel rendering issues
         0,
-        chunkW,
+        Math.ceil(chunkW),  // Use Math.ceil to avoid subpixel rendering issues
         this.canvas.height
       );
     }
