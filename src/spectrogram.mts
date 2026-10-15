@@ -92,6 +92,63 @@ export class SpectrogramConfig extends SeismographConfig {
     // Set new defaults for SeismographConfig fields
     this.yLabel = "Frequency";
   }
+  static fromSeismographConfig(seisConfig?: SeismographConfig): SpectrogramConfig {
+    if (seisConfig != null && seisConfig instanceof SpectrogramConfig) {
+      return seisConfig;
+    }
+    const spectConfig = new SpectrogramConfig();
+    if (seisConfig != null) {
+      spectConfig.yLabel = "Frequency";
+      // copy axis config
+      spectConfig._title = seisConfig._title;
+      spectConfig.showTitle = seisConfig.showTitle;
+      spectConfig._timeFormat = seisConfig._timeFormat;
+      spectConfig.relativeTimeFormat = seisConfig.relativeTimeFormat;
+      // x axis
+      spectConfig.isXAxis = seisConfig.isXAxis;
+      spectConfig.xAxisTimeZone = seisConfig.xAxisTimeZone;
+      spectConfig.isXAxisTop = seisConfig.isXAxisTop;
+      spectConfig._xLabel = seisConfig._xLabel;
+      spectConfig.xLabelOrientation = seisConfig.xLabelOrientation;
+      spectConfig._xSublabel = seisConfig._xSublabel;
+      spectConfig.xSublabelIsUnits = seisConfig.xSublabelIsUnits;
+      spectConfig.xGridLines = seisConfig.xGridLines;
+      // y axis
+      spectConfig.isYAxis = seisConfig.isYAxis;
+      spectConfig.isYAxisRight = seisConfig.isYAxisRight;
+      spectConfig.isYAxisNice = seisConfig.isYAxisNice;
+      spectConfig.yAxisNumTickHint = seisConfig.yAxisNumTickHint;
+      spectConfig._yLabel = seisConfig._yLabel;
+      spectConfig._yLabelRight = seisConfig._yLabelRight;
+      spectConfig.yLabelOrientation = seisConfig.yLabelOrientation;
+      spectConfig._ySublabel = seisConfig._ySublabel;
+      spectConfig.ySublabelTrans = seisConfig.ySublabelTrans;
+      spectConfig.ySublabelIsUnits = seisConfig.ySublabelIsUnits;
+      spectConfig.yGridLines = seisConfig.yGridLines;
+
+      spectConfig.gridLineColor = seisConfig.gridLineColor;
+      spectConfig.isRelativeTime = seisConfig.isRelativeTime;
+      spectConfig.margin =  {
+        top: seisConfig.margin.top,
+        right: seisConfig.margin.right,
+        bottom: seisConfig.margin.bottom,
+        left: seisConfig.margin.left,
+        toString: function () {
+          return (
+            "t:" +
+            this.top +
+            " l:" +
+            this.left +
+            " b:" +
+            this.bottom +
+            " r:" +
+            this.right
+          );
+        },
+      };
+    }
+    return spectConfig;
+  }
 }
 
 // Overriding Seismograph to allow for shared functionality with Seismograph, only altered for the different rendering
@@ -99,9 +156,10 @@ export class Spectrogram extends Seismograph {
   spectrogramConfig: SpectrogramConfig;
   canvasRenderer: CanvasRenderer;
 
-  constructor(seisData?: SeismogramDisplayData | SeismogramDisplayData[], seisConfig?: SpectrogramConfig) {
-    super(seisData, seisConfig);
-    this.spectrogramConfig = seisConfig || new SpectrogramConfig();
+  constructor(seisData?: SeismogramDisplayData | SeismogramDisplayData[], seisConfig?: SpectrogramConfig|SeismographConfig) {
+    const spectrogramConfig = SpectrogramConfig.fromSeismographConfig(seisConfig);
+    super(seisData, spectrogramConfig);
+    this.spectrogramConfig = spectrogramConfig;
     this.canvasRenderer = new CanvasRenderer(
       this.canvas?.node() as HTMLCanvasElement,
       this.spectrogramConfig.windowSize,
