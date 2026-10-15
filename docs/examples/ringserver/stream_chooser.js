@@ -1,5 +1,5 @@
 
-import * as sp from "../../seisplotjs_3.2.6_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.7_standalone.mjs";
 
 class StreamListChooser extends HTMLElement {
   constructor() {

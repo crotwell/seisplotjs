@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.2.6_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.7_standalone.mjs";
 
 import { parse_sis_xml } from "./response_parse.js";
 
