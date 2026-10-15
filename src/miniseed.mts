@@ -97,12 +97,6 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   out.blocketteList = [];
   out.recordSize = 4096;
   out.sampleRate = out.calcSampleRate();
-  out.startTime = out.startBTime.toDateTime();
-  if ((out.activityFlags & 2) !== 0) {
-    // time correction not yet applied, but luxon only allows millisecond
-    // and timeCorrection is tenth-millis
-    out.startTime = out.startTime.plus(out.timeCorrection/10);
-  }
 
   for (let i = 0; i < out.numBlockettes; i++) {
     let nextOffset = dataView.getUint16(offset + 2, headerByteSwap);
@@ -135,7 +129,12 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
       out.sampleRate = blockette.sampleRate;
     }
   }
-
+  let corrBtime = out.startBTime;
+  if ((out.activityFlags & 2) === 0) {
+    // time correction not yet applied
+    corrBtime = corrBtime.applyTimeCorrection(out.timeCorrection);
+  }
+  out.startTime = corrBtime.toDateTime();
   out.endTime = out.timeOfSample(out.numSamples - 1);
   return out;
 }
@@ -341,6 +340,7 @@ export class DataHeader {
     ); //seconds
   }
 }
+
 export class Blockette {
   type: number;
   body: DataView;
@@ -505,7 +505,7 @@ export class BTime {
    * @returns         BTime as a DateTime
    */
   toDateTime(): DateTime {
-    const millis = Math.round(this.tenthMilli / 10);
+    const millis = Math.round((this.tenthMilli + this.microsecond/100) / 10);
     if (this.sec === 60) {
       // luxon doesn't handle leap seconds, so invalid???
       return DateTime.invalid(
@@ -523,8 +523,37 @@ export class BTime {
         millisecond: 0,
       },
       UTC_OPTIONS,
+    ).plus(millis);
+    return d;
+  }
+
+
+  applyTimeCorrection(tenthMilliCorr: number): BTime {
+    let corrStartTime = DateTime.fromObject(
+      {
+        year: this.year,
+        ordinal: this.jday,
+        hour: this.hour,
+        minute: this.min,
+        second: this.sec,
+        millisecond: 0,
+      },
+      UTC_OPTIONS,
     );
-    return d.plus(millis);
+    const corrTenthSeconds = this.tenthMilli+tenthMilliCorr;
+    const millis = Math.floor(corrTenthSeconds / 10);
+    corrStartTime = corrStartTime.plus(millis);
+    const corrBTime = BTime.fromDateTime(corrStartTime);
+    const tMilliRemainder = corrTenthSeconds-millis*10;
+
+    corrBTime.tenthMilli += tMilliRemainder;
+    corrBTime.microsecond = this.microsecond; // no change
+    return corrBTime;
+  }
+
+  static fromDateTime(d: DateTime): BTime {
+    const bTime = new BTime(d.year, d.ordinal, d.hour, d.minute, d.second, d.millisecond*10);
+    return bTime;
   }
 }
 

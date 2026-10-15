@@ -8,6 +8,7 @@ import {describe, expect, test} from 'vitest';
 import { isDef } from "../../src/util.mjs";
 import * as mseed3 from "../../src/mseed3.mjs";
 import * as miniseed from "../../src/miniseed.mjs";
+import * as seedcodec from "../../src/seedcodec.mjs";
 import fs from "fs";
 
 const MISSING_REF_DATA_MSG =`
@@ -263,3 +264,25 @@ test("mergeMseed3", () => {
   const sddList = mseed3.sddPerChannel(drList);
   expect(sddList).toBeDefined();
 });
+
+test("ms2convert", () => {
+  const btime = new miniseed.BTime(1999, 365, 23, 59, 59, 9999);
+  btime.microsecond = 49;
+  const dh = new miniseed.DataHeader();
+  dh.staCode = "ABC";
+  dh.netCode = "XX";
+  dh.locCode = "00";
+  dh.chanCode = "BHZ";
+  dh.startBTime = btime;
+  dh.sampleRate = 1;
+  dh.numSamples = 100;
+  dh.encoding = seedcodec.INTEGER;
+  dh.endTime = dh.timeOfSample(dh.numSamples-1);
+  dh.activityFlags = 1;
+  dh.dataQualityFlags = 128;
+  dh.ioClockFlags = 32;
+  dh.timeCorrection = 12345; // one sec, 2345 tenth milli
+  const ms2rec = new miniseed.DataRecord(dh, new DataView(new ArrayBuffer(512)));
+  const ms3rec = mseed3.convertMS2Record(ms2rec);
+  expect(ms3rec.header.flags).toEqual(7);
+})

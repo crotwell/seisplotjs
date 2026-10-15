@@ -46,6 +46,9 @@ export const LITTLE_ENDIAN = true;
 /** const for big endian, false */
 export const BIG_ENDIAN = false;
 
+/** const one second in nanoseconds, 1e9 */
+export const ONE_SEC_NANOS = 1000000000;
+
 export function toMSeed3(
   seis: Seismogram,
   extraHeaders?: Record<string, unknown>,
@@ -503,10 +506,6 @@ export class MSeed3Header {
     header.nanosecond = dataView.getInt32(4, headerLittleEndian);
     header.year = dataView.getInt16(8, headerLittleEndian);
 
-    if (checkByteSwap(header.year)) {
-      throw new Error("Looks like wrong byte order, year=" + header.year);
-    }
-
     header.dayOfYear = dataView.getInt16(10, headerLittleEndian);
     header.hour = dataView.getUint8(12);
     header.minute = dataView.getUint8(13);
@@ -874,17 +873,6 @@ export function makeString(
 }
 
 /**
- * Sanity checks on year to see if a record might be in the wrong byte order.
- * Checks year betwee 1960 and 2055.
- *
- * @param   year year as number to test
- * @returns        true is byte order appears to be wrong, false if it seems ok
- */
-function checkByteSwap(year: number) {
-  return year < 1960 || year > 2055;
-}
-
-/**
  * Checks if two miniseed3 records are (nearly) contiguous.
  *
  * @param   dr1 first record
@@ -1111,17 +1099,33 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   const xHeader = new MSeed3Header();
   const xExtras: Record<string, unknown> = {};
   const ms2H = ms2record.header;
-  xHeader.flags =
-    (ms2H.activityFlags & 1) * 1 +
-    (ms2H.dataQualityFlags & 128) * 2 +
-    (ms2H.ioClockFlags & 32) * 4;
-  xHeader.year = ms2H.startBTime.year;
-  xHeader.dayOfYear = ms2H.startBTime.jday;
-  xHeader.hour = ms2H.startBTime.hour;
-  xHeader.minute = ms2H.startBTime.min;
-  xHeader.second = ms2H.startBTime.sec;
-  xHeader.nanosecond =
-    ms2H.startBTime.tenthMilli * 100000 + ms2H.startBTime.microsecond * 1000;
+  xHeader.flags = 0;
+  if ((ms2H.activityFlags & 1) !==0) xHeader.flags +=1;
+  if ((ms2H.dataQualityFlags & 128) !== 0) xHeader.flags += 2;
+  if ((ms2H.ioClockFlags & 32) !== 0) xHeader.flags += 4;
+  let startBTime = ms2H.startBTime;
+  if ((ms2H.activityFlags & 2) === 0) {
+    startBTime = startBTime.applyTimeCorrection(ms2H.timeCorrection);
+  }
+  let startTime = startBTime.toDateTime();
+  let nanos = startTime.millisecond*1000000 +(startBTime.tenthMilli % 10) * 100000
+    + startBTime.microsecond * 1000;
+  startTime = startTime.minus(startTime.millisecond); // zero out millis
+
+  while (nanos < 0) {
+    startTime = startTime.minus(1000);//one sec
+    nanos += ONE_SEC_NANOS;
+  }
+  while (nanos > 999999999) {
+    startTime = startTime.plus(1000);
+    nanos -= ONE_SEC_NANOS;
+  }
+  xHeader.year = startTime.year;
+  xHeader.dayOfYear = startTime.ordinal;
+  xHeader.hour = startTime.hour;
+  xHeader.minute = startTime.minute;
+  xHeader.second = startTime.second;
+  xHeader.nanosecond = nanos;
   xHeader.sampleRateOrPeriod =
     ms2H.sampleRate >= 1 ? ms2H.sampleRate : -1.0 / ms2H.sampleRate;
   xHeader.encoding = ms2record.header.encoding;
@@ -1146,33 +1150,6 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
 
     if (ms2H.typeCode !== D_TYPECODE) {
       xExtras.DataQuality = ms2H.typeCode;
-    }
-  }
-
-  if (xHeader.nanosecond < 0) {
-    xHeader.second -= 1;
-    xHeader.nanosecond += 1000000000;
-
-    if (xHeader.second < 0) {
-      // might be wrong for leap seconds
-      xHeader.second += 60;
-      xHeader.minute -= 1;
-
-      if (xHeader.minute < 0) {
-        xHeader.minute += 60;
-        xHeader.hour -= 1;
-
-        if (xHeader.hour < 0) {
-          xHeader.hour += 24;
-          xHeader.dayOfYear = -1;
-
-          if (xHeader.dayOfYear < 0) {
-            // wrong for leap years
-            xHeader.dayOfYear += 365;
-            xHeader.year -= 1;
-          }
-        }
-      }
     }
   }
 
