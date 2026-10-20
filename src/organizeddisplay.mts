@@ -10,7 +10,9 @@ import { SeismographConfig } from "./seismographconfig.mjs";
 import { isDef } from "./util.mjs";
 
 import {OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT} from "./organizeddisplaytools.mjs";
-import {OrganizedDisplayItem, ORG_DISP_ITEM, SEISMOGRAPH, MAP} from "./organizeddisplayitem.mjs";
+import {OrganizedDisplayItem,
+  ORG_DISP_ITEM, SEISMOGRAPH, SPECTRA, SPECTROGRAM,
+  MAP} from "./organizeddisplayitem.mjs";
 import {defaultPlotSelect} from "./organizeddisplayselect.mjs";
 
 export {
@@ -30,6 +32,13 @@ export const WITH_MAP = "map";
 export const DEFAULT_WITH_MAP = "false";
 export const WITH_TOOLS = "tools";
 export const DEFAULT_WITH_TOOLS = "true";
+
+export const WITH_SEISMOGRAPH = "seismograph";
+export const DEFAULT_WITH_SEISMOGRAPH = "true";
+export const WITH_SPECTRA = "spectra";
+export const DEFAULT_WITH_SPECTRA = "false";
+export const WITH_SPECTROGRAM = "spectrogram";
+export const DEFAULT_WITH_SPECTROGRAM = "false";
 
 export const OVERLAY_BY = "overlay";
 export const OVERLAY_NONE = "none";
@@ -84,6 +93,9 @@ export class OrganizedDisplay extends SeisPlotElement {
       WITH_MAP,
       WITH_INFO,
       OVERLAY_BY,
+      WITH_SEISMOGRAPH,
+      WITH_SPECTRA,
+      WITH_SPECTROGRAM,
     ]);
     const map = QuakeStationMap.observedAttributes;
     return mine.concat(map);
@@ -152,6 +164,49 @@ export class OrganizedDisplay extends SeisPlotElement {
   set info(val: string) {
     this.setAttribute(WITH_INFO, val.toLowerCase().trim());
   }
+  get with_seismograph(): string {
+    let k = this.hasAttribute(WITH_SEISMOGRAPH)
+      ? this.getAttribute(WITH_SEISMOGRAPH)
+      : DEFAULT_WITH_SEISMOGRAPH;
+    // typescript null
+    if (!isDef(k)) {
+      k = DEFAULT_WITH_SEISMOGRAPH;
+    }
+    k = k.trim().toLowerCase();
+    return k;
+  }
+  set with_seismograph(val: string) {
+    this.setAttribute(WITH_SEISMOGRAPH, val.toLowerCase().trim());
+  }
+  get with_spectra(): string {
+    let k = this.hasAttribute(WITH_SPECTRA)
+      ? this.getAttribute(WITH_SPECTRA)
+      : DEFAULT_WITH_SPECTRA;
+    // typescript null
+    if (!isDef(k)) {
+      k = DEFAULT_WITH_SPECTRA;
+    }
+    k = k.trim().toLowerCase();
+    return k;
+  }
+  set with_spectra(val: string) {
+    this.setAttribute(WITH_SPECTRA, val.toLowerCase().trim());
+  }
+  get with_spectrogram(): string {
+    let k = this.hasAttribute(WITH_SPECTROGRAM)
+      ? this.getAttribute(WITH_SPECTROGRAM)
+      : DEFAULT_WITH_SPECTROGRAM;
+    // typescript null
+    if (!isDef(k)) {
+      k = DEFAULT_WITH_SPECTROGRAM;
+    }
+    k = k.trim().toLowerCase();
+    return k;
+  }
+  set with_spectrogram(val: string) {
+    this.setAttribute(WITH_SPECTROGRAM, val.toLowerCase().trim());
+  }
+
   get overlayby(): string {
     let k = this.hasAttribute(OVERLAY_BY)
       ? this.getAttribute(OVERLAY_BY)
@@ -184,37 +239,86 @@ export class OrganizedDisplay extends SeisPlotElement {
     this.drawMap(allData, selectedData);
     this.drawInfo(selectedData);
     this.drawSeismograph(selectedData);
+    this.drawSpectra(selectedData);
+    this.drawSpectrogram(selectedData);
+  }
+  drawSpectrogram(sortedData: Array<SeismogramDisplayData>): Array<OrganizedDisplayItem> {
+    let seisDispItems = new Array<OrganizedDisplayItem>();
+    if (this.with_spectrogram === "true") {
+      // spectrogram can't overlay
+      seisDispItems = this.organizedItems(SPECTROGRAM, sortedData, OVERLAY_INDIVIDUAL);
+    } else {
+      this.removeItems(SPECTROGRAM);
+    }
+    return seisDispItems;
+  }
+  drawSpectra(sortedData: Array<SeismogramDisplayData>): Array<OrganizedDisplayItem> {
+    let seisDispItems = new Array<OrganizedDisplayItem>();
+    if (this.with_spectra === "true") {
+      seisDispItems = this.organizedItems(SPECTRA, sortedData, this.overlayby);
+    } else {
+      this.removeItems(SPECTRA);
+    }
+    return seisDispItems;
   }
   drawSeismograph(sortedData: Array<SeismogramDisplayData>): Array<OrganizedDisplayItem> {
     let seisDispItems = new Array<OrganizedDisplayItem>();
-    if (this.overlayby === OVERLAY_INDIVIDUAL) {
+    if (this.with_seismograph === "true") {
+      seisDispItems = this.organizedItems(SEISMOGRAPH, sortedData, this.overlayby);
+    } else {
+      this.removeItems(SEISMOGRAPH);
+    }
+    return seisDispItems;
+  }
+  removeItems(plottype: String) {
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    wrapper
+      .querySelectorAll(ORG_DISP_ITEM)
+      .forEach((item) => {
+        if (item instanceof OrganizedDisplayItem
+          && item.plottype === plottype) {
+            wrapper.removeChild(item);
+          }
+        });
+  }
+  organizedItems(plottype: string,
+                 sortedData: Array<SeismogramDisplayData>,
+                 overlayby: string
+                ): Array<OrganizedDisplayItem> {
+    let seisDispItems = new Array<OrganizedDisplayItem>();
+    if (overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach((sdd) => {
         const oi = new OrganizedDisplayItem([sdd], this.seismographConfig);
-        oi.plottype = SEISMOGRAPH;
+        oi.plottype = plottype;
         seisDispItems.push(oi);
       });
-    } else if (this.overlayby === OVERLAY_VECTOR) {
+    } else if (overlayby === OVERLAY_VECTOR) {
       const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach((gsdd) => {
         const oi = new OrganizedDisplayItem(gsdd, this.seismographConfig);
+        oi.plottype = plottype;
         seisDispItems.push(oi);
       });
-    } else if (this.overlayby === OVERLAY_COMPONENT) {
+    } else if (overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, this.seismographConfig);
+      oitems.forEach(oi => oi.plottype = plottype);
       seisDispItems = seisDispItems.concat(oitems);
-    } else if (this.overlayby === OVERLAY_STATION_COMPONENT) {
+    } else if (overlayby === OVERLAY_STATION_COMPONENT) {
       const oitems = overlayByStationComponent(sortedData, this.seismographConfig);
+      oitems.forEach(oi => oi.plottype = plottype);
       seisDispItems = seisDispItems.concat(oitems);
-    } else if (this.overlayby === OVERLAY_STATION) {
+    } else if (overlayby === OVERLAY_STATION) {
       const oitems = overlayByStation(sortedData, this.seismographConfig);
+      oitems.forEach(oi => oi.plottype = plottype);
       seisDispItems = seisDispItems.concat(oitems);
-    } else if (this.overlayby === OVERLAY_ALL) {
+    } else if (overlayby === OVERLAY_ALL) {
       const oi = new OrganizedDisplayItem(sortedData, this.seismographConfig);
+      oi.plottype = plottype;
       seisDispItems.push(oi);
-    } else if (this.overlayby === OVERLAY_NONE) {
+    } else if (overlayby === OVERLAY_NONE) {
       // nothing to do here
     } else {
-      throw new Error(`Unknown overlay: ${this.overlayby}`);
+      throw new Error(`Unknown overlay: ${overlayby}`);
     }
 
     if (this.topSeismographConfig != null && seisDispItems.length > 0) {
@@ -234,12 +338,10 @@ export class OrganizedDisplay extends SeisPlotElement {
 
     // mouse hover over seismogram highlights station if map show
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
-    wrapper
-      .querySelectorAll(ORG_DISP_ITEM)
-      .forEach((item) => wrapper.removeChild(item));
+    this.removeItems(plottype);
 
     seisDispItems.forEach((odi: OrganizedDisplayItem) => {
-      if (odi.plottype === SEISMOGRAPH) {
+      if (odi.plottype === plottype) {
         odi.addEventListener("mouseenter", (_evt) => {
           const mapElement = wrapper.querySelector(MAP_ELEMENT) as QuakeStationMap;
           if (mapElement ) {
@@ -368,7 +470,13 @@ export class OrganizedDisplay extends SeisPlotElement {
     }
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === WITH_MAP) {
+    if (name === WITH_SEISMOGRAPH) {
+      this.drawSeismograph(this.selectedData());
+    } else if (name === WITH_SPECTRA) {
+      this.drawSpectra(this.selectedData());
+    } else if (name === WITH_SPECTROGRAM) {
+      this.drawSpectrogram(this.selectedData());
+    } else if (name === WITH_MAP) {
       this.drawMap(this.sortedSeisData(), this.selectedData());
     } else if (name === WITH_INFO) {
       const sortedData = this.selectedData();

@@ -24,6 +24,18 @@ export const TOOLS_HTML = `
         <label for="with_seis">seismograph</label>
       </span>
       <span>
+        <input type="checkbox" name="with_parmo" id="with_parmo">
+        <label for="with_parmo">part motion</label>
+      </span>
+      <span>
+        <input type="checkbox" name="with_spectra" id="with_spectra">
+        <label for="with_spectra">spectra</label>
+      </span>
+      <span>
+        <input type="checkbox" name="with_spectrogram" id="with_spectrogram">
+        <label for="with_spectrogram">spectrogram</label>
+      </span>
+      <span>
         <input type="checkbox" name="with_map" id="with_map">
         <label for="with_map">map</label>
       </span>
@@ -95,7 +107,13 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         "input#with_seis",
       ) as HTMLInputElement;
       if (doSeisCB) {
-        doSeisCB.checked = orgdisp.map === "true";
+        doSeisCB.checked = orgdisp.with_seismograph === "true";
+      }
+      const doSpectraCB = shadow?.querySelector(
+        "input#with_spectra",
+      ) as HTMLInputElement;
+      if (doSpectraCB) {
+        doSpectraCB.checked = orgdisp.with_spectra === "true";
       }
       const doMapCB = shadow?.querySelector(
         "input#with_map",
@@ -312,6 +330,32 @@ export class OrganizedDisplayTools extends SeisPlotElement {
   }
   wireComponents() {
     const shadow = this.shadowRoot;
+
+    const doSeismographCB = shadow?.querySelector(
+      "input#with_seis",
+    ) as HTMLInputElement;
+    doSeismographCB?.addEventListener("change", () => {
+      if (this._organizedDisplay) {
+        this._organizedDisplay.with_seismograph = `${doSeismographCB.checked}`;
+      }
+    });
+    const doSpectraCB = shadow?.querySelector(
+      "input#with_spectra",
+    ) as HTMLInputElement;
+    doSpectraCB?.addEventListener("change", () => {
+      if (this._organizedDisplay) {
+        this._organizedDisplay.with_spectra = `${doSpectraCB.checked}`;
+      }
+    });
+    const doSpectrogramCB = shadow?.querySelector(
+      "input#with_spectrogram",
+    ) as HTMLInputElement;
+    doSpectrogramCB?.addEventListener("change", () => {
+      if (this._organizedDisplay) {
+        this._organizedDisplay.with_spectrogram = `${doSpectrogramCB.checked}`;
+      }
+    });
+
     const doMapCB = shadow?.querySelector("input#with_map") as HTMLInputElement;
     doMapCB?.addEventListener("change", () => {
       if (this._organizedDisplay) {

@@ -617,9 +617,7 @@ export class HelicorderConfig extends SeismographConfig {
     }
     this.lineSeisConfig = lineSeisConfig;
   }
-  static fromSeismographConfig(
-    seisConfig: SeismographConfig,
-  ): HelicorderConfig {
+  static fromSeismographConfig(seisConfig: SeismographConfig): HelicorderConfig {
     if (!seisConfig.fixedTimeScale) {
       throw new Error("Helicorder config must have fixedTimeScale set");
     }

@@ -2,6 +2,7 @@ import { fftForward } from "./fft.mjs";
 import * as spectraplot from "./spectraplot.mjs";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion.mjs";
 import { Seismograph } from "./seismograph.mjs";
+import { Spectrogram } from "./spectrogram.mjs";
 import * as querystringify from "querystringify";
 import { SeisPlotElement } from "./spelement.mjs";
 import { SeismogramDisplayData } from "./seismogram.mjs";
@@ -19,6 +20,7 @@ export const PLOT_TYPE = "plottype";
 export const SEISMOGRAPH = "seismograph";
 export const SPECTRA = "amp_spectra";
 export const PARTICLE_MOTION = "particlemotion";
+export const SPECTROGRAM = "spectrogram";
 export const MAP = "map";
 export const INFO = "info";
 export const QUAKE_TABLE = "quake_table";
@@ -48,6 +50,12 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       height: 400px;
     }
     sp-seismograph {
+      height: var(--sp-seismograph-height, 200px);
+    }
+    sp-spectra {
+      height: var(--sp-seismograph-height, 200px);
+    }
+    sp-spectrogram {
       height: var(--sp-seismograph-height, 200px);
     }
     div.wrapper {
@@ -184,6 +192,12 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         pmpSeisConfig,
       );
       wrapper.appendChild(particleMotionPlot);
+    } else if (this.plottype.startsWith(SPECTROGRAM)) {
+        const spectrogram = new Spectrogram(
+          this.seisData,
+          this._seismographConfig,
+        );
+        wrapper.appendChild(spectrogram);
     } else if (this.plottype.startsWith(MAP)) {
       const mapid =
         "map" + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
