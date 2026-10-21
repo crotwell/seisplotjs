@@ -10,8 +10,9 @@ import fs from "fs";
 test("load miniseed file", () => {
 
     const mseedData = fs.readFileSync('test/miniseed/CO_JSC.mseed');
-    const ab = mseedData.buffer.slice(mseedData.byteOffset, mseedData.byteOffset + mseedData.byteLength);
     expect(mseedData.length).toEqual(7168);
+    // not sure why, but if this is not done we read past the end of the data into garbage
+    const ab = mseedData.buffer.slice(mseedData.byteOffset, mseedData.byteOffset + mseedData.byteLength);
     const parsed = miniseed.parseDataRecords(ab);
     expect(parsed.length).toEqual(14);
     const dr = parsed[0];
@@ -63,7 +64,9 @@ test("load miniseed file", () => {
 test("contiguous miniseed file", () => {
     const mseedData = fs.readFileSync('test/miniseed/CO_JSC.mseed');
     expect(mseedData.length).toEqual(7168);
-    const parsed = miniseed.parseDataRecords(mseedData.buffer);
+    // not sure why, but if this is not done we read past the end of the data into garbage
+    const ab = mseedData.buffer.slice(mseedData.byteOffset, mseedData.byteOffset + mseedData.byteLength);
+    const parsed = miniseed.parseDataRecords(ab);
     expect(parsed.length).toEqual(14);
     const drFirst = parsed[0];
     const drSecond = parsed[1];
