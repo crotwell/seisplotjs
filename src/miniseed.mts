@@ -92,23 +92,40 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   out.numBlockettes = dataView.getUint8(39);
   out.timeCorrection = dataView.getInt32(40, headerByteSwap);
   out.dataOffset = dataView.getUint16(44, headerByteSwap);
+  if (out.dataOffset < 0 && out.numSamples > 0) {
+    throw new Error(
+      `Offset to data is negative: ${out.dataOffset} but there are ${out.numSamples} samples`,
+    );
+  }
   out.blocketteOffset = dataView.getUint16(46, headerByteSwap);
   let offset = out.blocketteOffset;
+  if (offset < 0) {
+    throw new Error(
+      `Offset to first blockette is negative: ${offset}`,
+    );
+  }
   out.blocketteList = [];
   out.recordSize = 4096;
   out.sampleRate = out.calcSampleRate();
 
   for (let i = 0; i < out.numBlockettes; i++) {
     let nextOffset = dataView.getUint16(offset + 2, headerByteSwap);
-
     if (nextOffset === 0) {
       // last blockette
       nextOffset = out.dataOffset;
+    } else if (nextOffset < offset) {
+      throw new Error(
+        `Offset to next blockette is before current offset: ${nextOffset} < ${offset}`,);
+    } else if (nextOffset > out.recordSize) {
+      throw new Error(
+        `Offset to next blockette is past record size: ${nextOffset} > ${out.recordSize}`,
+      );
+    } else if (nextOffset > out.dataOffset) {
+      throw new Error(
+        `Offset to next blockette is past data offset: ${nextOffset} > ${out.dataOffset}`,
+      );
     }
 
-    if (nextOffset === 0) {
-      nextOffset = offset; // zero length, probably an error...
-    }
 
     const blockette = parseBlockette(
       dataView,
@@ -154,6 +171,16 @@ export function parseBlockette(
   length: number,
   headerByteSwap: boolean,
 ): Blockette {
+  if (offset < 0) {
+      throw new Error(
+        `blockette offset is negative: ${offset}`,
+      );
+  }
+  if (length < 0) {
+      throw new Error(
+        `blockette length is negative: ${length}`,
+      );
+  }
   const type = dataView.getUint16(offset, headerByteSwap);
   const body = new DataView(
     dataView.buffer,
