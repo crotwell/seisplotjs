@@ -2,7 +2,7 @@
  * commonalities with all types of FDSN Web Services
  */
 
-import { isNonEmptyStringArg, checkProtocol } from "./util.mjs";
+import { isNonEmptyStringArg, checkProtocol, defaultFetchInitObj } from "./util.mjs";
 import {USGS_HOST} from './quakeml.mjs';
 
 export const EARTHSCOPE_HOST = "service.earthscope.org";
@@ -41,12 +41,16 @@ export class FDSNCommon {
   /** @private */
   _timeoutSec: number;
 
+  /** @private */
+  _headers: Headers;
+
   constructor(service: string, host?: string) {
     this._specVersion = "1";
     this._host = EARTHSCOPE_HOST;
     this._protocol = checkProtocol();
     this._path_base = FDSNWS_PATH_BASE;
     this._service = service;
+    this._headers = new Headers();
 
     if (isNonEmptyStringArg(host)) {
       this._host = host;
@@ -59,6 +63,19 @@ export class FDSNCommon {
   defaultPortStringForProtocol(protocol: string) {
     return defaultPortStringForProtocol(protocol, this._port);
 
+  }
+
+  setHeader(key: string, value?: string) {
+    if (value != null && value.length>0) {
+      this._headers.set(key, value);
+    } else {
+      this._headers.delete(key);
+    }
+  }
+
+  createFetchInitObj(mimeType: string): RequestInit {
+    const fetchInit = defaultFetchInitObj(mimeType, this._headers);
+    return fetchInit;
   }
 }
 

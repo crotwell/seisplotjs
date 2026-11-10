@@ -736,20 +736,24 @@ export interface FetchInitObject {
  * @param   mimeType requested mime type
  * @returns           object with fetch configuration parameters
  */
-export function defaultFetchInitObj(mimeType?: string): RequestInit {
-  const headers: Record<string, string> = {};
-
-  if (isStringArg(mimeType)) {
-    headers.Accept = mimeType;
+export function defaultFetchInitObj(mimeType?: string, otherHeaders?: Headers): RequestInit {
+  const headers = new Headers();
+  if (otherHeaders != null) {
+    otherHeaders.forEach( (v,k) => {
+      headers.set(k, v);
+    });
   }
-
-  return {
+  if (isStringArg(mimeType)) {
+    headers.set("Accept", mimeType);
+  }
+  const out: RequestInit = {
     cache: "no-cache",
     redirect: "follow",
     mode: "cors",
     referrer: "seisplotjs",
     headers: headers,
   };
+  return out;
 }
 export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
   const out = {};
