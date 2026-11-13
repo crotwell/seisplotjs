@@ -14,6 +14,9 @@
         height: 300px;
         width: 700px;
       }
+      p.errormessage {
+        color: red;
+      }
     </style>
   </head>
   <body>
@@ -73,7 +76,8 @@
       let times = sp.luxon.Interval.after(start, sp.luxon.Duration.fromMillis(1000*1800));
       let dsQuery = new sp.fdsndataselect.DataSelectQuery();
 
-      const seismograph = (document.querySelector('sp-seismograph'));
+
+      const seismograph = document.querySelector('sp-seismograph');
       seismograph.seismographConfig = new sp.seismographconfig.SeismographConfig();
       seismograph.seismographConfig.title = "";
       dsQuery.networkCode('CO')
@@ -81,13 +85,15 @@
         .locationCode('00')
         .channelCode('LHZ')
         .timeRange(times);
-      dsQuery.querySeismograms().then(seisArray => {
+      dsQuery.querySeismograms()
+      .then( (seisArray) => {
         seismograph.seisData = seisArray;
       }).catch( function(error) {
-        const errdiv = document.querySelect("div#myseismograph");
+        console.error(error);
+        const errdiv = document.querySelector("div#myseismograph");
         const p = errdiv.appendChild(document.createElement('p'));
+        p.classList.add("errormessage");
         p.textContent = `Error loading data: ${error}`;
-        console.assert(false, error);
       });
     </script>
     <script src="prism.js"></script>
