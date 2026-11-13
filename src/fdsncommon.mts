@@ -71,6 +71,7 @@ export class FDSNCommon {
     } else {
       this._headers.delete(key);
     }
+    return this;
   }
 
   createFetchInitObj(mimeType: string): RequestInit {
