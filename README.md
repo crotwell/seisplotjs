@@ -7,6 +7,10 @@ A tutorial with examples of various access and display types can be seen at
 [crotwell.github.io/seisplotjs](https://crotwell.github.io/seisplotjs/).
 Also see the [wiki](https://github.com/crotwell/seisplotjs/wiki).
 
+> [!WARNING]
+> Earthscope will require Authentication starting 2026 Dec 15 for all
+> seismogram downloads. See [here](earthscope_auth.md) for more information.
+
 Install with `npm i --save seisplotjs`.
 
 Import like:
