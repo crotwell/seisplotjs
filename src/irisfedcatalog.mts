@@ -20,6 +20,7 @@ import { NslcId } from "./fdsnsourceid.mjs";
 import { DataSelectQuery } from "./fdsndataselect.mjs";
 import { SeismogramDisplayData } from "./seismogram.mjs";
 import {
+  AUTHORIZATION_HEADER,
   TEXT_MIME,
   makeParam,
   doFetchWithTimeout,
@@ -1005,6 +1006,7 @@ export class FedCatalogQuery extends FDSNCommon {
   setupForFdnsDataSelect(fedCatalogResult: FedCatalogResult): FedCatalogResult {
     for (const r of fedCatalogResult.queries) {
       const dataSelectQuery = new DataSelectQuery();
+      this._headers.forEach( (k,v) => {dataSelectQuery.setHeader(k,v);});
       r.dataSelectQuery = dataSelectQuery;
       fedCatalogResult.params.forEach((k, v) => {
         const field = `_${k}`;

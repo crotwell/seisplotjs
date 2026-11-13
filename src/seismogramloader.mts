@@ -15,7 +15,7 @@ import {
   createMarkersForTravelTimes,
   createMarkerForOriginTime,
 } from "./seismographmarker.mjs";
-import { isDef, isStringArg, stringify } from "./util.mjs";
+import { isDef, isStringArg, stringify, insertAuthorizationToken } from "./util.mjs";
 
 /**
  * Loads seismograms based on queries to Station and Event web services.
@@ -34,10 +34,18 @@ export class SeismogramLoader {
   eventQuery: EventQuery | Promise<Array<Quake>>;
   dataselectQuery: null | DataSelectQuery;
   taupQuery: null | TauPQuery;
+
+  /** @private */
+  _headers: Headers;
+  /** @private */
   _startPhaseList: Array<string>;
+  /** @private */
   _endPhaseList: Array<string>;
+  /** @private */
   _markedPhaseList: Array<string>;
+  /** @private */
   _startOffset: Duration;
+  /** @private */
   _endOffset: Duration;
 
   constructor(
@@ -71,6 +79,7 @@ export class SeismogramLoader {
     this.withResponse = false;
     this.markOrigin = true;
     this.dataselectQuery = null;
+    this._headers = new Headers();
 
     if (isDef(dataselectQuery)) {
       this.dataselectQuery = dataselectQuery;
@@ -194,6 +203,24 @@ export class SeismogramLoader {
     }
   }
 
+  setAuthorizationToken(token: string) {
+    insertAuthorizationToken(this._headers, token);
+    return this;
+  }
+
+  setHeader(key: string, value?: string) {
+    if (value != null && value.length>0) {
+      this._headers.set(key, value);
+    } else {
+      this._headers.delete(key);
+    }
+    return this;
+  }
+
+  getHeaders(): Headers {
+    return this._headers;
+  }
+
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
     return this.load().then((res) => res.waveforms);
   }
@@ -214,9 +241,11 @@ export class SeismogramLoader {
           "Must set some station parameter to avoid asking for everything.",
         );
       }
-      let fedcat;
+      let fedcat: FedCatalogQuery|StationQuery | Promise<Array<Network>>;
       if (this.withFedCatalog) {
-        fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
+        const asFedCatQuery = FedCatalogQuery.fromStationQuery(this.stationQuery);
+        this._headers.forEach( (k,v) => {asFedCatQuery.setHeader(k,v);});
+        fedcat = asFedCatQuery;
       } else {
         fedcat = this.stationQuery;
       }
@@ -412,9 +441,12 @@ export class SeismogramLoader {
         } else if (this.withFedCatalog) {
           // use IrisFedCat
           const fedcatDS = new FedCatalogQuery();
+          this._headers.forEach( (k,v) => {fedcatDS.setHeader(k,v);});
           sddListPromise = fedcatDS.postQuerySeismograms(seismogramDataList);
         } else {
           // use default dataselect
+          const dataSelectDefault = new DataSelectQuery();
+          this._headers.forEach( (k,v) => {dataSelectDefault.setHeader(k,v);});
           sddListPromise = new DataSelectQuery().postQuerySeismograms(
             seismogramDataList,
           );
