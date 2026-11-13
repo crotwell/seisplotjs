@@ -339,6 +339,14 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         this._organizedDisplay.with_seismograph = `${doSeismographCB.checked}`;
       }
     });
+    const doParMotionCB = shadow?.querySelector(
+      "input#with_parmo",
+    ) as HTMLInputElement;
+    doParMotionCB?.addEventListener("change", () => {
+      if (this._organizedDisplay) {
+        this._organizedDisplay.with_particlemotion = `${doParMotionCB.checked}`;
+      }
+    });
     const doSpectraCB = shadow?.querySelector(
       "input#with_spectra",
     ) as HTMLInputElement;

@@ -1,3 +1,4 @@
+import {groupComponentOfMotion} from "./grouping.mjs";
 import { INFO_ELEMENT, QuakeStationTable } from "./infotable.mjs";
 import {
   MAP_ELEMENT,
@@ -11,7 +12,7 @@ import { isDef } from "./util.mjs";
 
 import {OrganizedDisplayTools, ORG_DISP_TOOLS_ELEMENT} from "./organizeddisplaytools.mjs";
 import {OrganizedDisplayItem,
-  ORG_DISP_ITEM, SEISMOGRAPH, SPECTRA, SPECTROGRAM,
+  ORG_DISP_ITEM, SEISMOGRAPH, PARTICLE_MOTION, SPECTRA, SPECTROGRAM,
   MAP} from "./organizeddisplayitem.mjs";
 import {defaultPlotSelect} from "./organizeddisplayselect.mjs";
 
@@ -35,6 +36,8 @@ export const DEFAULT_WITH_TOOLS = "true";
 
 export const WITH_SEISMOGRAPH = "seismograph";
 export const DEFAULT_WITH_SEISMOGRAPH = "true";
+export const WITH_PARTICLEMOTION = "parmotion";
+export const DEFAULT_WITH_PARTICLEMOTION = "false";
 export const WITH_SPECTRA = "spectra";
 export const DEFAULT_WITH_SPECTRA = "false";
 export const WITH_SPECTROGRAM = "spectrogram";
@@ -94,6 +97,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       WITH_INFO,
       OVERLAY_BY,
       WITH_SEISMOGRAPH,
+      WITH_PARTICLEMOTION,
       WITH_SPECTRA,
       WITH_SPECTROGRAM,
     ]);
@@ -178,6 +182,20 @@ export class OrganizedDisplay extends SeisPlotElement {
   set with_seismograph(val: string) {
     this.setAttribute(WITH_SEISMOGRAPH, val.toLowerCase().trim());
   }
+  get with_particlemotion(): string {
+    let k = this.hasAttribute(WITH_PARTICLEMOTION)
+      ? this.getAttribute(WITH_PARTICLEMOTION)
+      : DEFAULT_WITH_PARTICLEMOTION;
+    // typescript null
+    if (!isDef(k)) {
+      k = DEFAULT_WITH_PARTICLEMOTION;
+    }
+    k = k.trim().toLowerCase();
+    return k;
+  }
+  set with_particlemotion(val: string) {
+    this.setAttribute(WITH_PARTICLEMOTION, val.toLowerCase().trim());
+  }
   get with_spectra(): string {
     let k = this.hasAttribute(WITH_SPECTRA)
       ? this.getAttribute(WITH_SPECTRA)
@@ -239,8 +257,18 @@ export class OrganizedDisplay extends SeisPlotElement {
     this.drawMap(allData, selectedData);
     this.drawInfo(selectedData);
     this.drawSeismograph(selectedData);
+    this.drawParticleMotion(selectedData);
     this.drawSpectra(selectedData);
     this.drawSpectrogram(selectedData);
+  }
+  drawParticleMotion(sortedData: Array<SeismogramDisplayData>): Array<OrganizedDisplayItem> {
+    let seisDispItems = new Array<OrganizedDisplayItem>();
+    if (this.with_particlemotion === "true") {
+      seisDispItems = this.organizedItems(PARTICLE_MOTION, sortedData, this.overlayby);
+    } else {
+      this.removeItems(PARTICLE_MOTION);
+    }
+    return seisDispItems;
   }
   drawSpectrogram(sortedData: Array<SeismogramDisplayData>): Array<OrganizedDisplayItem> {
     let seisDispItems = new Array<OrganizedDisplayItem>();
@@ -270,7 +298,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     }
     return seisDispItems;
   }
-  removeItems(plottype: String) {
+  removeItems(plottype: string) {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
     wrapper
       .querySelectorAll(ORG_DISP_ITEM)
@@ -472,6 +500,8 @@ export class OrganizedDisplay extends SeisPlotElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === WITH_SEISMOGRAPH) {
       this.drawSeismograph(this.selectedData());
+    } else if (name === WITH_PARTICLEMOTION) {
+      this.drawParticleMotion(this.selectedData());
     } else if (name === WITH_SPECTRA) {
       this.drawSpectra(this.selectedData());
     } else if (name === WITH_SPECTROGRAM) {
@@ -593,54 +623,6 @@ export function overlayAll(
   seisConfig?: SeismographConfig,
 ): Array<OrganizedDisplayItem> {
   return overlayBySDDFunction(sddList, "all", () => "all", seisConfig);
-}
-
-/**
- * Groups seismic data into subarrays where members of each subarray are
- * from the same network/station, have the same band and gain/instrument code
- * and overlap in time. Note, in most cases the subarrays will have
- * 1, 2 or 3 elements, but this is not checked nor guaranteed.
- *
- * @param   sddList list of SeismogramDisplayData to split
- * @returns          array of array of data, organized by component of motion
- */
-export function groupComponentOfMotion(
-  sddList: Array<SeismogramDisplayData>,
-): Array<Array<SeismogramDisplayData>> {
-  let tmpSeisDataList = Array.from(sddList);
-
-  const bifurcate = (
-    arr: Array<SeismogramDisplayData>,
-    filter: (arg0: SeismogramDisplayData) => boolean,
-  ) =>
-    arr.reduce(
-      (
-        acc: Array<Array<SeismogramDisplayData>>,
-        val: SeismogramDisplayData,
-      ) => (acc[filter(val) ? 0 : 1].push(val), acc),
-      [[], []],
-    );
-
-  const byFriends = [];
-  let first = tmpSeisDataList.shift();
-  while (isDef(first)) {
-    const isFriend = (sdddB: SeismogramDisplayData) =>
-      isDef(first) /* dumb, typescript */ &&
-      first.networkCode === sdddB.networkCode &&
-      first.stationCode === sdddB.stationCode &&
-      first.locationCode === sdddB.locationCode &&
-      first.channelCode.slice(0, 2) === sdddB.channelCode.slice(0, 2) &&
-      first.timeRange.overlaps(sdddB.timeRange);
-
-    const splitArray = bifurcate(tmpSeisDataList, isFriend);
-    const nextGroup = splitArray[0];
-    nextGroup.unshift(first);
-    byFriends.push(nextGroup);
-    tmpSeisDataList = splitArray[1];
-    first = tmpSeisDataList.shift();
-  }
-
-  return byFriends;
 }
 
 export function createAttribute(

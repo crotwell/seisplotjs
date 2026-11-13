@@ -16,7 +16,9 @@ import {
 } from "d3-axis";
 
 import { AUTO_COLOR_SELECTOR } from "./cssutil.mjs";
-import { AmplitudeScalable, TimeScalable, MinMaxable } from "./scale.mjs";
+import {
+  AmplitudeScalable, TimeScalable, MinMaxable, ZERO_DURATION
+} from "./scale.mjs";
 import { SeismographConfig, numberFormatWrapper } from "./seismographconfig.mjs";
 import {
   createMarkersForTravelTimes,
@@ -60,7 +62,7 @@ import {
   Seismogram,
   COUNT_UNIT,
 } from "./seismogram.mjs";
-import { SeisPlotElement } from "./spelement.mjs";
+import { ScalableGraph } from "./scaleablegraph.mjs";
 import * as axisutil from "./axisutil.mjs";
 import * as util from "./util.mjs"; // for util.log to replace console.log
 
@@ -220,7 +222,7 @@ export const SEISMOGRAPH_CSS_ID = "seismographcss";
  * }<br/>
  * in order to have the seismogram display.
  */
-export class Seismograph extends SeisPlotElement {
+export class Seismograph extends ScalableGraph {
   /** @private */
   static _lastID: number;
   plotId: number;
@@ -243,8 +245,6 @@ export class Seismograph extends SeisPlotElement {
   g: Selection<SVGGElement, unknown, null, undefined>;
   throttleRescale: ReturnType<typeof setTimeout> | null;
   throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
-  time_scalable: SeismographTimeScalable;
-  amp_scalable: SeismographAmplitudeScalable;
 
   panZoomer?: PanZoomer;
 
@@ -320,25 +320,6 @@ export class Seismograph extends SeisPlotElement {
     this.svg.classed(AUTO_COLOR_SELECTOR, true);
     this.svg.attr("plotId", this.plotId);
 
-    const alignmentTimeOffset = Duration.fromMillis(0);
-    const maxDuration = findMaxDuration(this.seisData);
-
-    this.time_scalable = new SeismographTimeScalable(
-      this,
-      alignmentTimeOffset,
-      maxDuration,
-    );
-
-    if (isDef(this.seismographConfig.linkedTimeScale)) {
-      this.seismographConfig.linkedTimeScale.link(this.time_scalable);
-    }
-
-    this.calcTimeScaleDomain();
-    this.amp_scalable = new SeismographAmplitudeScalable(this);
-
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
-    }
     this.redoDisplayYScale();
 
     this.g = this.svg
@@ -406,43 +387,6 @@ export class Seismograph extends SeisPlotElement {
     });
   }
 
-  get seismographConfig() {
-    return super.seismographConfig;
-  }
-  set seismographConfig(seismographConfig: SeismographConfig) {
-    if (isDef(this.seismographConfig.linkedTimeScale)) {
-      this.seismographConfig.linkedTimeScale.unlink(this.time_scalable);
-    }
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.unlink(this.amp_scalable);
-    }
-    super.seismographConfig = seismographConfig;
-    if (isDef(this.seismographConfig.linkedTimeScale)) {
-      this.seismographConfig.linkedTimeScale.link(this.time_scalable);
-    }
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
-    }
-
-    this.redraw();
-  }
-  connectedCallback() {
-
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      this.beforeFirstDraw = false;
-      this.seismographConfig.linkedAmplitudeScale.recalculate().catch((e) => warn(e));
-    } else {
-      this.redraw();
-    }
-  }
-  disconnectedCallback() {
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.unlink(this.amp_scalable);
-    }
-    if (this.seismographConfig.linkedTimeScale) {
-      this.seismographConfig.linkedTimeScale.unlink(this.time_scalable);
-    }
-  }
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.redraw();
   }
@@ -547,6 +491,7 @@ export class Seismograph extends SeisPlotElement {
         }
       }
     }
+    this.redoDisplayYScale();
 
     this.drawSeismograms();
     this.drawAxis();
@@ -604,7 +549,7 @@ export class Seismograph extends SeisPlotElement {
     const mouseTimeVal = this.timeScaleForAxis().invert(
       evt.offsetX - margin.left,
     );
-    const mouseAmp = this.ampScaleForAxis().invert(evt.offsetY - margin.top);
+    const mouseAmp = this.seismographAxisAmpScale().invert(evt.offsetY - margin.top);
     const out = {
       mouseevent: evt,
       time: null,
@@ -655,22 +600,29 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.yGridLines) {
       drawYScaleGridLines(
         canvas,
-        this.ampScaleForAxis(),
+        this.seismographAxisAmpScale(),
         this.seismographConfig.gridLineColor,
       );
     }
-    drawAllOnCanvas(
-      canvas,
-      this._seisDataList,
-      this._seisDataList.map((sdd) => this.timeScaleForSeisDisplayData(sdd, true)),  // Set resolution scaling to true
-      this._seisDataList.map((sdd) => this.ampScaleForSeisDisplayData(sdd)),
-      this._seisDataList.map((_sdd, ti) =>
-        this.seismographConfig.getColorForIndex(ti),
-      ),
-      this.seismographConfig.lineWidth * this.seismographConfig.resolutionScale,
-      this.seismographConfig.connectSegments,
-      this.minmax_sample_pixels,
-    );
+    // Set resolution scaling to true
+    const timeScalePromiseList = Promise.all(
+      this._seisDataList.map((sdd) => this.timeScaleForSeisDisplayData(sdd, true)));
+    const ampScalePromiseList = Promise.all(
+      this._seisDataList.map((sdd) => this.ampScaleForSeisDisplayData(sdd)));
+    Promise.all([timeScalePromiseList, ampScalePromiseList]).then( ([timeScaleList, ampScaleList]) => {
+      drawAllOnCanvas(
+        canvas,
+        this._seisDataList,
+        timeScaleList,
+        ampScaleList,
+        this._seisDataList.map((_sdd, ti) =>
+          this.seismographConfig.getColorForIndex(ti),
+        ),
+        this.seismographConfig.lineWidth * this.seismographConfig.resolutionScale,
+        this.seismographConfig.connectSegments,
+        this.minmax_sample_pixels,
+      );
+    }).catch(err => console.warn("problem drawing", err));
   }
 
   calcScaleAndZoom(): void {
@@ -697,71 +649,10 @@ export class Seismograph extends SeisPlotElement {
   ampScaleForSeisDisplayData(
     sdd: SeismogramDisplayData,
   ): ScaleLinear<number, number, never> {
-    const ampScale = this.__initAmpScale(true);  // Set resolution scaling to true
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      const drawHalfWidth = this.amp_scalable.drawHalfWidth;
-      let sensitivityVal = 1;
-      if (
-        this.seismographConfig.doGain &&
-        sdd.seismogram?.isYUnitCount() &&
-        sdd.sensitivity?.sensitivity
-      ) {
-        sensitivityVal = sdd.sensitivity.sensitivity;
-      }
-      if (!this.seismographConfig.isCenteredAmp()) {
-        return ampScale.domain([
-          (this.amp_scalable.drawMiddle - drawHalfWidth) * sensitivityVal,
-          (this.amp_scalable.drawMiddle + drawHalfWidth) * sensitivityVal,
-        ]);
-      }
-      const sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
-      const minMax = calcMinMax(
-        sdd,
-        sddInterval,
-        false,
-        this.seismographConfig.amplitudeMode,
-      );
-      if (minMax) {
-        // if doGain, halfWidth is in real world units, so mul sensitivity to
-        // get counts for drawing
-        const myMin = minMax.middle - drawHalfWidth * sensitivityVal;
-        const myMax = minMax.middle + drawHalfWidth * sensitivityVal;
-        ampScale.domain([myMin, myMax]);
-      } else {
-        // no data?
-        ampScale.domain([-1, 1]);
-      }
-    } else if (this.seismographConfig.fixedAmplitudeScale) {
-      ampScale.domain(this.seismographConfig.fixedAmplitudeScale);
-    } else {
-      throw new Error(
-        "ampScaleForSeisDisplayData Must be either linked or fixed amp scale",
-      );
-    }
+    const ampRange = this.ampRangeForSeisDisplayData(sdd)
+    const ampScale = this.__initAmpScale([this.height-1,1], true);  // Set resolution scaling to true
+    ampScale.domain(ampRange.asArray());
     return ampScale;
-  }
-
-  displayTimeRangeForSeisDisplayData(sdd: SeismogramDisplayData): Interval {
-    let plotInterval;
-    if (this.seismographConfig.linkedTimeScale) {
-      if (this.time_scalable.drawDuration.equals(ZERO_DURATION)) {
-        this.seismographConfig.linkedTimeScale.recalculate().catch((m) => {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `problem recalc displayTimeRangeForSeisDisplayData: ${m}`,
-          );
-        });
-      }
-      // drawDuration should be set via recalculate now
-      const startOffset = this.time_scalable.drawAlignmentTimeOffset;
-      const duration = this.time_scalable.drawDuration;
-      plotInterval = sdd.relativeTimeWindow(startOffset, duration);
-    } else if (this.seismographConfig.fixedTimeScale) {
-      plotInterval = this.seismographConfig.fixedTimeScale;
-    } else {
-      throw new Error("Must be either fixed or linked time scale");
-    }
-    return plotInterval;
   }
 
   timeScaleForSeisDisplayData(
@@ -800,46 +691,8 @@ export class Seismograph extends SeisPlotElement {
     this.drawLeftRightAxis();
   }
 
-  /**
-   * Creates amp scale, set range based on height.
-   * @private
-   * @returns amp scale with range set
-   */
-  __initAmpScale(scaleForResolution: boolean = false): ScaleLinear<number, number, never> {
-    const ampAxisScale = d3scaleLinear();
-    // don't use top,bot pixel, somehow line at top amp disappears if [this.height, 0]
-    const height =
-      (scaleForResolution ? (this.seismographConfig.resolutionScale*this.height)
-      : this.height) - 1;
-    ampAxisScale.range([height, 1]);
-    return ampAxisScale;
-  }
-
-  ampScaleForAxis(): ScaleLinear<number, number, never> {
-    const ampAxisScale = this.__initAmpScale();
-    if (this.seismographConfig.fixedAmplitudeScale) {
-      ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
-    } else if (this.seismographConfig.linkedAmplitudeScale) {
-      let middle;
-      if (this.seismographConfig.isCenteredAmp()) {
-        middle = 0;
-      } else {
-        middle = this.amp_scalable.drawMiddle;
-      }
-      ampAxisScale.domain([
-        middle - this.amp_scalable.drawHalfWidth,
-        middle + this.amp_scalable.drawHalfWidth,
-      ]);
-    } else {
-      throw new Error(
-        "ampScaleForAxis Must be either linked or fixed amp scale",
-      );
-    }
-    return ampAxisScale;
-  }
-
   timeScaleForAxis():
-    | ScaleLinear<number, number, never>
+    ScaleLinear<number, number, never>
     | axisutil.LuxonTimeScale {
     let xScaleToDraw;
     if (this.seismographConfig.isRelativeTime) {
@@ -879,7 +732,7 @@ export class Seismograph extends SeisPlotElement {
     return xScaleToDraw;
   }
   /**
-   * Draws the left and right (amplitude) axis if configured.
+   * Draws the time and bottom (time) axis if configured.
    *
    */
   drawTopBottomAxis(): void {
@@ -952,7 +805,8 @@ export class Seismograph extends SeisPlotElement {
   createLeftRightAxis(): Array<Axis<d3NumberValue> | null> {
     let yAxis = null;
     let yAxisRight = null;
-    const axisScale = this.ampScaleForAxis();
+    const axisScale = this.seismographAxisAmpScale();
+    console.log(`amp axis: domain: ${axisScale.domain()}  range: ${axisScale.range()}`)
     if (this.seismographConfig.isYAxis) {
       yAxis = d3axisLeft(axisScale).tickFormat(
         numberFormatWrapper(this.seismographConfig.amplitudeFormat),
@@ -970,6 +824,9 @@ export class Seismograph extends SeisPlotElement {
       yAxisRight.ticks(this.seismographConfig.yAxisNumTickHint, this.seismographConfig.amplitudeFormat);
     }
     return [yAxis, yAxisRight];
+  }
+  seismographAxisAmpScale() {
+    return this.ampScaleForAxis([this.height-1,1]);
   }
 
   rescaleYAxis(): void {
@@ -1035,10 +892,11 @@ export class Seismograph extends SeisPlotElement {
       this.g.select("g.allseismograms").selectAll("g.seismogram").remove();
 
       if (this.seismographConfig.windowAmp) {
-        this.recheckAmpScaleDomain();
+        this.recheckAmpScaleDomain().then( () => {this.redoDisplayYScale();this.drawSeismograms();});
       }
 
       this.drawSeismograms();
+      const height = this.height;
       this.g
         .select("g.allmarkers")
         .selectAll("g.marker")
@@ -1053,7 +911,7 @@ export class Seismograph extends SeisPlotElement {
         .selectAll("g.markertext")
         .attr("transform", function () {
           // shift up by this.seismographConfig.markerTextOffset percentage
-          const axisScale = mythis.ampScaleForAxis();
+          const axisScale = mythis.seismographAxisAmpScale();
           const maxY = axisScale.range()[0];
           const deltaY = axisScale.range()[0] - axisScale.range()[1];
           const texty =
@@ -1096,7 +954,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   drawMarkers() {
-    const axisScale = this.ampScaleForAxis();
+    const axisScale = this.seismographAxisAmpScale();
     const allMarkers: Array<MarkerHolderType> = this._seisDataList
       .reduce((acc: Array<MarkerHolderType>, sdd) => {
         const sddXScale = this.timeScaleForSeisDisplayData(sdd);
@@ -1388,100 +1246,6 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  /**
-   * Update the duration if not already set. This only matters for
-   * linedTimeScale currently.
-   */
-  calcTimeScaleDomain(): void {
-    if (isDef(this.seismographConfig.linkedTimeScale)) {
-      const linkedTimeScale = this.seismographConfig.linkedTimeScale;
-      if (
-        this._seisDataList.length !== 0 &&
-        linkedTimeScale.duration.toMillis() === 0
-      ) {
-        this.seismographConfig.linkedTimeScale.duration = findMaxDuration(
-          this._seisDataList,
-        );
-      }
-    }
-  }
-
-  /**
-   * Calculate the amplitude range over the current time range, depending
-   * on amplitude style.
-   *
-   * @returns min max over the time range
-   */
-  calcAmpScaleDomain(): MinMaxable {
-    let minMax;
-    if (this.seismographConfig.fixedAmplitudeScale) {
-      minMax = MinMaxable.fromArray(this.seismographConfig.fixedAmplitudeScale);
-    } else {
-      if (this.seismographConfig.windowAmp) {
-        if (isDef(this.seismographConfig.linkedTimeScale)) {
-          minMax = findMinMaxOverRelativeTimeRange(
-            this._seisDataList,
-            this.seismographConfig.linkedTimeScale.offset,
-            this.seismographConfig.linkedTimeScale.duration,
-            this.seismographConfig.doGain,
-            this.seismographConfig.amplitudeMode,
-          );
-        } else if (isDef(this.seismographConfig.fixedTimeScale)) {
-          minMax = findMinMaxOverTimeRange(
-            this._seisDataList,
-            this.seismographConfig.fixedTimeScale,
-            this.seismographConfig.doGain,
-            this.seismographConfig.amplitudeMode,
-          );
-        } else {
-          throw new Error("neither fixed nor linked time scale");
-        }
-      } else {
-        minMax = findMinMax(
-          this._seisDataList,
-          this.seismographConfig.doGain,
-          this.seismographConfig.amplitudeMode,
-        );
-      }
-
-      if (minMax.halfWidth === 0) {
-        // flatlined data, use -1, +1
-        //minMax = [minMax[0] - 1, minMax[1] + 1];
-      }
-      if (this.seismographConfig.isYAxisNice) {
-        // use d3 scale's nice function
-        let scale = d3scaleLinear();
-        scale.domain(minMax.asArray());
-        scale = scale.nice();
-        minMax = MinMaxable.fromArray(scale.domain());
-      }
-    }
-    return minMax;
-  }
-
-  recheckAmpScaleDomain(): void {
-    const calcMidHW = this.calcAmpScaleDomain();
-    const oldMiddle = this.amp_scalable.middle;
-    const oldHalfWidth = this.amp_scalable.halfWidth;
-    this.amp_scalable.minMax = calcMidHW;
-
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      if (
-        this.amp_scalable.middle !== oldMiddle ||
-        this.amp_scalable.halfWidth !== oldHalfWidth
-      ) {
-        this.seismographConfig.linkedAmplitudeScale
-          .recalculate() // sets yScale.domain
-          .catch((m) => {
-            // eslint-disable-next-line no-console
-            console.warn(`problem recalc amp scale: ${m}`);
-          });
-      }
-    } else {
-      this.redoDisplayYScale();
-    }
-  }
-
   redoDisplayYScale(): void {
     this.rescaleYAxis();
 
@@ -1561,17 +1325,19 @@ export class Seismograph extends SeisPlotElement {
    */
   seisDataUpdated() {
     this.calcTimeScaleDomain();
-    this.recheckAmpScaleDomain();
-    if (!this.beforeFirstDraw) {
-      // only trigger a draw if appending after already drawn on screen
-      // otherwise, just append the data and wait for outside to call first draw()
-      //this.drawSeismograms();
-      if (this.seismographConfig.linkedAmplitudeScale) {
-        this.seismographConfig.linkedAmplitudeScale.recalculate().catch((e) => warn(e));
-      } else {
-        this.redraw();
+    this.recheckAmpScaleDomain().then(() => {
+      this.redoDisplayYScale();
+      if (!this.beforeFirstDraw) {
+        // only trigger a draw if appending after already drawn on screen
+        // otherwise, just append the data and wait for outside to call first draw()
+        //this.drawSeismograms();
+        if (this.seismographConfig.linkedAmplitudeScale) {
+          this.seismographConfig.linkedAmplitudeScale.recalculate().catch((e) => warn(e));
+        } else {
+          this.redraw();
+        }
       }
-    }
+    });
   }
 
   /**
@@ -1612,74 +1378,16 @@ export class Seismograph extends SeisPlotElement {
       });
 
       if (this._seisDataList.length > 0) {
-        this.recheckAmpScaleDomain();
-        this.drawSeismograms();
+        this.recheckAmpScaleDomain().then( () => {this.redoDisplayYScale();this.drawSeismograms();});
       }
     }
   }
 }
 
-export class SeismographAmplitudeScalable extends AmplitudeScalable {
-  graph: Seismograph;
-  drawHalfWidth: number;
-  drawMiddle: number;
-  constructor(graph: Seismograph) {
-    const calcMidHW = graph.calcAmpScaleDomain();
-    super(calcMidHW);
-    this.graph = graph;
-    this.drawHalfWidth = super.halfWidth;
-    this.drawMiddle = super.middle;
-  }
-  notifyAmplitudeChange(middle: number, halfWidth: number) {
-    if (middle !== this.drawMiddle || halfWidth !== this.drawHalfWidth) {
-      this.drawMiddle = middle;
-      this.drawHalfWidth = halfWidth;
-      this.graph.redoDisplayYScale();
-
-      if (!this.graph.beforeFirstDraw) {
-        // only trigger a draw if appending after already drawn on screen
-        // otherwise, just append the data and wait for outside to call first draw()
-        this.graph.redraw();
-      }
-    }
-  }
-}
-
-export const ZERO_DURATION = Duration.fromMillis(0);
-
-export class SeismographTimeScalable extends TimeScalable {
-  graph: Seismograph;
-  drawAlignmentTimeOffset: Duration;
-  drawDuration: Duration;
-  constructor(
-    graph: Seismograph,
-    alignmentTimeOffset: Duration,
-    duration: Duration,
-  ) {
-    super(alignmentTimeOffset, duration);
-    this.graph = graph;
-    this.drawAlignmentTimeOffset = ZERO_DURATION;
-    this.drawDuration = ZERO_DURATION;
-  }
-
-  notifyTimeRangeChange(offset: Duration, duration: Duration) {
-    if (
-      !this.drawAlignmentTimeOffset.equals(offset) ||
-      !this.drawDuration.equals(duration)
-    ) {
-      this.drawAlignmentTimeOffset = offset;
-      this.drawDuration = duration;
-      // something changed, maybe redraw
-      if (isDef(this.graph) && !this.graph.beforeFirstDraw) {
-        window.requestAnimationFrame(() => {
-          this.graph.redrawWithXScale();
-        });
-      }
-    }
-  }
-}
 // static ID for seismogram
 Seismograph._lastID = 0;
+
+
 
 /**
  * Creates a wrapper for d3 formatter for numbers for axis that keeps typescript happy.

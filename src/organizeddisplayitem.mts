@@ -1,11 +1,14 @@
 import { fftForward } from "./fft.mjs";
+import {groupComponentOfMotion} from "./grouping.mjs";
 import * as spectraplot from "./spectraplot.mjs";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion.mjs";
 import { Seismograph } from "./seismograph.mjs";
+import {AMPLITUDE_MODE} from "./scale.mjs";
 import { Spectrogram } from "./spectrogram.mjs";
 import * as querystringify from "querystringify";
+import { sort, SORT_ALPHABETICAL } from "./sorting.mjs";
 import { SeisPlotElement } from "./spelement.mjs";
-import { SeismogramDisplayData } from "./seismogram.mjs";
+import { SeismogramDisplayData, findMinMax } from "./seismogram.mjs";
 import { SeismographConfig } from "./seismographconfig.mjs";
 import { QuakeStationTable } from "./infotable.mjs";
 import {
@@ -51,6 +54,9 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     }
     sp-seismograph {
       height: var(--sp-seismograph-height, 200px);
+    }
+    sp-particle-motion {
+      height: var(--sp-particle-motion-height, 400px);
     }
     sp-spectra {
       height: var(--sp-seismograph-height, 200px);
@@ -179,16 +185,26 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       spectraPlot.setAttribute(spectraplot.LOGFREQ, loglog);
       wrapper.appendChild(spectraPlot);
     } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
-      if (this.seisData.length !== 2) {
-        throw new Error(
-          `particle motion requies exactly 2 seisData in seisDataList, ${this.seisData.length}`,
-        );
-      }
-
-      const pmpSeisConfig = this._seismographConfig.clone();
+      const groupedSDD = groupComponentOfMotion(this.seisData);
+      const xData = new Array<SeismogramDisplayData>();
+      const yData = new Array<SeismogramDisplayData>();
+      groupedSDD.forEach((gsdd) => {
+        gsdd = sort(gsdd, SORT_ALPHABETICAL);
+        for (let xidx=0; xidx < gsdd.length-1; xidx++) {
+          for (let yidx=xidx+1; yidx < gsdd.length; yidx++) {
+            xData.push(gsdd[xidx]);
+            yData.push(gsdd[yidx]);
+          }
+        }
+      });
+      const pmpSeisConfig = createParticleMotionConfig(null, this._seismographConfig);
+      const doGain = true;
+      const minMax = findMinMax(this.seisData, doGain);
+      pmpSeisConfig.fixedAmplitudeScale = minMax.asArray();
+      pmpSeisConfig.doGain = doGain;
       const particleMotionPlot = new ParticleMotion(
-        [this.seisData[0]],
-        [this.seisData[1]],
+        xData,
+        yData,
         pmpSeisConfig,
       );
       wrapper.appendChild(particleMotionPlot);

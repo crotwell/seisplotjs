@@ -3,6 +3,9 @@ import * as util from "./util.mjs";
 import {transition} from "./transition.mjs";
 import { Duration } from "luxon";
 
+
+export const ZERO_DURATION = Duration.fromMillis(0);
+
 /** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */
 export enum AMPLITUDE_MODE {
   Raw = "raw", // raw values, no centering
