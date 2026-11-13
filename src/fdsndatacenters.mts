@@ -29,6 +29,7 @@ import * as fdsnstation from "./fdsnstation.mjs";
 /** const for service name */
 export const DATACENTERS_SERVICE = "datacenters";
 export const DATACENTERS_PATH_BASE = "ws";
+export const DEFAULT_HOST = FDSN_HOST;
 
 /**
  * Query to a FDSN Data Centers Registry web service.
@@ -48,7 +49,7 @@ export class DataCentersQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = FDSN_HOST;
+      host = DEFAULT_HOST;
     }
     super(DATACENTERS_SERVICE, host);
     this._path_base = DATACENTERS_PATH_BASE;

@@ -4,7 +4,8 @@
  * https://www.seis.sc.edu
  */
 import {
-  FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath, protocolForKnownHost
+  FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST,
+  appendToPath, protocolForKnownHost
 } from "./fdsncommon.mjs";
 import { NslcId } from "./fdsnsourceid.mjs";
 import * as util from "./util.mjs"; // for util.log
@@ -53,6 +54,7 @@ export const SERVICE_NAME = `fdsnws-${DATASELECT_SERVICE}-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.earthscope.org */
 export { IRIS_HOST, EARTHSCOPE_HOST };
+export const DEFAULT_HOST = EARTHSCOPE_HOST;
 
 /**
  * Query to a FDSN Dataselect web service.
@@ -96,7 +98,7 @@ export class DataSelectQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = EARTHSCOPE_HOST;
+      host = DEFAULT_HOST;
     }
     super(DATASELECT_SERVICE, host);
     if (host === EARTHSCOPE_HOST) {

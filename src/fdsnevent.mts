@@ -55,6 +55,7 @@ export const SERVICE_VERSION = 1;
  */
 export const SERVICE_NAME = `fdsnws-event-${SERVICE_VERSION}`;
 export { USGS_HOST };
+export const DEFAULT_HOST = USGS_HOST;
 
 /**
  * Query to a FDSN Event web service.
@@ -143,7 +144,7 @@ export class EventQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = USGS_HOST;
+      host = DEFAULT_HOST;
     }
     super(EVENT_SERVICE, host);
   }
@@ -784,8 +785,10 @@ export class EventQuery extends FDSNCommon {
   formBaseURL(): string {
     let colon = ":";
 
-    if (!this._host || this._host === USGS_HOST) {
-      this._host = USGS_HOST;
+    if (!this._host) {
+      this._host = DEFAULT_HOST;
+    }
+    if (this._host === USGS_HOST) {
       // usgs does 301 moved permanently to https
       this._protocol = "https:";
     }

@@ -44,6 +44,7 @@ export const SERVICE_VERSION = 1;
  * https://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `${IRISWS_PATH_BASE}-${SYNGINE_SERVICE}-${SERVICE_VERSION}`;
+export const DEFAULT_HOST = EARTHSCOPE_HOST;
 
 export function calcMoment(Mw: number): number {
   return 10.0 ** ((Mw / 2.0 * 3.0 + 9.1));
@@ -155,7 +156,7 @@ export class SyngineQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = EARTHSCOPE_HOST;
+      host = DEFAULT_HOST;
     }
     super(SYNGINE_SERVICE, host);
     this._path_base = IRISWS_PATH_BASE;

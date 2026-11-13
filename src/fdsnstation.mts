@@ -32,6 +32,7 @@ import {
   isObject,
   isStringArg,
   isNumArg,
+  isNonEmptyStringArg,
   stringify,
   validStartTime,
   validEndTime,
@@ -61,6 +62,7 @@ export const SERVICE_VERSION = 1;
  * https://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
+export const DEFAULT_HOST = EARTHSCOPE_HOST;
 
 /** const for the default IRIS web service host, service.earthscope.org */
 export { IRIS_HOST, EARTHSCOPE_HOST };
@@ -146,7 +148,10 @@ export class StationQuery extends FDSNCommon {
    *
    * @param host the host to connect to , defaults to service.earthscope.org
    */
-  constructor(host?: string) {
+   constructor(host?: string) {
+     if (!isNonEmptyStringArg(host)) {
+       host = DEFAULT_HOST;
+     }
     super(STATION_SERVICE, host);
   }
 

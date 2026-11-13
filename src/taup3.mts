@@ -21,6 +21,7 @@ import {
 import { Station, Channel } from "./stationxml.mjs";
 import { Quake } from "./quakeml.mjs";
 export const USC_HOST = "www.seis.sc.edu";
+export const DEFAULT_HOST = USC_HOST;
 export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";
 export const SVG_FORMAT = "svg";
@@ -218,7 +219,7 @@ export class TauPQuery extends FDSNCommon {
 
   constructor(host?: string | null) {
     if (!isNonEmptyStringArg(host)) {
-      host = USC_HOST;
+      host = DEFAULT_HOST;
     }
     super(TAUP_SERVICE, host);
     this.specVersion("3");

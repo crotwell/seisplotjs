@@ -65,6 +65,7 @@ export const SERVICE_NAME = `fdsnws-${AVAILABILITY_SERVICE}-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.earthscope.org */
 export { IRIS_HOST, EARTHSCOPE_HOST };
+export const DEFAULT_HOST = EARTHSCOPE_HOST;
 
 /**
  * Query to a FDSN Availability web service.
@@ -128,7 +129,7 @@ export class AvailabilityQuery extends FDSNCommon {
 
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = EARTHSCOPE_HOST;
+      host = DEFAULT_HOST;
     }
     super(AVAILABILITY_SERVICE, host);
   }

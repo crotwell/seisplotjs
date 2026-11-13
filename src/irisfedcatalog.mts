@@ -57,6 +57,7 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `${IRISWS_PATH_BASE}-${IRISFEDCAT_SERVICE}-${SERVICE_VERSION}`;
 export const TARGET_DATASELECT = "dataselect";
 export const TARGET_STATION = "station";
+export const DEFAULT_HOST = EARTHSCOPE_HOST;
 
 /** a fake, completely empty stationxml document in case of no data. */
 export const FAKE_EMPTY_TEXT = "\n";
@@ -236,7 +237,7 @@ export class FedCatalogQuery extends FDSNCommon {
    */
   constructor(host?: string) {
     if (!isNonEmptyStringArg(host)) {
-      host = EARTHSCOPE_HOST;
+      host = DEFAULT_HOST;
     }
     super(IRISFEDCAT_SERVICE, host);
     this._path_base = IRISWS_PATH_BASE;
