@@ -234,7 +234,7 @@ export class Spectrogram extends Seismograph {
     const safeFMin = Math.max(this.spectrogramConfig.freqMin, 0);
     // We can use __initAmpScale because it initializes the scale range to the height of the plot - then we just need to set
     // the domain to the safe frequency range
-    const axisScale = this.__initAmpScale().domain([safeFMin, safeFMax]);
+    const axisScale = this.__initAmpScale([this.height-1,1], false).domain([safeFMin, safeFMax]);
 
     // Create the left and right axes just like the normal Seismograph, but with frequency formatting instead of amplitude formatting
     if (this.spectrogramConfig.isYAxis) {
