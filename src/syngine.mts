@@ -27,7 +27,6 @@ import {
   isNonEmptyStringArg,
   makeParam,
   doFetchWithTimeout,
-  defaultFetchInitObj,
   TEXT_MIME
 } from "./util.mjs";
 
@@ -696,7 +695,7 @@ export class SyngineQuery extends FDSNCommon {
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
     this.format(FORMAT_MINISEED);
     const url = this.formURL();
-    const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+    const fetchInit = this.createFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (
@@ -801,7 +800,7 @@ export class SyngineQuery extends FDSNCommon {
    */
   queryInstaseisVersion(): Promise<string> {
     const url = this.formInstaseisVersionURL();
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {
@@ -824,7 +823,7 @@ export class SyngineQuery extends FDSNCommon {
    */
   queryVersion(): Promise<string> {
     const url = this.formVersionURL();
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {

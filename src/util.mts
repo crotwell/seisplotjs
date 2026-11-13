@@ -715,6 +715,10 @@ export function fixProtocolInUrl(url: string): string {
   return url;
 }
 
+export function insertAuthorizationToken(headers: Headers, token: string) {
+  headers.set("Authorization", `Bearer ${token}`);
+}
+
 export interface FetchInitObject {
   cache: string;
   redirect: string;

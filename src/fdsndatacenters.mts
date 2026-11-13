@@ -20,7 +20,6 @@ import {
   TEXT_MIME,
   JSON_MIME,
   doFetchWithTimeout,
-  defaultFetchInitObj,
 } from "./util.mjs";
 import * as fdsnavailability from "./fdsnavailability.mjs";
 import * as fdsndataselect from "./fdsndataselect.mjs";
@@ -198,7 +197,7 @@ export class DataCentersQuery extends FDSNCommon {
    */
   queryJson(): Promise<RootType> {
     const url = this.formURL();
-    const fetchInit = defaultFetchInitObj(JSON_MIME);
+    const fetchInit = this.createFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         const contentType = response.headers.get("content-type");
@@ -458,7 +457,7 @@ export class DataCentersQuery extends FDSNCommon {
    */
   queryVersion(): Promise<string> {
     const url = this.formVersionURL();
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {

@@ -22,7 +22,6 @@ import {
   makeParam,
   makePostParam,
   doFetchWithTimeout,
-  defaultFetchInitObj,
   doStringGetterSetter,
   doBoolGetterSetter,
   doIntGetterSetter,
@@ -883,7 +882,7 @@ export class StationQuery extends FDSNCommon {
     }
 
     const url = this.formURL(level);
-    const fetchInit = defaultFetchInitObj(XML_MIME);
+    const fetchInit = this.createFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {
@@ -920,7 +919,7 @@ export class StationQuery extends FDSNCommon {
         return new DOMParser().parseFromString(rawXmlText, "text/xml");
       });
     } else {
-      const fetchInit = defaultFetchInitObj(XML_MIME);
+      const fetchInit = this.createFetchInitObj(XML_MIME);
       fetchInit.method = "POST";
       fetchInit.body = this.createPostBody(level, postLines);
       return doFetchWithTimeout(
@@ -1063,7 +1062,7 @@ export class StationQuery extends FDSNCommon {
    */
   queryVersion(): Promise<string> {
     const url = this.formVersionURL();
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {

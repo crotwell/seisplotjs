@@ -26,7 +26,6 @@ import {
   TEXT_MIME,
   makeParam,
   doFetchWithTimeout,
-  defaultFetchInitObj,
   validStartTime,
   validEndTime,
 } from "./util.mjs";
@@ -405,7 +404,7 @@ export class DataSelectQuery extends FDSNCommon {
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
     this.format(FORMAT_MINISEED);
     const url = this.formURL();
-    const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+    const fetchInit = this.createFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (
@@ -433,7 +432,7 @@ export class DataSelectQuery extends FDSNCommon {
   queryMS3Records(): Promise<Array<mseed3.MSeed3Record>> {
     this.format(FORMAT_MINISEED_THREE);
     const url = this.formURL();
-    const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+    const fetchInit = this.createFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (
@@ -564,7 +563,7 @@ export class DataSelectQuery extends FDSNCommon {
   }
 
   postQueryRawWithBody(body: string): Promise<Response> {
-    const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+    const fetchInit = this.createFetchInitObj(miniseed.MINISEED_MIME);
     fetchInit.method = "POST";
     fetchInit.body = body;
     return doFetchWithTimeout(
@@ -616,7 +615,7 @@ export class DataSelectQuery extends FDSNCommon {
    */
   queryVersion(): Promise<string> {
     const url = this.formVersionURL();
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {

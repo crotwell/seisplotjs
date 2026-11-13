@@ -2,7 +2,10 @@
  * commonalities with all types of FDSN Web Services
  */
 
-import { isNonEmptyStringArg, checkProtocol, defaultFetchInitObj } from "./util.mjs";
+import {
+  isNonEmptyStringArg, checkProtocol,
+  defaultFetchInitObj, insertAuthorizationToken
+} from "./util.mjs";
 import {USGS_HOST} from './quakeml.mjs';
 
 export const EARTHSCOPE_HOST = "service.earthscope.org";
@@ -65,6 +68,11 @@ export class FDSNCommon {
 
   }
 
+  setAuthorizationToken(token: string) {
+    insertAuthorizationToken(this._headers, token);
+    return this;
+  }
+
   setHeader(key: string, value?: string) {
     if (value != null && value.length>0) {
       this._headers.set(key, value);
@@ -72,6 +80,10 @@ export class FDSNCommon {
       this._headers.delete(key);
     }
     return this;
+  }
+
+  getHeaders(): Headers {
+    return this._headers;
   }
 
   createFetchInitObj(mimeType: string): RequestInit {

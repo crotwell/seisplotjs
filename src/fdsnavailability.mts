@@ -4,7 +4,7 @@
  * https://www.seis.sc.edu
  */
 import {
-  FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath, protocolForKnownHost 
+  FDSNCommon, IRIS_HOST, EARTHSCOPE_HOST, appendToPath, protocolForKnownHost
 } from "./fdsncommon.mjs";
 import { DateTime, Interval } from "luxon";
 import { SeismogramDisplayData } from "./seismogram.mjs";
@@ -25,7 +25,6 @@ import {
   JSON_MIME,
   makeParam,
   doFetchWithTimeout,
-  defaultFetchInitObj,
   validStartTime,
   validEndTime,
 } from "./util.mjs";
@@ -483,7 +482,7 @@ export class AvailabilityQuery extends FDSNCommon {
   queryJson(): Promise<RootType> {
     this.format(FORMAT_JSON);
     const url = this.formURL("query");
-    const fetchInit = defaultFetchInitObj(JSON_MIME);
+    const fetchInit = this.createFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (
@@ -534,7 +533,7 @@ export class AvailabilityQuery extends FDSNCommon {
   extentJson(): Promise<RootType> {
     this.format(FORMAT_JSON);
     const url = this.formURL("extent");
-    const fetchInit = defaultFetchInitObj(JSON_MIME);
+    const fetchInit = this.createFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (
@@ -646,7 +645,7 @@ export class AvailabilityQuery extends FDSNCommon {
         }),
       );
     } else {
-      const fetchInit = defaultFetchInitObj(JSON_MIME);
+      const fetchInit = this.createFetchInitObj(JSON_MIME);
       fetchInit.method = "POST";
       fetchInit.body = this.createPostBody(channelTimeList);
       return fetch(appendToPath(this.formBaseURL(), `${method}?`), fetchInit).then(
@@ -820,7 +819,7 @@ export class AvailabilityQuery extends FDSNCommon {
    */
   queryVersion(): Promise<string> {
     const url = this.formVersionURL();
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {

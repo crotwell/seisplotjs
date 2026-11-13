@@ -24,7 +24,6 @@ import {
   TEXT_MIME,
   makeParam,
   doFetchWithTimeout,
-  defaultFetchInitObj,
   doStringGetterSetter,
   doBoolGetterSetter,
   doIntGetterSetter,
@@ -755,7 +754,7 @@ export class EventQuery extends FDSNCommon {
     }
 
     const url = this.formURL();
-    const fetchInit = defaultFetchInitObj(XML_MIME);
+    const fetchInit = this.createFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (response.status === 200) {
@@ -816,7 +815,7 @@ export class EventQuery extends FDSNCommon {
    */
   queryCatalogs(): Promise<Array<string>> {
     const url = this.formCatalogsURL();
-    const fetchInit = defaultFetchInitObj(XML_MIME);
+    const fetchInit = this.createFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (response.status === 200) {
@@ -872,7 +871,7 @@ export class EventQuery extends FDSNCommon {
    */
   queryContributors(): Promise<Array<string>> {
     const url = this.formContributorsURL();
-    const fetchInit = defaultFetchInitObj(XML_MIME);
+    const fetchInit = this.createFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (response.status === 200) {
@@ -924,7 +923,7 @@ export class EventQuery extends FDSNCommon {
    */
   queryVersion(): Promise<string> {
     const url = this.formVersionURL();
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (response.status === 200) {

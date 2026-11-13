@@ -16,7 +16,6 @@ import {
   SVG_MIME,
   TEXT_MIME,
   makeParam,
-  defaultFetchInitObj,
   doFetchWithTimeout,
 } from "./util.mjs";
 import { Station, Channel } from "./stationxml.mjs";
@@ -468,7 +467,7 @@ export class TauPQuery extends FDSNCommon {
   queryText(): Promise<string> {
     this.format(TEXT_FORMAT);
     const url = this.formURL(TAUP_TIME_TOOL);
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    const fetchInit = this.createFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
         if (
@@ -491,7 +490,7 @@ export class TauPQuery extends FDSNCommon {
   queryJson(): Promise<TauP3TimeJsonType> {
     this.format(JSON_FORMAT);
     const url = this.formURL(TAUP_TIME_TOOL);
-    const fetchInit = defaultFetchInitObj(JSON_MIME);
+    const fetchInit = this.createFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (
@@ -516,7 +515,7 @@ export class TauPQuery extends FDSNCommon {
   querySvg(): Promise<Element> {
     this.format(SVG_FORMAT);
     const url = this.formURL(TAUP_PATH_TOOL);
-    const fetchInit = defaultFetchInitObj(SVG_MIME);
+    const fetchInit = this.createFetchInitObj(SVG_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
         if (response.status === 200) {
