@@ -176,7 +176,7 @@ export class ScalableGraph extends SeisPlotElement {
       const minMax = calcMinMax(
         sdd,
         sddInterval,
-        false,
+        this.seismographConfig.doGain,
         this.seismographConfig.amplitudeMode,
       );
       if (minMax) {
@@ -188,11 +188,10 @@ export class ScalableGraph extends SeisPlotElement {
           }
         }
         const drawHalfWidth = this.amp_scalable.drawHalfWidth;
-        console.log(`ampRangeForSeisDisplayData: minMax: ${minMax}  sens: ${sensitivityVal}  dhw: ${drawHalfWidth}`)
         // if doGain, halfWidth is in real world units, so mul sensitivity to
         // get counts for drawing
-        const myMin = minMax.middle - drawHalfWidth / sensitivityVal;
-        const myMax = minMax.middle + drawHalfWidth / sensitivityVal;
+        const myMin = minMax.middle - drawHalfWidth * sensitivityVal;
+        const myMax = minMax.middle + drawHalfWidth * sensitivityVal;
         out = new MinMaxable(myMin, myMax);
       } else {
         out = new MinMaxable(-1, 1);

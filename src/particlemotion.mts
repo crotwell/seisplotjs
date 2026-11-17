@@ -7,29 +7,27 @@
 import { select as d3select } from "d3-selection";
 import "d3-transition";
 import { scaleLinear as d3scaleLinear } from "d3-scale";
-import { line as d3line, curveLinear as d3curveLinear } from "d3-shape";
-import { axisLeft as d3axisLeft, axisBottom as d3axisBottom } from "d3-axis";
-import { Duration, Interval } from "luxon";
-import { SeisPlotElement } from "./spelement.mjs";
-import {
-  MinMaxable, AmplitudeScalable,
-  TimeScalable, ZERO_DURATION } from "./scale.mjs";
+import { Interval } from "luxon";
 import { SeismographConfig, numberFormatWrapper } from "./seismographconfig.mjs";
 import { ScalableGraph } from "./scaleablegraph.mjs";
 import {
   Seismogram,
-  SeismogramDisplayData,
-  findMinMaxOfSDD,
-  findMaxDuration
+  SeismogramDisplayData
 } from "./seismogram.mjs";
 import { SeismogramSegment } from "./seismogramsegment.mjs";
 import { COLOR_CSS_ID } from "./seismograph.mjs";
-import { isDef, isNumArg, SVG_NS, validStartTime, validEndTime, createSVGElement } from "./util.mjs";
+import { isDef, isNumArg, validStartTime, validEndTime, createSVGElement } from "./util.mjs";
 import {AUTO_COLOR_SELECTOR} from "./cssutil.mjs";
 import * as axisutil from "./axisutil.mjs";
 import type { HandlebarsInput } from "./axisutil.mjs";
 
 import type { Axis } from "d3-axis";
+import {
+  axisLeft as d3axisLeft,
+  axisBottom as d3axisBottom,
+  axisTop as d3axisTop,
+  axisRight as d3axisRight,
+} from "d3-axis";
 import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
 import type { Selection } from "d3-selection";
 
@@ -124,12 +122,6 @@ export class ParticleMotion extends ScalableGraph {
   height: number;
   outerWidth = -1;
   outerHeight = -1;
-  xScale: ScaleLinear<number, number, never>;
-  xScaleRmean: ScaleLinear<number, number, never>;
-  xAxis: Axis<d3NumberValue>;
-  yScale: ScaleLinear<number, number, never>;
-  yScaleRmean: ScaleLinear<number, number, never>;
-  yAxis: Axis<d3NumberValue>;
   static _lastID: number;
 
   constructor(
@@ -183,31 +175,6 @@ export class ParticleMotion extends ScalableGraph {
       );
     }
 
-    this.xScale = d3scaleLinear();
-    // yScale for axis (not drawing) that puts mean at 0 in center
-    this.xScaleRmean = d3scaleLinear();
-    this.yScale = d3scaleLinear();
-    // yScale for axis (not drawing) that puts mean at 0 in center
-    this.yScaleRmean = d3scaleLinear();
-
-    if (this.seismographConfig.isCenteredAmp()) {
-      this.xAxis = d3axisBottom(this.xScaleRmean);
-      this.yAxis = d3axisLeft(this.yScaleRmean);
-    } else {
-      this.xAxis = d3axisBottom(this.xScale);
-      this.yAxis = d3axisLeft(this.yScale);
-    }
-    this.xAxis.ticks(this.seismographConfig.yAxisNumTickHint,
-      this.seismographConfig.amplitudeFormat)
-      .tickFormat(
-        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
-      );
-    this.yAxis.ticks(this.seismographConfig.yAxisNumTickHint,
-      this.seismographConfig.amplitudeFormat)
-      .tickFormat(
-        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
-      );
-
     this.width = 100;
     this.height = 100;
     // for line ends to show direction of particle motion
@@ -225,7 +192,7 @@ export class ParticleMotion extends ScalableGraph {
     path.setAttribute("stroke", "currentColor");
     path.setAttribute("fill", "currentColor");
     const g = svgWrapped.appendChild(createSVGElement("g"));
-    g.classList.add("plot");
+    g.classList.add("marginTransform");
     g.setAttribute(
         "transform",
         "translate(" +
@@ -300,24 +267,18 @@ export class ParticleMotion extends ScalableGraph {
       this.calcWidthHeight(rect.width, calcHeight);
     }
 
-    const timeScalePromiseList = Promise.all(
-      this._seisDataList.map((sdd) => this.recalcDisplayTimeRangeForSeisDisplayData(sdd)));
-    const ampScalePromiseList = Promise.all(
-      this._seisDataList.map((sdd) => this.ampScaleForSeisDisplayData(sdd)));
-    return Promise.all([timeScalePromiseList, ampScalePromiseList]).then( ([timeScaleList, ampScaleList]) => {
-      console.log(`redraw time: ${timeScaleList[0]}  amp: ${ampScaleList[0].domain()}`)
-      this.calcScaleDomain();
-      this.drawAxis();
-      const handlebarsInput = this.createHandlebarsInput();
-      axisutil.drawAxisLabels(
-        svgEl,
-        this.seismographConfig,
-        this.height,
-        this.width,
-        handlebarsInput,
-      );
-      this.drawParticleMotion();
-    });
+    const timeScaleList = this._seisDataList.map((sdd) => this.recalcDisplayTimeRangeForSeisDisplayData(sdd));
+    const ampScaleList = this._seisDataList.map((sdd) => this.ampScaleForSeisDisplayData(sdd));
+    this.drawAxis();
+    const handlebarsInput = this.createHandlebarsInput();
+    axisutil.drawAxisLabels(
+      svgEl,
+      this.seismographConfig,
+      this.height,
+      this.width,
+      handlebarsInput,
+    );
+    this.drawParticleMotion();
   }
 
   checkResize(): boolean {
@@ -335,10 +296,10 @@ export class ParticleMotion extends ScalableGraph {
   drawParticleMotion() {
     const svgEl = this.getShadowRoot().querySelector("svg") as SVGElement;
 
-    let g = svgEl.querySelector("g.plot");
+    let g = svgEl.querySelector("g.marginTransform");
     if (g == null) {
       g = svgEl.appendChild(createSVGElement("g"));
-      g.classList.add("plot");
+      g.classList.add("marginTransform");
     }
     for (const inner_g of g.querySelectorAll("g.particleMotion")) {
       g.removeChild(inner_g);
@@ -368,7 +329,6 @@ export class ParticleMotion extends ScalableGraph {
     }
     let xSegments: Array<SeismogramSegment>;
     let ySegments: Array<SeismogramSegment>;
-    const promiseList: Array<Promise<void>> = [];
     for (let i = 0; i < this.xSeisData.length; i++) {
       const lineG = g.appendChild(createSVGElement("g")) as SVGGElement;
       lineG.classList.add("particleMotion");
@@ -378,22 +338,17 @@ export class ParticleMotion extends ScalableGraph {
       lineG.classList.add("orient" + xOrientCode + "_" + yOrientCode);
       xSegments = this.xSeisData[i].segments;
       ySegments = this.ySeisData[i].segments;
-      const segPromise = this.recalcDisplayTimeRangeForSeisDisplayData(this.xSeisData[i])
-      .then((timeRange: Interval) => {
-        if (timeRange != null) {
-          console.log(`drawPM, timeRange: ${timeRange}`);
-          const ampScale = this.ampScaleForSeisDisplayData(this.xSeisData[i]);
-          console.log(`amp scale: ${ampScale.domain()} ${ampScale.range()}`)
-          xSegments.forEach((segX) => {
-            ySegments.forEach((segY) => {
-              this.drawParticleMotionForSegment(lineG, segX, segY, timeRange, ampScale);
-            });
+      let timeRange = this.recalcDisplayTimeRangeForSeisDisplayData(this.xSeisData[i]);
+      if (timeRange != null) {
+        const xAmpScale = this.xAmpScaleForSeisDisplayData(this.xSeisData[i]);
+        const yAmpScale = this.ampScaleForSeisDisplayData(this.ySeisData[i]);
+        xSegments.forEach((segX) => {
+          ySegments.forEach((segY) => {
+            this.drawParticleMotionForSegment(lineG, segX, segY, timeRange, xAmpScale, yAmpScale);
           });
-        }
-      });
-      promiseList.push(segPromise);
+        });
+      }
     }
-    Promise.all(promiseList).catch(err => console.warn(`probelm drawing par mo`, err));
   }
 
   drawParticleMotionForSegment(
@@ -401,7 +356,8 @@ export class ParticleMotion extends ScalableGraph {
     segA: SeismogramSegment,
     segB: SeismogramSegment,
     pmtimeRange: Interval,
-    ampScale: ScaleLinear<number, number, never>
+    xampScale: ScaleLinear<number, number, never>,
+    yampScale: ScaleLinear<number, number, never>
   ) {
 
     let timeRange = segA.timeRange?.intersection(segB.timeRange);
@@ -428,7 +384,7 @@ export class ParticleMotion extends ScalableGraph {
     path.setAttribute("marker-end", "url(#arrow)");
     let pathPoints = "M";
     for (let i = 0; i < numPts; i++) {
-      pathPoints += ampScale(segA.yAtIndex(idxA+i))+","+ampScale(segB.yAtIndex(idxB + i))+"L";
+      pathPoints += xampScale(segA.yAtIndex(idxA+i))+","+yampScale(segB.yAtIndex(idxB + i))+"L";
     }
     path.setAttribute("d", pathPoints.substring(0, pathPoints.length-1));
   }
@@ -440,66 +396,131 @@ export class ParticleMotion extends ScalableGraph {
     const ampRange = this.ampRangeForSeisDisplayData(sdd)
     const ampScale = this.__initAmpScale([this.height-1,1], false);  // Set resolution scaling to true
     ampScale.domain(ampRange.asArray());
-    console.log(`pm ampScaleForSeisDisplayData: ${ampScale.domain()} ${ampScale.range()} `)
     return ampScale;
   }
 
-  drawAxis() {
-    const svgEl = this.getShadowRoot().querySelector("svg") as SVGElement;
-    const svgG = svgEl?.querySelector("g.plot");
-    if (svgG != null) {
-      for (const g of svgG.querySelectorAll("g.axis")) {
-        svgG.removeChild(g);
-      }
-      const xg = svgG.appendChild(createSVGElement("g")) as SVGGElement;
-      xg.classList.add("axis");
-      xg.classList.add("axis--x");
-      xg.setAttribute("transform", "translate(0," + this.height + ")");
-      const xg_d3 = d3select(xg) as Selection<SVGGElement,unknown,null,undefined>;
-      xg_d3.call(this.xAxis);
-      const yg = svgG.appendChild(createSVGElement("g")) as SVGGElement;
-      yg.classList.add("axis");
-      yg.classList.add("axis--y");
-      const yg_d3 = d3select(yg) as Selection<SVGGElement,unknown,null,undefined>;
-      yg_d3.call(this.yAxis);
+  xAmpScaleForSeisDisplayData(
+    sdd: SeismogramDisplayData,
+  ): ScaleLinear<number, number, never> {
+    const ampRange = this.ampRangeForSeisDisplayData(sdd)
+    const ampScale = this.__initAmpScale([1, this.width-1], false);  // Set resolution scaling to true
+    ampScale.domain(ampRange.asArray());
+    return ampScale;
+  }
+
+  drawAxis(): void {
+
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const svgEl = wrapper.querySelector("svg") as SVGElement;
+    if (!svgEl) {
+      // svgEl is not def in particlemotion draw()?
+      return;
     }
+
+    const g = d3select(svgEl).select("g.marginTransform");
+    g.selectAll("g.axis--y").remove();
+    g.selectAll("g.axis--y-right").remove();
+    const [yAxis, yAxisRight, xAxis, xAxisTop] = this.createLeftRightTopBottomAxis();
+    const testg = g.append("g");
+    testg.classed("testaxisg", true);
+    if (isDef(yAxis)) {
+      g.append("g").classed("axis axis--y", true).call(yAxis);
+    }
+    if (isDef(yAxisRight)) {
+      g
+        .append("g")
+        .attr("class", "axis axis--y-right")
+        .attr("transform", "translate(" + this.width + ",0)")
+        .call(yAxisRight);
+    }
+
+    g.selectAll("g.axis--x").remove();
+    g.selectAll("g.axis--x-top").remove();
+    if (isDef(xAxis)) {
+      g
+        .append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(xAxis);
+    }
+    if (isDef(xAxisTop)) {
+      g.append("g").attr("class", "axis axis--x-top").call(xAxisTop);
+    }
+  }
+  createLeftRightTopBottomAxis(): Array<Axis<d3NumberValue> | null> {
+    let yAxis = null;
+    let yAxisRight = null;
+    const yAxisScale = this.ampScaleForAxis([this.height-1,1]);
+    const xAxisScale = this.ampScaleForAxis([this.width-1,1]);
+    if (this.seismographConfig.isYAxis) {
+      yAxis = d3axisLeft(yAxisScale).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
+      yAxis.scale(yAxisScale);
+      yAxis.ticks(this.seismographConfig.yAxisNumTickHint,
+        this.seismographConfig.amplitudeFormat);
+    }
+
+    if (this.seismographConfig.isYAxisRight) {
+      yAxisRight = d3axisRight(yAxisScale).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
+      yAxisRight.scale(yAxisScale);
+      yAxisRight.ticks(this.seismographConfig.yAxisNumTickHint, this.seismographConfig.amplitudeFormat);
+    }
+    let xAxis = null;
+    let xAxisTop = null;
+    if (this.seismographConfig.isXAxis) {
+      xAxis = d3axisBottom(xAxisScale).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
+      xAxis.scale(xAxisScale);
+      xAxis.ticks(this.seismographConfig.yAxisNumTickHint,
+        this.seismographConfig.amplitudeFormat);
+    }
+
+    if (this.seismographConfig.isXAxisTop) {
+      xAxisTop = d3axisTop(xAxisScale).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
+      xAxisTop.scale(xAxisScale);
+      xAxisTop.ticks(this.seismographConfig.yAxisNumTickHint, this.seismographConfig.amplitudeFormat);
+    }
+    return [yAxis, yAxisRight, xAxis, xAxisTop];
   }
 
   rescaleAxis() {
     const delay = 500;
     const svg = d3select(this.getShadowRoot().querySelector("svg") as SVGElement);
-    const yaxisG = svg.select(".axis--y") as Selection<SVGGElement,unknown,null,undefined>;
-    yaxisG
-      .transition()
-      .duration(delay / 2)
-      .call(this.yAxis);
-    const xaxisG = svg.select(".axis--x") as Selection<SVGGElement,unknown,null,undefined>;
-    xaxisG
-      .transition()
-      .duration(delay / 2)
-      .call(this.xAxis);
-  }
-
-  calcScaleDomain() {
-    let ampRange = this.calcAmpScaleDomain().asArray();
-    this.xScale.domain(ampRange).nice();
-    this.yScale.domain(ampRange).nice();
-
-    const xNiceMinMax = this.xScale.domain();
-    const xHalfNice = (xNiceMinMax[1] - xNiceMinMax[0]) / 2;
-    if (this.seismographConfig.isCenteredAmp()) {
-      this.xScaleRmean.domain([-1 * xHalfNice, xHalfNice]);
-    } else {
-      this.xScaleRmean.domain(this.xScale.domain());
+    const [yAxis, yAxisRight, xAxis, xAxisTop] = this.createLeftRightTopBottomAxis();
+    if (yAxis) {
+      const yaxisG = svg.select(".axis--y") as Selection<SVGGElement,unknown,null,undefined>;
+      yaxisG
+        .transition()
+        .duration(delay / 2)
+        .call(yAxis);
     }
-    const yNiceMinMax = this.yScale.domain();
-    const yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0]) / 2;
-    if (this.seismographConfig.isCenteredAmp()) {
-      this.yScaleRmean.domain([-1 * yHalfNice, yHalfNice]);
-    } else {
-      this.yScaleRmean.domain(this.yScale.domain());
+    if (yAxisRight) {
+      const yaxisG = svg.select(".axis--y-right") as Selection<SVGGElement,unknown,null,undefined>;
+      yaxisG
+        .transition()
+        .duration(delay / 2)
+        .call(yAxisRight);
     }
-    this.rescaleAxis();
+    if (xAxis) {
+      const xaxisG = svg.select(".axis--x") as Selection<SVGGElement,unknown,null,undefined>;
+      xaxisG
+        .transition()
+        .duration(delay / 2)
+        .call(xAxis);
+    }
+    if (xAxisTop) {
+      const xaxisG = svg.select(".axis--x-top") as Selection<SVGGElement,unknown,null,undefined>;
+      xaxisG
+        .transition()
+        .duration(delay / 2)
+        .call(xAxisTop);
+    }
   }
 
   calcWidthHeight(nOuterWidth: number, nOuterHeight: number) {
@@ -516,10 +537,6 @@ export class ParticleMotion extends ScalableGraph {
       this.seismographConfig.margin.right;
     this.height = Math.min(this.height, this.width);
     this.width = Math.min(this.height, this.width);
-    this.xScale.range([0, this.width]);
-    this.yScale.range([this.height, 0]);
-    this.xScaleRmean.range([0, this.width]);
-    this.yScaleRmean.range([this.height, 0]);
   }
 
   createHandlebarsInput(): HandlebarsInput {
