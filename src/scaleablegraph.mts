@@ -1,12 +1,11 @@
-import { DateTime, Duration, Interval } from "luxon";
+import { Duration, Interval } from "luxon";
 import { scaleLinear as d3scaleLinear } from "d3-scale";
-import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
+import type { ScaleLinear } from "d3-scale";
 
-import * as axisutil from "./axisutil.mjs";
 import {
   AmplitudeScalable, TimeScalable, MinMaxable, ZERO_DURATION
 } from "./scale.mjs";
-import { SeismographConfig, numberFormatWrapper } from "./seismographconfig.mjs";
+import { SeismographConfig } from "./seismographconfig.mjs";
 import { SeisPlotElement } from "./spelement.mjs";
 import {
   SeismogramDisplayData,
@@ -15,11 +14,9 @@ import {
   findMinMax,
   findMinMaxOverTimeRange,
   findMinMaxOverRelativeTimeRange,
-  Seismogram,
-  COUNT_UNIT,
 } from "./seismogram.mjs";
 import {
-  isDef, isNumArg, validStartTime, validEndTime, warn, durationEnd
+  isDef, warn
  } from "./util.mjs";
 
 export class ScalableGraph extends SeisPlotElement {

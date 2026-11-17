@@ -257,7 +257,7 @@ export class SeedlinkConnection {
     this.requestConfig = requestConfig;
     this.receivePacketFn = receivePacketFn;
     this.errorHandler = errorHandler;
-    this.logCommandFn = (msg: string) => {};
+    this.logCommandFn = (_msg: string) => {};
     this.closeFn = null;
     this.endCommand = END_COMMAND;
     this.agent = "seisplotjs";
@@ -327,7 +327,7 @@ export class SeedlinkConnection {
   interactiveConnect(): Promise<SeedlinkConnection> {
     if (this.webSocket) {
       // ignore closeEvent from old websocket
-      this.webSocket.onclose = (closeEvent) => {};
+      this.webSocket.onclose = (_closeEvent) => {};
       this.webSocket.close();
       this.webSocket = null;
     }

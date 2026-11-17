@@ -16,9 +16,6 @@ import {
 } from "d3-axis";
 
 import { AUTO_COLOR_SELECTOR } from "./cssutil.mjs";
-import {
-  AmplitudeScalable, TimeScalable, MinMaxable, ZERO_DURATION
-} from "./scale.mjs";
 import { SeismographConfig, numberFormatWrapper } from "./seismographconfig.mjs";
 import {
   createMarkersForTravelTimes,

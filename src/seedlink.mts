@@ -61,7 +61,7 @@ export class SeedlinkConnection {
     this.requestConfig = requestConfig;
     this.receiveMiniseedFn = receiveMiniseedFn;
     this.errorHandler = errorHandler;
-    this.logCommandFn = (msg: string) => {};
+    this.logCommandFn = (_msg: string) => {};
     this.closeFn = null;
     this.command = "DATA";
     this.webSocket = null;
