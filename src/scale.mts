@@ -173,8 +173,12 @@ export class LinkedAmplitudeScale {
     graphList.forEach((graph) => {
       if ("notifyAmplitudeChange" in graph) {
         this._graphSet.add(graph);
+        // make sure at least one notify goes to this new graph
+        graph.notifyAmplitudeChange(graph.middle, this.halfWidth);
       } else if ("amp_scalable" in graph) {
         this._graphSet.add(graph.amp_scalable);
+        // make sure at least one notify goes to this new graph
+        graph.amp_scalable.notifyAmplitudeChange(graph.amp_scalable.middle, this.halfWidth);
       } else {
         // graph does not have notifyAmplitudeChange method or amp_scalable field, skipping
       }
@@ -371,8 +375,10 @@ export class LinkedTimeScale {
     graphList.forEach((graph) => {
       if ("notifyTimeRangeChange" in graph) {
         this._graphSet.add(graph);
+        graph.notifyTimeRangeChange(this.offset, this.duration);
       } else if ("time_scalable" in graph) {
         this._graphSet.add(graph.time_scalable);
+        graph.time_scalable.notifyTimeRangeChange(this.offset, this.duration);
       } else {
         //graph does not have notifyTimeRangeChange method or time_scalable field, skipping
       }
