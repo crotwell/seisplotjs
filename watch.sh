@@ -27,7 +27,7 @@ doit
 
 if [ $WEBPID -ne 0 ]; then
   # recompile on file change within 1 seconds, except version.ts
-  fswatch -o -l 1 --exclude version.ts src package.json tsconfig.json | while read stuff; do
+  fswatch -o -l 1 --exclude version src package.json tsconfig.json | while read stuff; do
     echo $stuff
     echo "Restarting..."
     kill $WEBPID
