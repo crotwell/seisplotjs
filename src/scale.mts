@@ -87,6 +87,7 @@ export class AmplitudeScalable {
     if (minMax) {
       this.minMax = minMax;
     } else {
+      console.warn(`AmplitudeScalable minmax missing`)
       this.minMax = new MinMaxable(0, 0);
     }
   }
@@ -146,8 +147,9 @@ export class LinkedAmplitudeScale {
     this._scaleId = ++_lastId;
     const glist = graphList ? graphList : []; // in case null
     this._halfWidth = 0;
-    this._graphSet = new Set(glist);
+    this._graphSet = new Set();
     this._recalcTimeoutID = null;
+    this.linkAll(glist);
   }
 
   get halfWidth(): number {
@@ -173,19 +175,28 @@ export class LinkedAmplitudeScale {
     graphList.forEach((graph) => {
       if ("notifyAmplitudeChange" in graph) {
         this._graphSet.add(graph);
-        // make sure at least one notify goes to this new graph
-        graph.notifyAmplitudeChange(graph.middle, this.halfWidth);
       } else if ("amp_scalable" in graph) {
         this._graphSet.add(graph.amp_scalable);
-        // make sure at least one notify goes to this new graph
-        graph.amp_scalable.notifyAmplitudeChange(graph.amp_scalable.middle, this.halfWidth);
       } else {
         // graph does not have notifyAmplitudeChange method or amp_scalable field, skipping
       }
     });
-    this.recalculate().catch((m) => {
+    return this.recalculate().then(()=>{
+        graphList.forEach((graph) => {
+          if ("notifyAmplitudeChange" in graph) {
+            // make sure at least one notify goes to this new graph
+            this.notifyGraph(graph, graph.middle, this.halfWidth);
+          } else if ("amp_scalable" in graph) {
+            // make sure at least one notify goes to this new graph
+            this.notifyGraph(graph.amp_scalable, graph.amp_scalable.middle, this.halfWidth);
+          }
+        });
+    }).catch((m) => {
       util.warn(`problem recalc linkAll: ${m}`);
     });
+  }
+  notifyGraph(ampScalable: AmplitudeScalable, middle: number, halfWidth: number) {
+    ampScalable.notifyAmplitudeChange(ampScalable.middle, halfWidth);
   }
   /**
    * Link new Seismograph with this amplitude scale.
@@ -229,11 +240,16 @@ export class LinkedAmplitudeScale {
     return promiseOut;
   }
   _internalNotifyAll(): Promise<Array<AmplitudeScalable>> {
+    if (this.graphList.length===0) {
+      // no op
+      return Promise.resolve([]);
+    }
     const hw = this.halfWidth;
     return Promise.all(
       this.graphList.map((g) => {
         return new Promise<AmplitudeScalable>((resolve) => {
           setTimeout(() => {
+
             g.notifyAmplitudeChange(g.middle, hw);
             resolve(g);
           }, 10);
@@ -253,21 +269,8 @@ export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
   constructor(graphList?: Array<AmplitudeScalable>) {
     super(graphList);
   }
-  recalculate(): Promise<Array<AmplitudeScalable>> {
-    // no-op, just notify
-    return this.notifyAll();
-  }
-  notifyAll(): Promise<Array<AmplitudeScalable>> {
-    return Promise.all(
-      this.graphList.map((g) => {
-        return new Promise<AmplitudeScalable>((resolve) => {
-          setTimeout(() => {
-            g.notifyAmplitudeChange(g.middle, g.halfWidth);
-            resolve(g);
-          }, 10);
-        });
-      }),
-    );
+  notifyGraph(ampScalable: AmplitudeScalable, middle: number, halfWidth: number) {
+    ampScalable.notifyAmplitudeChange(ampScalable.middle, ampScalable.halfWidth);
   }
 }
 
@@ -280,19 +283,6 @@ export class FixedHalfWidthAmplitudeScale extends LinkedAmplitudeScale {
   recalculate(): Promise<Array<AmplitudeScalable>> {
     // no-op, just notify
     return this.notifyAll();
-  }
-  notifyAll(): Promise<Array<AmplitudeScalable>> {
-    const hw = this.halfWidth;
-    return Promise.all(
-      this.graphList.map((g) => {
-        return new Promise<AmplitudeScalable>((resolve) => {
-          setTimeout(() => {
-            g.notifyAmplitudeChange(g.middle, hw);
-            resolve(g);
-          }, 10);
-        });
-      }),
-    );
   }
 }
 

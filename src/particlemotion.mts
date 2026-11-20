@@ -267,8 +267,6 @@ export class ParticleMotion extends ScalableGraph {
       this.calcWidthHeight(rect.width, calcHeight);
     }
 
-    const timeScaleList = this._seisDataList.map((sdd) => this.recalcDisplayTimeRangeForSeisDisplayData(sdd));
-    const ampScaleList = this._seisDataList.map((sdd) => this.ampScaleForSeisDisplayData(sdd));
     this.drawAxis();
     const handlebarsInput = this.createHandlebarsInput();
     axisutil.drawAxisLabels(
@@ -338,7 +336,7 @@ export class ParticleMotion extends ScalableGraph {
       lineG.classList.add("orient" + xOrientCode + "_" + yOrientCode);
       xSegments = this.xSeisData[i].segments;
       ySegments = this.ySeisData[i].segments;
-      let timeRange = this.recalcDisplayTimeRangeForSeisDisplayData(this.xSeisData[i]);
+      let timeRange = this.displayTimeRangeForSeisDisplayData(this.xSeisData[i]);
       if (timeRange != null) {
         const xAmpScale = this.xAmpScaleForSeisDisplayData(this.xSeisData[i]);
         const yAmpScale = this.ampScaleForSeisDisplayData(this.ySeisData[i]);
@@ -384,11 +382,11 @@ export class ParticleMotion extends ScalableGraph {
     path.setAttribute("marker-end", "url(#arrow)");
     let pathPoints = "M";
     for (let i = 0; i < numPts; i++) {
-      pathPoints += xampScale(segA.yAtIndex(idxA+i))+","+yampScale(segB.yAtIndex(idxB + i))+"L";
+      pathPoints += Math.round(xampScale(segA.yAtIndex(idxA+i)))+","
+        +Math.round(yampScale(segB.yAtIndex(idxB + i)))+"L";
     }
     path.setAttribute("d", pathPoints.substring(0, pathPoints.length-1));
   }
-
 
   ampScaleForSeisDisplayData(
     sdd: SeismogramDisplayData,
@@ -421,8 +419,6 @@ export class ParticleMotion extends ScalableGraph {
     g.selectAll("g.axis--y").remove();
     g.selectAll("g.axis--y-right").remove();
     const [yAxis, yAxisRight, xAxis, xAxisTop] = this.createLeftRightTopBottomAxis();
-    const testg = g.append("g");
-    testg.classed("testaxisg", true);
     if (isDef(yAxis)) {
       g.append("g").classed("axis axis--y", true).call(yAxis);
     }
@@ -451,7 +447,7 @@ export class ParticleMotion extends ScalableGraph {
     let yAxis = null;
     let yAxisRight = null;
     const yAxisScale = this.ampScaleForAxis([this.height-1,1]);
-    const xAxisScale = this.ampScaleForAxis([this.width-1,1]);
+    const xAxisScale = this.ampScaleForAxis([1,this.width-1]);
     if (this.seismographConfig.isYAxis) {
       yAxis = d3axisLeft(yAxisScale).tickFormat(
         numberFormatWrapper(this.seismographConfig.amplitudeFormat),

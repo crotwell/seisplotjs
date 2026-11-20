@@ -3,7 +3,8 @@ import { scaleLinear as d3scaleLinear } from "d3-scale";
 import type { ScaleLinear } from "d3-scale";
 
 import {
-  AmplitudeScalable, TimeScalable, MinMaxable, ZERO_DURATION
+  AmplitudeScalable, TimeScalable, MinMaxable, ZERO_DURATION,
+  AMPLITUDE_MODE
 } from "./scale.mjs";
 import { SeismographConfig } from "./seismographconfig.mjs";
 import { SeisPlotElement } from "./spelement.mjs";
@@ -43,11 +44,13 @@ export class ScalableGraph extends SeisPlotElement {
     }
 
     this.calcTimeScaleDomain();
-    this.amp_scalable = new SeismographAmplitudeScalable(this);
+    const amp = this.calcAmpScaleDomain();
+    this.amp_scalable = new SeismographAmplitudeScalable(this, amp);
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
+    this.recheckAmpScaleDomain();
   }
 
 
@@ -74,10 +77,10 @@ export class ScalableGraph extends SeisPlotElement {
 
   connectedCallback() {
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.recalculate().catch((e) => warn(e));
-    } else {
-      this.redraw();
+      this.seismographConfig.linkedAmplitudeScale.recalculate()
+        .catch((e) => warn(e));
     }
+    super.connectedCallback(); // calls redraw()
   }
   disconnectedCallback() {
     if (this.seismographConfig.linkedAmplitudeScale) {
@@ -114,7 +117,7 @@ export class ScalableGraph extends SeisPlotElement {
    */
   seisDataUpdated() {
     this.calcTimeScaleDomain();
-    let ampMinMax = this.calcAmpScaleDomain();
+    this.amp_scalable.minMax = this.calcAmpScaleDomain();
     if (this.isConnected) {
       this.redraw();
       // only trigger a draw if appending after already drawn on screen
@@ -163,14 +166,22 @@ export class ScalableGraph extends SeisPlotElement {
     sdd: SeismogramDisplayData,
   ): MinMaxable {
     let out: MinMaxable;
+    let sensitivityVal = 1;
     if (this.seismographConfig.linkedAmplitudeScale) {
-      let sensitivityVal = 1;
       if (
         this.seismographConfig.doGain &&
         sdd.seismogram?.isYUnitCount() &&
         sdd.sensitivity?.sensitivity
       ) {
         sensitivityVal = sdd.sensitivity.sensitivity;
+      }
+
+      if (this.seismographConfig.amplitudeMode === AMPLITUDE_MODE.Raw ||
+        this.seismographConfig.amplitudeMode === AMPLITUDE_MODE.Zero
+      ) {
+        return new MinMaxable(
+          this.amp_scalable.drawMiddle-this.amp_scalable.drawHalfWidth,
+          this.amp_scalable.drawMiddle+this.amp_scalable.drawHalfWidth);
       }
       const sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
       const minMax = calcMinMax(
@@ -190,8 +201,17 @@ export class ScalableGraph extends SeisPlotElement {
         const drawHalfWidth = this.amp_scalable.drawHalfWidth;
         // if doGain, halfWidth is in real world units, so mul sensitivity to
         // get counts for drawing
-        const myMin = minMax.middle - drawHalfWidth * sensitivityVal;
-        const myMax = minMax.middle + drawHalfWidth * sensitivityVal;
+        let myMin;
+        let myMax;
+        if (this.seismographConfig.amplitudeMode === AMPLITUDE_MODE.Mean) {
+          myMin = sdd.mean - drawHalfWidth * sensitivityVal;
+          myMax = sdd.mean + drawHalfWidth * sensitivityVal;
+        } else {
+          // MinMax
+          myMin = minMax.middle - drawHalfWidth * sensitivityVal;
+          myMax = minMax.middle + drawHalfWidth * sensitivityVal;
+        }
+
         out = new MinMaxable(myMin, myMax);
       } else {
         out = new MinMaxable(-1, 1);
@@ -204,8 +224,6 @@ export class ScalableGraph extends SeisPlotElement {
         "ampRangeForSeisDisplayData Must be either linked or fixed amp scale",
       );
     }
-    console.log(`ampRangeForSeisDisplayData: ${out} `)
-
     return out;
   }
 
@@ -220,7 +238,6 @@ export class ScalableGraph extends SeisPlotElement {
       } else {
         middle = this.amp_scalable.drawMiddle;
       }
-      console.log(`ampScaleForAxis  HW: ${this.amp_scalable.drawHalfWidth}`)
       ampAxisScale.domain([
         middle - this.amp_scalable.drawHalfWidth,
         middle + this.amp_scalable.drawHalfWidth,
@@ -292,15 +309,13 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
   graph: ScalableGraph;
   drawHalfWidth: number;
   drawMiddle: number;
-  constructor(graph: ScalableGraph) {
-    const calcMidHW = graph.calcAmpScaleDomain();
-    super(calcMidHW);
+  constructor(graph: ScalableGraph, minMax: MinMaxable) {
+    super(minMax);
     this.graph = graph;
     this.drawHalfWidth = super.halfWidth;
     this.drawMiddle = super.middle;
   }
   notifyAmplitudeChange(middle: number, halfWidth: number) {
-    console.log(`notifyAmplitudeChange( ${middle}, ${halfWidth})`)
     if (middle !== this.drawMiddle || halfWidth !== this.drawHalfWidth) {
       this.drawMiddle = middle;
       this.drawHalfWidth = halfWidth;
@@ -338,9 +353,10 @@ export class SeismographTimeScalable extends TimeScalable {
     ) {
       this.drawAlignmentTimeOffset = offset;
       this.drawDuration = duration;
-      // something changed, maybe redraw
+      // something changed, maybe recalc amp and redraw
       if (isDef(this.graph) && this.graph.isConnected) {
         window.requestAnimationFrame(() => {
+          this.graph.recheckAmpScaleDomain();
           this.graph.redraw();
         });
       }
@@ -362,21 +378,28 @@ export function calcAmpScaleWithConfig(seisDataList: Array<SeismogramDisplayData
     minMax = MinMaxable.fromArray(seismographConfig.fixedAmplitudeScale);
   } else {
     if (seismographConfig.windowAmp) {
-      if (isDef(seismographConfig.linkedTimeScale)) {
-        minMax = findMinMaxOverRelativeTimeRange(
-          seisDataList,
-          seismographConfig.linkedTimeScale.offset,
-          seismographConfig.linkedTimeScale.duration,
-          seismographConfig.doGain,
-          seismographConfig.amplitudeMode,
-        );
-      } else if (isDef(seismographConfig.fixedTimeScale)) {
+      if (isDef(seismographConfig.fixedTimeScale)) {
         minMax = findMinMaxOverTimeRange(
           seisDataList,
           seismographConfig.fixedTimeScale,
           seismographConfig.doGain,
           seismographConfig.amplitudeMode,
         );
+      } else if (isDef(seismographConfig.linkedTimeScale) && seismographConfig.linkedTimeScale.duration.toMillis()===0) {
+          // no duration yet, so use whole seismogram
+          minMax = findMinMax(
+            seisDataList,
+            seismographConfig.doGain,
+            seismographConfig.amplitudeMode,
+          );
+      } else if (isDef(seismographConfig.linkedTimeScale)) {
+          minMax = findMinMaxOverRelativeTimeRange(
+            seisDataList,
+            seismographConfig.linkedTimeScale.offset,
+            seismographConfig.linkedTimeScale.duration,
+            seismographConfig.doGain,
+            seismographConfig.amplitudeMode,
+          );
       } else {
         throw new Error("neither fixed nor linked time scale");
       }
@@ -400,6 +423,5 @@ export function calcAmpScaleWithConfig(seisDataList: Array<SeismogramDisplayData
       minMax = MinMaxable.fromArray(scale.domain());
     }
   }
-  console.log(`minMax calcAmpScaleWithConfig: ${minMax}`)
   return minMax;
 }

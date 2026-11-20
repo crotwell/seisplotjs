@@ -803,7 +803,6 @@ export class Seismograph extends ScalableGraph {
     let yAxis = null;
     let yAxisRight = null;
     const axisScale = this.seismographAxisAmpScale();
-    console.log(`amp axis: domain: ${axisScale.domain()}  range: ${axisScale.range()}`)
     if (this.seismographConfig.isYAxis) {
       yAxis = d3axisLeft(axisScale).tickFormat(
         numberFormatWrapper(this.seismographConfig.amplitudeFormat),
@@ -1321,6 +1320,7 @@ export class Seismograph extends ScalableGraph {
    * trigger a redraw.
    */
   seisDataUpdated() {
+    super.seisDataUpdated();
     this.calcTimeScaleDomain();
     this.recheckAmpScaleDomain().then(() => {
       this.redoDisplayYScale();
