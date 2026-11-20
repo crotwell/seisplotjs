@@ -618,6 +618,15 @@ export class SeismogramDisplayData {
     return out;
   }
 
+  static fromSourceIdAndInterval(
+    sourceId: FDSNSourceId,
+    timeRange: Interval
+  ): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(timeRange);
+    out._sourceId = sourceId;
+    return out;
+  }
+
   static fromCodesAndTimes(
     networkCode: string,
     stationCode: string,

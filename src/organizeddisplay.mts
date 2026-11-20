@@ -1,4 +1,4 @@
-import {groupComponentOfMotion} from "./grouping.mjs";
+import {groupComponentOfMotion, groupStation} from "./grouping.mjs";
 import { INFO_ELEMENT, QuakeStationTable } from "./infotable.mjs";
 import {
   MAP_ELEMENT,
@@ -314,12 +314,39 @@ export class OrganizedDisplay extends SeisPlotElement {
                  overlayby: string
                 ): Array<OrganizedDisplayItem> {
     let seisDispItems = new Array<OrganizedDisplayItem>();
-    if (overlayby === OVERLAY_INDIVIDUAL) {
-      sortedData.forEach((sdd) => {
-        const oi = new OrganizedDisplayItem([sdd], this.seismographConfig);
-        oi.plottype = plottype;
-        seisDispItems.push(oi);
-      });
+
+    if (plottype === PARTICLE_MOTION
+        && (overlayby === OVERLAY_INDIVIDUAL
+          || overlayby === OVERLAY_COMPONENT
+          || overlayby === OVERLAY_STATION_COMPONENT)) {
+      // parmo need pairs, so vector and then pair up
+      let groupedSDD = null;
+      if (overlayby === OVERLAY_INDIVIDUAL
+        || overlayby === OVERLAY_COMPONENT) {
+        groupedSDD = groupComponentOfMotion(sortedData);
+      } else if (overlayby === OVERLAY_STATION_COMPONENT) {
+        groupedSDD = groupStation(sortedData);
+      }
+      if (groupedSDD != null) {
+        for (const group of groupedSDD) {
+          for (let xidx = 0; xidx < group.length-1; xidx++) {
+            const xSDD = group[xidx];
+            for (let yidx = xidx+1; yidx < group.length; yidx++) {
+              const ySDD = group[yidx];
+              const oi = new OrganizedDisplayItem([xSDD, ySDD], this.seismographConfig);
+              oi.plottype = plottype;
+              seisDispItems.push(oi);
+            }
+          }
+        }
+      }
+    } else if (overlayby === OVERLAY_INDIVIDUAL) { {
+        sortedData.forEach((sdd) => {
+          const oi = new OrganizedDisplayItem([sdd], this.seismographConfig);
+          oi.plottype = plottype;
+          seisDispItems.push(oi);
+        });
+      }
     } else if (overlayby === OVERLAY_VECTOR) {
       const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach((gsdd) => {

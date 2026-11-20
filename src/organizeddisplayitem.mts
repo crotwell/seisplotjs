@@ -198,10 +198,6 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         }
       });
       const pmpSeisConfig = createParticleMotionConfig(null, this._seismographConfig);
-      const doGain = true;
-      const minMax = findMinMax(this.seisData, doGain);
-      pmpSeisConfig.fixedAmplitudeScale = minMax.asArray();
-      pmpSeisConfig.doGain = doGain;
       const particleMotionPlot = new ParticleMotion(
         xData,
         yData,

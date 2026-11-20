@@ -12,36 +12,28 @@ import { checkStringOrDate } from "./util.mjs";
  */
 export function registerHelpers() {
   Handlebars.registerHelper(
-    "onlyChangesChannel",
+    "parmoChannel",
     function (
-      sddDataList: Array<SeismogramDisplayData>,
+      xSddDataList: Array<SeismogramDisplayData>,
+      ySddDataList: Array<SeismogramDisplayData>,
       index: number,
     ): string {
       let out;
-      const curr = sddDataList[index];
+      const xcurr = xSddDataList[index];
+      const ycurr = ySddDataList[index];
 
-      if (typeof curr === "undefined" || curr === null) {
+      if (xcurr == null || ycurr === null) {
         return "unknown";
       }
+      const xout = onlyChangesChannel(xSddDataList, index);
+      const yout = onlyChangesChannel([xcurr, ycurr], 1);
 
-      if (index === 0) {
-        out = curr.codes();
-      } else {
-        const prev = sddDataList[index - 1];
-
-        if (prev.networkCode !== curr.networkCode) {
-          out = curr.codes();
-        } else if (prev.stationCode !== curr.stationCode) {
-          out = `${curr.stationCode}.${curr.locationCode}.${curr.channelCode}`;
-        } else if (prev.locationCode !== curr.locationCode) {
-          out = `${curr.locationCode}.${curr.channelCode}`;
-        } else {
-          out = curr.channelCode;
-        }
-      }
-
-      return out;
+      return `${xout}-${yout}`;
     },
+  );
+  Handlebars.registerHelper(
+    "onlyChangesChannel",
+    onlyChangesChannel
   );
   Handlebars.registerHelper("distdeg", function (sdd: SeismogramDisplayData) {
     const distaz = sdd.distaz;
@@ -105,4 +97,34 @@ export function registerHelpers() {
       return `${param.toMillis() / 1000} sec`;
     },
   );
+}
+
+export function onlyChangesChannel(
+    sddDataList: Array<SeismogramDisplayData>,
+    index: number,
+  ): string {
+  let out;
+  const curr = sddDataList[index];
+
+  if (typeof curr === "undefined" || curr === null) {
+    return "unknown";
+  }
+
+  if (index === 0) {
+    out = curr.codes();
+  } else {
+    const prev = sddDataList[index - 1];
+
+    if (prev.networkCode !== curr.networkCode) {
+      out = curr.codes();
+    } else if (prev.stationCode !== curr.stationCode) {
+      out = `${curr.stationCode}.${curr.locationCode}.${curr.channelCode}`;
+    } else if (prev.locationCode !== curr.locationCode) {
+      out = `${curr.locationCode}.${curr.channelCode}`;
+    } else {
+      out = curr.channelCode;
+    }
+  }
+
+  return out;
 }

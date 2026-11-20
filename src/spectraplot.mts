@@ -437,9 +437,10 @@ export class SpectraPlot extends HTMLElement {
           return yScale.range()[0];
         }
       });
-      pathg
-        .append("g")
-        .append("path")
+      const codes = ap.seismogramDisplayData?.codes();
+      const dataG = pathg.append("g");
+      if (codes != null) {dataG.classed(codes, true);}
+      dataG.append("path")
         .classed("fftpath", true)
         .datum(ampSlice)
         .attr("d", line);

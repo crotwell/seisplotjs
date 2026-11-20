@@ -17,7 +17,7 @@ import {
 import { SeismogramSegment } from "./seismogramsegment.mjs";
 import { COLOR_CSS_ID } from "./seismograph.mjs";
 import { isDef, isNumArg, validStartTime, validEndTime, createSVGElement } from "./util.mjs";
-import {AUTO_COLOR_SELECTOR} from "./cssutil.mjs";
+import {AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil.mjs";
 import * as axisutil from "./axisutil.mjs";
 import type { HandlebarsInput } from "./axisutil.mjs";
 
@@ -32,7 +32,7 @@ import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
 import type { Selection } from "d3-selection";
 
 export const DEFAULT_TITLE =
-  "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
+  "{{#each seisXData}}<tspan>{{parmoChannel ../seisXData ../seisYData @index}}</tspan> {{else}}No Data{{/each}}";
 export const DEFAULT_XLABEL =
   "{{#each seisXData}}<tspan>{{this.channelCode}}</tspan> {{else}}No Data{{/each}}";
 
@@ -327,10 +327,11 @@ export class ParticleMotion extends ScalableGraph {
     }
     let xSegments: Array<SeismogramSegment>;
     let ySegments: Array<SeismogramSegment>;
+    const dataG = g.appendChild(createSVGElement("g")) as SVGGElement;
+    dataG.classList.add("particleMotion");
+    dataG.classList.add(G_DATA_SELECTOR);
     for (let i = 0; i < this.xSeisData.length; i++) {
-      const lineG = g.appendChild(createSVGElement("g")) as SVGGElement;
-      lineG.classList.add("particleMotion");
-      lineG.classList.add("seisplotjsdata");
+      const lineG = dataG.appendChild(createSVGElement("g")) as SVGGElement;
       lineG.classList.add("seispath");
       lineG.classList.add(this.xSeisData[0].codes());
       lineG.classList.add("orient" + xOrientCode + "_" + yOrientCode);

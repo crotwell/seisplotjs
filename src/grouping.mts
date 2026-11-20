@@ -48,3 +48,36 @@ export function groupComponentOfMotion(
 
   return byFriends;
 }
+
+
+/**
+ * Groups seismic data into subarrays where members of each subarray are
+ * from the same network/station, have the same band and gain/instrument code
+ * and overlap in time. Note, in most cases the subarrays will have
+ * 1, 2 or 3 elements, but this is not checked nor guaranteed.
+ *
+ * @param   sddList list of SeismogramDisplayData to split
+ * @returns          array of array of data, organized by component of motion
+ */
+export function groupStation(
+  sddList: Array<SeismogramDisplayData>,
+): Array<Array<SeismogramDisplayData>> {
+  const friends = [];
+  const isFriend = (sddA: SeismogramDisplayData, sddB: SeismogramDisplayData) =>
+    sddA.sourceId.stationSourceId() === sddB.sourceId.stationSourceId();
+  for (const sdd of sddList) {
+    let foundGroup: null|Array<SeismogramDisplayData> = null;
+    for (const group of friends) {
+      if (group.length>0 && isFriend(sdd, group[0])) {
+        foundGroup = group;
+        break;
+      }
+    }
+    if (foundGroup == null) {
+      foundGroup = [];
+      friends.push(foundGroup);
+    }
+    foundGroup.push(sdd);
+  }
+  return friends;
+}
