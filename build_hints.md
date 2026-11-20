@@ -19,7 +19,7 @@ npm login
 npm publish
 
 # tag, and github
-git tag -a -m 'v3.3.0-SNAPSHOT' v3.3.0-SNAPSHOT
+git tag -a -m 'v3.3.0' v3.3.0
 git push
 # create release on github for tag and add standalone as binary
 

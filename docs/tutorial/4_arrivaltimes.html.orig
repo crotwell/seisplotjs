@@ -94,7 +94,7 @@
       <h1>
        Seisplotjs Tutorial
        <span class="sp_version">
-        3.3.0-SNAPSHOT
+        3.3.0
        </span>
       </h1>
       <h3>
@@ -109,11 +109,11 @@
       </h5>
       <p>
        It would be nice to know where the P and S wave are predicted to
-              arrive. We can use a
-       <a href="https://www.seis.sc.edu/uscws/webtaup/3/">
-        TauP
+              arrive. We can use the EarthScope
+       <a href="https://service.earthscope.org/irisws/traveltime/1/">
+        traveltime
        </a>
-       traveltime web service to to get travel times for seismic phases. The
+       web service to to get travel times for seismic phases. The
               traveltime web service uses
        <a href="https://www.seis.sc.edu/TauP/">
         The TauP Toolkit
@@ -171,7 +171,6 @@ const ttimePromise = Promise.all([quakePromise, stationsPromise])
       const taupQuery = new sp.taup3.TauPQuery();
       taupQuery.host("www.seis.sc.edu");
       taupQuery.pathBase(sp.fdsncommon.USCWS_PATH_BASE);
-      taupQuery._service = "devtaup";
       taupQuery.distdeg(allDistDeg);
       taupQuery.evdepthInMeter(q.depth);
       taupQuery.phases(allPhases);
@@ -366,7 +365,7 @@ const ttimePromise = Promise.all([quakePromise, stationsPromise])
    </div>
   </div>
   <script type="module">
-   import * as sp from "../seisplotjs_3.3.0-SNAPSHOT_standalone.mjs";
+   import * as sp from "../seisplotjs_3.3.0_standalone.mjs";
       sp.util.updateVersionText(".sp_version");
   </script>
   <script src="../prism.js">

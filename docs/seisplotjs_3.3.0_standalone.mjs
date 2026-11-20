@@ -43391,7 +43391,7 @@ __export(util_exports, {
 });
 
 // src/version.mts
-var version = "3.3.0-SNAPSHOT";
+var version = "3.3.0";
 
 // src/util.mts
 var XML_MIME = "application/xml";

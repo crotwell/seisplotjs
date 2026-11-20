@@ -27,7 +27,7 @@
               <section class='p2 mb2 clearfix bg-white minishadow'>
         <div class='clearfix'>
 
-          <h3>Seisplotjs <span class="sp_version">3.1.4-alpha.1</span> API Documentation</h3>
+          <h3>Seisplotjs <span class="sp_version">3.3.0-SNAPSHOT</span> API Documentation</h3>
           <p>Seisplotjs is a collection of javascript routines for requesting,
             manipulating and plotting seismic data. It is divided into submodules,
             which are listed below.
@@ -53,6 +53,7 @@
       <li><a href="fdsnstationcomponent.html">fdsnstationcomponent</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/fdsnstationcomponent.mts">source</a> ) - html component for FDSN Station web service options</li>
       <li><a href="fft.html">fft</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/fft.mts">source</a> ) - discrete fourier transforms via <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a></li>
       <li><a href="filter.html">filter</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/filter.mts">source</a> ) - timeseries filtering and utility functionality via <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a></li>
+      <li><a href="grouping.html">grouping</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/grouping.mts">source</a> ) - </li>
       <li><a href="handlebarshelpers.html">handlebarshelpers</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/handlebarshelpers.mts">source</a> ) - helpers for use with <a href="https://handlebarsjs.com/">handlebars</a>, eg in titles</li>
       <li><a href="helicorder.html">helicorder</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/helicorder.mts">source</a> ) - helicorder style 24 hour plots</li>
       <li><a href="infotable.html">infotable</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/infotable.mts">source</a> ) - component to display information about seismograms</li>
@@ -76,20 +77,22 @@
       <li><a href="ringserverweb4.html">ringserverweb4</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/ringserverweb4.mts">source</a> ) - presentation of data pulled from the web interface of a version 4 <a href="https://github.com/EarthScope/ringserver">Ringserver</a></li>
       <li><a href="sacpolezero.html">sacpolezero</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/sacpolezero.mts">source</a> ) - parsing of SAC polezero response file</li>
       <li><a href="scale.html">scale</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/scale.mts">source</a> ) - time and amplitude scale change notification</li>
+      <li><a href="scaleablegraph.html">scaleablegraph</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/scaleablegraph.mts">source</a> ) - </li>
       <li><a href="seedcodec.html">seedcodec</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seedcodec.mts">source</a> ) - decompression for seismic data, often used from miniseed</li>
       <li><a href="seedlink.html">seedlink</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seedlink.mts">source</a> ) - seedlink protocol over web socket to a <a href="https://github.com/EarthScope/ringserver">Ringserver</a> seedlink server</li>
       <li><a href="seedlink4.html">seedlink4</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seedlink4.mts">source</a> ) - seedlink version 4 protocol over web socket to a <a href="https://github.com/EarthScope/ringserver">Ringserver</a> seedlink server</li>
       <li><a href="seismogram.html">seismogram</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismogram.mts">source</a> ) - objects representing seismograms and timeseries</li>
-      <li><a href="seismogramloader.html">seismogramloader</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismogramloader.mts">source</a> ) - uses fdsnstation, fdsnevent, traveltime and fdsndataselect to load seismograms</li>
+      <li><a href="seismogramloader.html">seismogramloader</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismogramloader.mts">source</a> ) - uses fdsnstation, fdsnevent, taup3 and fdsndataselect to load seismograms</li>
       <li><a href="seismogramsegment.html">seismogramsegment</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismogramsegment.mts">source</a> ) - objects representing contiguous segments of seismograms</li>
       <li><a href="seismograph.html">seismograph</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismograph.mts">source</a> ) - plotting of seismograms</li>
       <li><a href="seismographconfig.html">seismographconfig</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismographconfig.mts">source</a> ) - configuration of seismograph plots</li>
       <li><a href="seismographconfigeditor.html">seismographconfigeditor</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismographconfigeditor.mts">source</a> ) - editor for configuration of seismograph plots</li>
       <li><a href="seismographmarker.html">seismographmarker</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismographmarker.mts">source</a> ) - markers on seismograms</li>
       <li><a href="seismographutil.html">seismographutil</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seismographutil.mts">source</a> ) - low level drawing functions for seismograph</li>
-      <li><a href="seisplotjs_3.3.0-SNAPSHOT_standalone.html">seisplotjs_3.3.0-SNAPSHOT_standalone</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seisplotjs_3.3.0-SNAPSHOT_standalone.mts">source</a> ) - low level drawing functions for seismograph</li>
+      <li><a href="seisplotjs_3.3.0_standalone.html">seisplotjs_3.3.0_standalone</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/seisplotjs_3.3.0_standalone.mts">source</a> ) - low level drawing functions for seismograph</li>
       <li><a href="sorting.html">sorting</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/sorting.mts">source</a> ) - sorting utilites for seismic data</li>
       <li><a href="spectraplot.html">spectraplot</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/spectraplot.mts">source</a> ) - plotting of specta output from the fft module</li>
+      <li><a href="spectrogram.html">spectrogram</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/spectrogram.mts">source</a> ) - </li>
       <li><a href="spelement.html">spelement</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/spelement.mts">source</a> ) - superclass for some custom elements</li>
       <li><a href="stationxml.html">stationxml</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/stationxml.mts">source</a> ) - objects corresponding to elements in a StationXML xml file</li>
       <li><a href="syngine.html">syngine</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/main/src/syngine.mts">source</a> ) - query EarthScope <a href="https://service.earthscope.org/irisws/syngine/docs/1/">Syngine</a> web service for synthetic seismograms</li>
