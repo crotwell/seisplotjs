@@ -67,6 +67,8 @@
         esid,
       );
       const seisConfig = sp.particlemotion.createParticleMotionConfig();
+      seisConfig.isRelativeTime = false;
+      seisConfig.enableLinkedAmplitude();
       console.log(`manual seisconfig: ${seisConfig.configId}`);
       const seismographList = document.querySelectorAll(
         sp.particlemotion.PARTICLE_MOTION_ELEMENT,
@@ -79,8 +81,7 @@
       seismographList[2].ySeisData = seisB;
       seismographList.forEach((graph) => {
         graph.seismographConfig = seisConfig;
-        graph.seismographConfig.isRelativeTime = false;
-        graph.draw();
+        graph.redraw();
       });
     </script>
   </body>

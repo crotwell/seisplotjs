@@ -124,14 +124,10 @@ const ttimePromise = Promise.all([quakePromise, stationsPromise])
     let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
 
     const doGain = true;
-    let minMax = sp.seismogram.findMinMax(
-      [xSeisData, ySeisData, zSeisData],
-      doGain,
-    );
     let pmSeisConfig = new sp.particlemotion.createParticleMotionConfig(
       firstSTimeWindow,
     );
-    pmSeisConfig.fixedYScale = minMax;
+    pmSeisConfig.enableLinkedAmplitude();
     pmSeisConfig.doGain = doGain;
     let pmpA = new sp.particlemotion.ParticleMotion(
       xSeisData,
