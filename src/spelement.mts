@@ -18,12 +18,15 @@ export class SeisPlotElement extends HTMLElement {
   _throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
   _sorting: Map<string,(sdd: SeismogramDisplayData) => number | string | DateTime>;
 
+  static _lastID: number = 0;
+  _graphId: number;
 
   constructor(
     seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
   ) {
     super();
+    this._graphId = ++SeisPlotElement._lastID;
     this.onRedraw = (_el: SeisPlotElement) => {};
     this._throttleRedraw = null;
     if (isDef(seisData)) {
