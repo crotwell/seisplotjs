@@ -22,10 +22,7 @@
     <h5 id="sp-particle-motion">&lt;sp-particle-motion&gt;</h5>
 
     <h3>Particle Motion:</h3>
-    <div>
-      <sp-particle-motion></sp-particle-motion>
-      <sp-particle-motion></sp-particle-motion>
-      <sp-particle-motion></sp-particle-motion>
+    <div class="parmo">
     </div>
 
     <script type="module">
@@ -69,19 +66,14 @@
       const seisConfig = sp.particlemotion.createParticleMotionConfig();
       seisConfig.isRelativeTime = false;
       seisConfig.enableLinkedAmplitude();
-      console.log(`manual seisconfig: ${seisConfig.configId}`);
-      const seismographList = document.querySelectorAll(
-        sp.particlemotion.PARTICLE_MOTION_ELEMENT,
-      );
-      seismographList[0].xSeisData = seisB;
-      seismographList[0].ySeisData = seis;
-      seismographList[1].xSeisData = seisC;
-      seismographList[1].ySeisData = seis;
-      seismographList[2].xSeisData = seisC;
-      seismographList[2].ySeisData = seisB;
+      const seismographList = [
+        new sp.particlemotion.ParticleMotion(seisB, seis, seisConfig),
+        new sp.particlemotion.ParticleMotion(seisC, seis, seisConfig),
+        new sp.particlemotion.ParticleMotion(seisC, seisB, seisConfig)
+      ];
+      const parmDiv = document.querySelector("div.parmo");
       seismographList.forEach((graph) => {
-        graph.seismographConfig = seisConfig;
-        graph.redraw();
+        parmDiv.appendChild(graph);
       });
     </script>
   </body>
